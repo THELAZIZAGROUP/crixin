@@ -89,4 +89,4 @@ Then ask your AI host: "use crixin-voice to call +1xxxxxxxxxx" or "use crixin-co
 ## Author
 
 - Mosab Abdallah · <https://github.com/Mrdopplereffekt>
-- Publisher: Lazizatech · <https://github.com/Lazizatech>
+- Publisher: The La Ziza Group LLC · <https://github.com/THELAZIZAGROUP>
