@@ -1,0 +1,72 @@
+# --- Secrets & credentials (never commit, no exceptions) -------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+service-account*.json
+service_account*.json
+serviceAccount*.json
+*-credentials*.json
+firebase-admin*.json
+gcp-key*.json
+google-application-credentials*.json
+secrets.*
+.npmrc
+
+# --- Node / npm / pnpm / yarn -----------------------------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.npm/
+.yarn/
+
+# --- Build output -----------------------------------------------------------
+dist/
+build/
+out/
+.next/
+.turbo/
+.cache/
+.swc/
+*.tsbuildinfo
+
+# --- Test / coverage --------------------------------------------------------
+coverage/
+.nyc_output/
+test-results/
+
+# --- Editors / IDEs ---------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+**/.DS_Store
+Thumbs.db
+
+# --- OS / misc --------------------------------------------------------------
+.tmp/
+*.log
+.envrc
+
+# --- Claude Code (project-local memory; keep out of public packages) --------
+.claude/
+CLAUDE.md
+.env.auth
+.vercel
+
+# --- Demo + scratch artifacts (build-time only, do not commit) ---------------
+demo-assets/
+desk-reference.jpg
+
+# --- Internal material lives in ../crixin-private (never in the public tree) --
+HANDOFF.md
+launch/
+docs/internal/
+cloud-run/

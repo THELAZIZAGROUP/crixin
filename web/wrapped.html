@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="canonical" href="https://crixin.com/wrapped" />
+  <title>Voice Wrapped — your year on the phone, by the numbers</title>
+  <meta name="description" content="Run `crixin voice wrapped` once. Get a self-contained HTML report — total calls, minutes on the line, top destinations, busiest hour, longest call, plus a Caller Archetype reveal. Local. PII auto-stripped." />
+  <meta name="keywords" content="voice wrapped, ai call analytics, twilio analytics, deepgram transcripts, voice mcp" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Voice Wrapped — your year on the phone" />
+  <meta property="og:description" content="Local-first annual recap of every call your AI placed via Voice MCP. Generated from your Twilio + Deepgram data, runs on your laptop." />
+  <meta property="og:url" content="https://crixin.com/wrapped" />
+  <meta property="og:site_name" content="Crixin" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="/site.js" defer></script>
+
+  <style>
+    .doc-hero { padding: 130px 0 60px; }
+    .eyebrow {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--brand);
+      padding: 6px 12px;
+      border: 1px solid var(--brand);
+      border-radius: 9999px;
+    }
+    .doc-hero h1 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(40px, 6vw, 76px);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin: 22px 0 18px;
+    }
+    .doc-hero h1 em { color: var(--brand); font-style: italic; }
+    .doc-hero p.lede {
+      font-size: 19px;
+      color: var(--text-secondary);
+      max-width: 720px;
+      line-height: 1.55;
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin: 36px 0;
+    }
+    .stat {
+      padding: 22px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      background: var(--bg-surface);
+    }
+    .stat .label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .stat .value {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 32px;
+      color: var(--brand);
+      line-height: 1.1;
+    }
+    .stat .sub { color: var(--text-secondary); font-size: 13px; margin-top: 6px; }
+    pre.code {
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 18px 22px;
+      margin: 18px 0;
+      color: var(--text-primary);
+      overflow-x: auto;
+    }
+    section.sm { padding: 60px 0; }
+    section.sm h2 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(28px, 4vw, 44px);
+      margin: 0 0 12px;
+    }
+    section.sm h2 em { color: var(--brand); font-style: italic; }
+    .ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+    .copy-cmd {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      padding: 12px 18px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--text-primary);
+    }
+    .copy-cmd:hover { border-color: var(--brand); color: var(--brand); }
+    .btn-primary {
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 11px 18px;
+      border-radius: 8px;
+      background: var(--brand);
+      color: #0b0d12;
+      border: 1px solid var(--brand);
+    }
+    .btn-ghost {
+      font-family: var(--font-sans);
+      font-size: 14px;
+      padding: 11px 18px;
+      border-radius: 8px;
+      border: 1px solid var(--border-strong);
+      color: var(--text-primary);
+    }
+    .btn-ghost:hover, .btn-primary:hover { border-color: var(--brand); }
+    footer.site {
+      padding: 30px 0 50px;
+      color: var(--text-muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border-subtle);
+      margin-top: 60px;
+    }
+    footer.site a { color: var(--text-secondary); margin: 0 12px; }
+  </style>
+</head>
+<body>
+  <canvas id="embers" aria-hidden="true"></canvas>
+
+  <header class="site" id="site-header">
+    <div class="wrap row">
+      <a href="/" class="brand-mark">crixin<span class="tag">v0.4.0</span></a>
+      <nav class="primary">
+        <a href="/voice">Voice MCP</a>
+        <a href="/voice/use-cases">Use cases</a>
+        
+        <a href="/coder">Coder</a><a href="/wrapped" style="color:var(--brand);">Wrapped</a>
+        <a href="/archetype">Archetype</a>
+        <a href="/voice/pricing">Pricing</a>
+        <a href="/login">Sign in</a>
+        <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="doc-hero">
+    <div class="wrap-narrow">
+      <span class="eyebrow">voice mcp · wrapped</span>
+      <h1>Your year on the <em>phone</em>.</h1>
+      <p class="lede">Run <code class="mono">crixin voice wrapped</code> once. Get a self-contained HTML report you can open in a browser, screenshot, or share. Generated locally from your Twilio + Deepgram data — your transcripts never leave your laptop. (Coder MCP has its own Wrapped: <code class="mono">crixin coder wrapped</code>.)</p>
+      <div class="ctas">
+        <span class="copy-cmd" onclick="navigator.clipboard.writeText('crixin voice wrapped')">crixin voice wrapped</span>
+        <a class="btn-primary" href="/install">Install in 30 seconds</a>
+        <a class="btn-ghost" href="/archetype">See the archetypes</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="sm">
+    <div class="wrap-narrow">
+      <h2>What's <em>on the page</em>.</h2>
+      <p style="color:var(--text-secondary);font-size:16px;line-height:1.65;">A single self-contained HTML file. Twelve numbers that tell you what your AI actually did this year.</p>
+
+      <div class="stat-grid">
+        <div class="stat"><div class="label">total calls</div><div class="value">1,247</div><div class="sub">your AI placed or received</div></div>
+        <div class="stat"><div class="label">total minutes</div><div class="value">8,432</div><div class="sub">avg 6m 45s per call</div></div>
+        <div class="stat"><div class="label">spend (twilio)</div><div class="value">$174.32</div><div class="sub">~$0.14 per call avg</div></div>
+        <div class="stat"><div class="label">unique destinations</div><div class="value">412</div><div class="sub">distinct phone numbers</div></div>
+        <div class="stat"><div class="label">busiest hour</div><div class="value">3 PM</div><div class="sub">2,180 calls placed</div></div>
+        <div class="stat"><div class="label">longest call</div><div class="value">22m 14s</div><div class="sub">CA94e1…3a02</div></div>
+        <div class="stat"><div class="label">top country</div><div class="value">Egypt</div><div class="sub">624 calls · 4,103 min</div></div>
+        <div class="stat"><div class="label">top campaign</div><div class="value">q2-restaurants</div><div class="sub">312 calls · $44 spend</div></div>
+        <div class="stat"><div class="label">caller archetype</div><div class="value">Patient Listener</div><div class="sub">avg call &gt; 3 min · low close-rate</div></div>
+        <div class="stat"><div class="label">top language</div><div class="value">ar-EG</div><div class="sub">via Polly.Hala-Neural</div></div>
+        <div class="stat"><div class="label">transcripts</div><div class="value">912 / 1,247</div><div class="sub">Deepgram-transcribed</div></div>
+        <div class="stat"><div class="label">duck rate</div><div class="value">14.2%</div><div class="sub">calls with a dodge phrase</div></div>
+      </div>
+
+      <!-- ═══════ The visual mockup — what the HTML report actually looks like ═══════ -->
+      <h2 style="margin-top:60px;">And the rest of <em>the page</em>.</h2>
+      <p style="color:var(--text-secondary);font-size:16px;line-height:1.65;">The twelve numbers above are the headline. Below them sits the visual layer — when your year happened, where it happened, what your AI agents talked about, and which of them did the work. All in one self-contained HTML file.</p>
+    </div>
+
+    <div class="wrap">
+      <style>
+        .wv-mock {
+          max-width: 920px; margin: 28px auto 0;
+          border: 1px solid var(--border-subtle);
+          border-radius: 16px;
+          background: var(--bg-surface);
+          padding: 36px 32px;
+          box-shadow: 0 60px 140px -70px rgba(245, 180, 82, 0.22);
+        }
+        .wv-eyebrow { display: inline-block; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.10em; text-transform: uppercase; color: var(--brand); padding: 5px 11px; border: 1px solid var(--brand); border-radius: 9999px; }
+        .wv-mock h3 { font-family: var(--font-display); font-weight: 400; font-size: clamp(28px, 4vw, 40px); line-height: 1.1; margin: 14px 0 6px; }
+        .wv-mock h3 em { color: var(--brand); font-style: italic; }
+        .wv-mock .wv-lede { color: var(--text-secondary); font-size: 14.5px; line-height: 1.6; margin: 0 0 26px; }
+        .wv-section-h { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin: 4px 0 12px; }
+
+        /* Hour-of-day heatmap */
+        .wv-heatmap { display: grid; grid-template-columns: repeat(24, 1fr); gap: 3px; margin-bottom: 8px; }
+        .wv-hm { aspect-ratio: 1; background: var(--bg-elevated); border: 1px solid var(--border-subtle); border-radius: 3px; }
+        .wv-hm-axis { display: grid; grid-template-columns: repeat(24, 1fr); gap: 3px; font-family: var(--font-mono); font-size: 9px; color: var(--text-muted); margin-bottom: 26px; }
+        .wv-hm-axis span { text-align: center; }
+
+        /* Day-of-week */
+        .wv-dow { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 26px; }
+        .wv-dow-cell { padding: 14px 6px; background: var(--bg-elevated); border: 1px solid var(--border-subtle); border-radius: 6px; text-align: center; }
+        .wv-dow-cell .lbl { display: block; color: var(--text-muted); font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 4px; }
+        .wv-dow-cell .ct { font-family: var(--font-display); font-style: italic; font-size: 20px; color: var(--brand); }
+
+        /* Monthly */
+        .wv-months { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; align-items: end; height: 110px; margin: 8px 0 6px; }
+        .wv-month-bar { background: var(--brand); border-radius: 3px 3px 0 0; min-height: 4px; opacity: 0.9; }
+        .wv-month-axis { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; font-family: var(--font-mono); font-size: 9px; color: var(--text-muted); margin-bottom: 26px; }
+        .wv-month-axis span { text-align: center; }
+
+        /* Two-column */
+        .wv-two { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 4px; }
+        @media (max-width: 720px) { .wv-two { grid-template-columns: 1fr; } }
+        .wv-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--border-subtle); font-size: 13.5px; color: var(--text-secondary); }
+        .wv-row:last-child { border-bottom: 0; }
+        .wv-row .l { color: var(--text-primary); font-family: var(--font-mono); font-size: 12.5px; }
+        .wv-row .r { color: var(--brand); font-family: var(--font-mono); font-size: 12px; }
+        .wv-bar { height: 5px; background: var(--bg-elevated); border-radius: 3px; overflow: hidden; margin-top: 6px; }
+        .wv-bar > span { display: block; height: 100%; background: var(--brand); }
+
+        /* Archetype reveal pill */
+        .wv-arch-pill { display: inline-block; padding: 6px 14px; border: 1px solid var(--brand); border-radius: 9999px; font-family: var(--font-display); font-style: italic; font-size: 20px; color: var(--brand); }
+
+        .wv-foot { margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--border-subtle); font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); text-align: center; }
+      </style>
+
+      <div class="wv-mock">
+        <span class="wv-eyebrow">voice wrapped · 2026</span>
+        <h3>1,247 calls, <em>annotated</em>.</h3>
+        <p class="wv-lede">Everything below is computed locally from your Twilio + Deepgram data. No metric goes out. Hover over any chart in the real HTML file and the underlying SID/call-detail surfaces in a tooltip.</p>
+
+        <!-- Hour-of-day -->
+        <div class="wv-section-h">When you called (hour of day, local time)</div>
+        <div class="wv-heatmap">
+          <div class="wv-hm" style="background:rgba(245,180,82,0.04);"></div>
+          <div class="wv-hm" style="background:rgba(245,180,82,0.02);"></div>
+          <div class="wv-hm" style="background:rgba(245,180,82,0.02);"></div>
+          <div class="wv-hm" style="background:rgba(245,180,82,0.02);"></div>
+          <div class="wv-hm" style="background:rgba(245,180,82,0.02);"></div>
+          <div class="wv-hm" style="background:rgba(245,180,82,0.02);"></div>
+          <div class="wv-hm" style="background:rgba(245,180,82,0.03);"></div>
+          <div class="wv-hm" style="background:rgba(245,180,82,0.08);"></div>
+          <div class="wv-hm" style="background:rgba(245,180,82,0.20);"></div>
+          <div class="wv-hm" style="background:rgba(245,180,82,0.42);"></div>
+          <div class="wv-hm" style="background:rgba(245,180,82,0.62);"></div>
+          <div class="wv-hm" style="background:rgba(245,180,82,0.78);"></div>
+          <div class="wv-hm" style="background:rgba(245,180,82,0.85);"></div>
+          <div class="wv-hm" style="background:rgba(245,180,82,0.72);"></div>
+          <div class="wv-hm" style="background:rgba(245,180,82,0.95);"></div>
+          <div class="wv-hm" style="background:rgba(245,180,82,1);"></div>
+          <div class="wv-hm" style="background:rgba(245,180,82,0.84);"></div>
+          <div class="wv-hm" style="background:rgba(245,180,82,0.62);"></div>
+          <div class="wv-hm" style="background:rgba(245,180,82,0.48);"></div>
+          <div class="wv-hm" style="background:rgba(245,180,82,0.32);"></div>
+          <div class="wv-hm" style="background:rgba(245,180,82,0.20);"></div>
+          <div class="wv-hm" style="background:rgba(245,180,82,0.10);"></div>
+          <div class="wv-hm" style="background:rgba(245,180,82,0.06);"></div>
+          <div class="wv-hm" style="background:rgba(245,180,82,0.04);"></div>
+        </div>
+        <div class="wv-hm-axis">
+          <span>12a</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12p</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+        </div>
+
+        <!-- Day of week -->
+        <div class="wv-section-h">Day of week (TCPA windows respected — 8am–9pm local)</div>
+        <div class="wv-dow">
+          <div class="wv-dow-cell"><span class="lbl">Mon</span><span class="ct">189</span></div>
+          <div class="wv-dow-cell"><span class="lbl">Tue</span><span class="ct">221</span></div>
+          <div class="wv-dow-cell"><span class="lbl">Wed</span><span class="ct">238</span></div>
+          <div class="wv-dow-cell"><span class="lbl">Thu</span><span class="ct">214</span></div>
+          <div class="wv-dow-cell"><span class="lbl">Fri</span><span class="ct">187</span></div>
+          <div class="wv-dow-cell"><span class="lbl">Sat</span><span class="ct">128</span></div>
+          <div class="wv-dow-cell"><span class="lbl">Sun</span><span class="ct">70</span></div>
+        </div>
+
+        <!-- Monthly -->
+        <div class="wv-section-h">Monthly distribution</div>
+        <div class="wv-months">
+          <div class="wv-month-bar" style="height:24%;"></div>
+          <div class="wv-month-bar" style="height:38%;"></div>
+          <div class="wv-month-bar" style="height:55%;"></div>
+          <div class="wv-month-bar" style="height:72%;"></div>
+          <div class="wv-month-bar" style="height:88%;"></div>
+          <div class="wv-month-bar" style="height:100%;"></div>
+          <div class="wv-month-bar" style="height:91%;"></div>
+          <div class="wv-month-bar" style="height:84%;"></div>
+          <div class="wv-month-bar" style="height:68%;"></div>
+          <div class="wv-month-bar" style="height:75%;"></div>
+          <div class="wv-month-bar" style="height:82%;"></div>
+          <div class="wv-month-bar" style="height:96%;"></div>
+        </div>
+        <div class="wv-month-axis">
+          <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
+        </div>
+
+        <!-- Caller archetype card -->
+        <div style="margin:30px 0 30px;padding:22px 24px;background:linear-gradient(180deg,rgba(245,180,82,0.05),var(--bg-elevated));border:1px solid var(--brand);border-radius:12px;">
+          <div class="wv-section-h" style="margin-bottom:8px;">Caller archetype reveal</div>
+          <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;">
+            <span class="wv-arch-pill">Patient Listener</span>
+            <span style="color:var(--text-muted);font-family:var(--font-mono);font-size:11px;letter-spacing:0.05em;">avg call &gt; 3 min · low close-rate · high question density</span>
+          </div>
+          <p style="color:var(--text-secondary);font-size:13.5px;line-height:1.6;margin:12px 0 0;max-width:680px;">31.2% of your calls run past 3 minutes — your AI lets the prospect talk. Sage-ish caller behavior; if you wanted more closes, this is the dial to turn.</p>
+        </div>
+
+        <!-- Two-column: countries + campaigns -->
+        <div class="wv-two">
+          <div>
+            <div class="wv-section-h">Top destination countries</div>
+            <div class="wv-row"><span class="l">Egypt</span><span class="r">624 · 4,103 min</span></div>
+            <div class="wv-bar"><span style="width:100%"></span></div>
+            <div class="wv-row" style="margin-top:6px;"><span class="l">United States · Canada</span><span class="r">312 · 2,418 min</span></div>
+            <div class="wv-bar"><span style="width:50%"></span></div>
+            <div class="wv-row" style="margin-top:6px;"><span class="l">UAE</span><span class="r">141 · 1,002 min</span></div>
+            <div class="wv-bar"><span style="width:23%"></span></div>
+            <div class="wv-row" style="margin-top:6px;"><span class="l">Saudi Arabia</span><span class="r">98 · 624 min</span></div>
+            <div class="wv-bar"><span style="width:16%"></span></div>
+            <div class="wv-row" style="margin-top:6px;"><span class="l">United Kingdom</span><span class="r">72 · 285 min</span></div>
+            <div class="wv-bar"><span style="width:12%"></span></div>
+          </div>
+          <div>
+            <div class="wv-section-h">Top campaigns</div>
+            <div class="wv-row"><span class="l">q2-restaurants</span><span class="r">312 · $44.10</span></div>
+            <div class="wv-row"><span class="l">dental-confirms</span><span class="r">218 · $18.20</span></div>
+            <div class="wv-row"><span class="l">b2b-discovery</span><span class="r">187 · $36.45</span></div>
+            <div class="wv-row"><span class="l">nps-followup</span><span class="r">156 · $11.80</span></div>
+            <div class="wv-row"><span class="l">activation-stalled</span><span class="r">98 · $9.60</span></div>
+
+            <div class="wv-section-h" style="margin-top:22px;">Top languages</div>
+            <div class="wv-row"><span class="l">ar-EG (Polly.Hala-Neural)</span><span class="r">624 · 50%</span></div>
+            <div class="wv-row"><span class="l">en-US (Polly.Joanna-Neural)</span><span class="r">453 · 36%</span></div>
+            <div class="wv-row"><span class="l">ar-MSA (Polly.Zeina)</span><span class="r">98 · 8%</span></div>
+            <div class="wv-row"><span class="l">es-MX (Polly.Mia-Neural)</span><span class="r">72 · 6%</span></div>
+          </div>
+        </div>
+
+        <div class="wv-foot">PII auto-stripped · generated locally · shareable as a screenshot</div>
+      </div>
+    </div>
+
+    <div class="wrap-narrow">
+      <h2 style="margin-top:60px;">Try it <em>locally</em>.</h2>
+      <p style="color:var(--text-secondary);font-size:16px;line-height:1.65;">Three commands and you've got your year. The DB is at <code class="mono">~/.crixin/crixin.db</code>; the report is just an HTML file you can move anywhere.</p>
+<pre class="code">npm i -g crixin
+crixin voice install              <span style="color:var(--text-muted);"># wire MCP into hosts</span>
+crixin voice ingest               <span style="color:var(--text-muted);"># pull last 90 days of Twilio</span>
+crixin voice wrapped --year 2026  <span style="color:var(--text-muted);"># writes ./crixin-voice-wrapped-2026.html</span></pre>
+
+      <p style="color:var(--text-secondary);font-size:14px;margin-top:20px;">No telemetry. No upload. No SaaS in the middle. The HTML report is yours to keep — drop it in a notion page, screenshot it for your investor deck, or use it as a year-end review for the AI agent that worked while you slept.</p>
+    </div>
+  </section>
+
+  <footer class="site">
+    <div class="wrap" style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;">
+      <div>
+        <a href="/">crixin</a>
+        <a href="/voice">voice</a>
+        <a href="/wrapped">wrapped</a>
+        <a href="/archetype">archetype</a>
+        <a href="/voice/pricing">pricing</a>
+      </div>
+      <div>
+        <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a>
+        <a href="/faq">FAQ</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

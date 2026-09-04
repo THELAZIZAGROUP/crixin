@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="canonical" href="https://crixin.com/coder" />
+  <title>Coder MCP — give your AI a memory across every session.</title>
+  <meta name="description" content="The Coder half of the Crixin MCP toolkit. Your AI agent reads back every Claude Code, Codex CLI, and Cursor session you've ever had through four MCP tools: search_sessions, list_recent_sessions, get_session, stats. Local SQLite. No account, no upload." />
+  <meta name="keywords" content="claude code observability, codex cli analytics, cursor session search, ai coding wrapped, llm cost tracker, behavioral archetype, mcp server, local-first" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="crixin coder — your year of AI pair programming, in receipts" />
+  <meta property="og:description" content="One install. Every prompt, every model, every dollar — searchable on your laptop. Local from the first byte." />
+  <meta property="og:url" content="https://crixin.com/coder" />
+  <meta property="og:image" content="https://crixin.com/og-image.png" />
+  <meta property="og:site_name" content="Crixin" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="/site.js" defer></script>
+
+  <style>
+    .doc-hero { padding: 130px 0 60px; }
+    .eyebrow {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--brand);
+      padding: 6px 12px;
+      border: 1px solid var(--brand);
+      border-radius: 9999px;
+    }
+    .doc-hero h1 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(40px, 6vw, 76px);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin: 22px 0 18px;
+    }
+    .doc-hero h1 em { color: var(--brand); font-style: italic; }
+    .doc-hero p.lede {
+      font-size: 19px;
+      color: var(--text-secondary);
+      max-width: 720px;
+      line-height: 1.55;
+    }
+    .ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+    .copy-cmd {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      padding: 12px 18px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--text-primary);
+    }
+    .copy-cmd:hover { border-color: var(--brand); color: var(--brand); }
+    .btn-primary { font-family: var(--font-sans); font-size: 14px; font-weight: 600; padding: 11px 18px; border-radius: 8px; background: var(--brand); color: #0b0d12; border: 1px solid var(--brand); }
+    .btn-ghost { font-family: var(--font-sans); font-size: 14px; padding: 11px 18px; border-radius: 8px; border: 1px solid var(--border-strong); color: var(--text-primary); }
+    .btn-ghost:hover, .btn-primary:hover { border-color: var(--brand); }
+
+    section.sm { padding: 60px 0; }
+    section.sm h2 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(28px, 4vw, 44px);
+      margin: 0 0 12px;
+    }
+    section.sm h2 em { color: var(--brand); font-style: italic; }
+    section.sm .sublede { color: var(--text-secondary); font-size: 16px; max-width: 640px; line-height: 1.65; }
+
+    .three-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 28px;
+    }
+    .three-card {
+      padding: 22px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      background: var(--bg-surface);
+      transition: border-color 200ms ease, transform 200ms ease;
+    }
+    .three-card:hover { border-color: var(--brand); transform: translateY(-2px); }
+    .three-card .num {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .three-card h3 {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 26px;
+      color: var(--brand);
+      margin: 0 0 8px;
+    }
+    .three-card p { color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin: 0; }
+
+    pre.code {
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 18px 22px;
+      margin: 18px 0 0;
+      color: var(--text-primary);
+      overflow-x: auto;
+    }
+    pre.code .c { color: var(--text-muted); }
+    pre.code .b { color: var(--brand); }
+
+    .archetype-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+      margin-top: 24px;
+    }
+    .archetype-pill {
+      padding: 14px 16px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      background: var(--bg-surface);
+      text-align: center;
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 18px;
+      color: var(--brand);
+    }
+    .archetype-pill .sub {
+      display: block;
+      font-family: var(--font-mono);
+      font-style: normal;
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    footer.site {
+      padding: 30px 0 50px;
+      color: var(--text-muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border-subtle);
+      margin-top: 60px;
+    }
+    footer.site a { color: var(--text-secondary); margin: 0 12px; }
+  </style>
+</head>
+<body>
+  <canvas id="embers" aria-hidden="true"></canvas>
+
+  <header class="site" id="site-header">
+    <div class="wrap row">
+      <a href="/" class="brand-mark">crixin<span class="tag">v0.4.0 · coder mcp</span></a>
+      <nav class="primary">
+        <a href="/voice">Voice MCP</a>
+        <a href="/coder" style="color:var(--brand);">Coder MCP</a>
+        <a href="/wrapped">Wrapped</a>
+        <a href="/archetype">Archetype</a>
+        <a href="/install">Install</a>
+        <a href="/voice/pricing">Pricing</a>
+        <a href="/login">Sign in</a>
+        <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="doc-hero">
+    <div class="wrap-narrow">
+      <span class="eyebrow">crixin · coder mcp · capability module</span>
+      <h1>Give your AI a <em>memory</em>.</h1>
+      <p class="lede">Coder MCP is one half of the Crixin toolkit. Every Claude Code, Codex CLI, and Cursor session you've ever had — ingested into local SQLite, surfaced through four MCP tools: <code>search_sessions</code>, <code>list_recent_sessions</code>, <code>get_session</code>, <code>stats</code>. Stop re-explaining your project to Claude for the 40th time. The other half (<a href="/voice" style="color:var(--brand);">Voice MCP</a>) gives your AI a phone.</p>
+      <div class="ctas">
+        <span class="copy-cmd" onclick="navigator.clipboard.writeText('npm i -g crixin && crixin install')">npm i -g crixin &amp;&amp; crixin install</span>
+        <a class="btn-primary" href="#install">Install in 30 seconds</a>
+        <a class="btn-ghost" href="/wrapped">See Wrapped</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="sm">
+    <div class="wrap">
+      <h2>Three jobs. <em>Local. Indexed. Yours.</em></h2>
+      <p class="sublede">Your <code>~/.claude/projects/</code> folder is keeping a log on you. Coder reads it, dumps it into a local SQLite, and gives you a dashboard you can read in 30 seconds.</p>
+
+      <div class="three-grid">
+        <div class="three-card">
+          <div class="num">01</div>
+          <h3>Recall</h3>
+          <p>"Where did I solve that auth refactor?" Sub-second deep search across every Claude, Codex, and Cursor session — with copy-paste resume commands the second you find it.</p>
+        </div>
+        <div class="three-card">
+          <div class="num">02</div>
+          <h3>Reflect</h3>
+          <p>How you actually use AI: peak hours, model mix, project distribution, real cost per output token. Numbers you didn't know existed, computed locally on raw BPE.</p>
+        </div>
+        <div class="three-card">
+          <div class="num">03</div>
+          <h3>Reveal</h3>
+          <p>An honest behavioral archetype based on your actual sessions — Cowboy, Architect, Debugger, Tinkerer, Prompter-First. Plus an annual Wrapped report when December comes.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sm">
+    <div class="wrap">
+      <h2>Eleven <em>archetypes</em>.</h2>
+      <p class="sublede">Five for you, six for your AI. Deterministic — no LLM, no telemetry. The rationale always cites real numbers from your data, never vibes.</p>
+
+      <p style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;color:var(--text-muted);text-transform:uppercase;margin-top:32px;">You</p>
+      <div class="archetype-grid">
+        <div class="archetype-pill">Cowboy<span class="sub">short, fast, ship</span></div>
+        <div class="archetype-pill">Architect<span class="sub">long, deep sessions</span></div>
+        <div class="archetype-pill">Debugger<span class="sub">stack traces +1</span></div>
+        <div class="archetype-pill">Tinkerer<span class="sub">small, frequent</span></div>
+        <div class="archetype-pill">Prompter-First<span class="sub">heavy user-led</span></div>
+      </div>
+
+      <p style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;color:var(--text-muted);text-transform:uppercase;margin-top:28px;">Your AI</p>
+      <div class="archetype-grid">
+        <div class="archetype-pill">Skipper<span class="sub">"pre-existing"</span></div>
+        <div class="archetype-pill">Apologizer<span class="sub">"I apologize"</span></div>
+        <div class="archetype-pill">Hedger<span class="sub">"I think" / "might"</span></div>
+        <div class="archetype-pill">Reverser<span class="sub">"actually wait"</span></div>
+        <div class="archetype-pill">Optimist<span class="sub">"all set" / "done!"</span></div>
+        <div class="archetype-pill">Stack-Tracer<span class="sub">debug rate ≥10%</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sm" id="install">
+    <div class="wrap-narrow">
+      <h2>Two commands. <em>That's the whole thing.</em></h2>
+      <p class="sublede">No setup wizard. No API keys. No telemetry that magically "helps us improve." The package on npm is the entire product.</p>
+<pre class="code"><span class="c"># Install both MCPs (voice + coder) into every supported host.</span>
+<span class="b">$</span> npm i -g crixin &amp;&amp; crixin install
+
+<span class="c"># Ingest your AI coding history into local SQLite.</span>
+<span class="b">$</span> crixin coder ingest
+
+<span class="c"># Open the dashboard.</span>
+<span class="b">$</span> crixin coder dashboard
+
+<span class="c"># Or just ask your AI host: "use crixin-coder to find when we last touched auth.ts"</span></pre>
+    </div>
+  </section>
+
+  <section class="sm">
+    <div class="wrap">
+      <div style="max-width:780px;margin:0 auto 14px;">
+        <h2>What you'll see, <em>specifically</em>.</h2>
+        <p class="sublede">Concrete numbers from your real session history — not telemetry, not someone else's dataset. One command, one self-contained HTML file. Below: an actual sample of what <code class="mono" style="background:var(--bg-elevated);padding:2px 6px;border-radius:4px;font-size:13px;">crixin coder wrapped --year 2026</code> writes to disk.</p>
+      </div>
+
+<pre class="code" style="max-width:780px;margin:0 auto 32px;">crixin coder wrapped --year 2026
+<span class="c"># → ./crixin-coder-wrapped-2026.html (118 KB, self-contained, no JS deps)</span></pre>
+
+      <!-- ═══════ The actual sample dashboard ═══════ -->
+      <style>
+        .wr-mock {
+          max-width: 920px; margin: 0 auto;
+          border: 1px solid var(--border-subtle);
+          border-radius: 16px;
+          background: var(--bg-surface);
+          padding: 36px 32px;
+          box-shadow: 0 60px 140px -70px rgba(245, 180, 82, 0.22);
+        }
+        .wr-mock .wr-eyebrow {
+          display: inline-block;
+          font-family: var(--font-mono);
+          font-size: 11px;
+          letter-spacing: 0.10em;
+          text-transform: uppercase;
+          color: var(--brand);
+          padding: 5px 11px;
+          border: 1px solid var(--brand);
+          border-radius: 9999px;
+        }
+        .wr-mock h3.wr-title {
+          font-family: var(--font-display);
+          font-weight: 400;
+          font-size: clamp(30px, 4vw, 44px);
+          line-height: 1.1;
+          letter-spacing: -0.015em;
+          margin: 14px 0 6px;
+        }
+        .wr-mock h3.wr-title em { color: var(--brand); font-style: italic; }
+        .wr-mock .wr-lede { color: var(--text-secondary); font-size: 14.5px; line-height: 1.6; margin: 0 0 28px; }
+
+        .wr-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 30px; }
+        .wr-stat { padding: 16px 18px; background: var(--bg-elevated); border: 1px solid var(--border-subtle); border-radius: 10px; }
+        .wr-stat .l { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+        .wr-stat .v { font-family: var(--font-display); font-style: italic; font-size: 32px; color: var(--brand); line-height: 1.05; }
+        .wr-stat.archetype .v { font-size: 22px; }
+        .wr-stat .s { color: var(--text-secondary); font-size: 12px; margin-top: 4px; }
+
+        .wr-section-h {
+          font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+          color: var(--text-muted); margin: 4px 0 12px;
+        }
+
+        /* Hour-of-day heatmap — 24 cells in a single row */
+        .heatmap {
+          display: grid; grid-template-columns: repeat(24, 1fr); gap: 3px;
+          margin-bottom: 10px;
+        }
+        .hm {
+          aspect-ratio: 1;
+          background: var(--bg-elevated);
+          border: 1px solid var(--border-subtle);
+          border-radius: 3px;
+          position: relative;
+        }
+        .hm-axis {
+          display: grid; grid-template-columns: repeat(24, 1fr); gap: 3px;
+          font-family: var(--font-mono); font-size: 9px; color: var(--text-muted);
+          margin-bottom: 24px;
+        }
+        .hm-axis span { text-align: center; }
+
+        /* Day-of-week strip — Mon-Sun, intensity-shaded */
+        .dow { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 6px; }
+        .dow-cell {
+          padding: 16px 6px;
+          background: var(--bg-elevated);
+          border: 1px solid var(--border-subtle);
+          border-radius: 6px;
+          text-align: center;
+          font-family: var(--font-mono);
+          font-size: 11px;
+          color: var(--text-primary);
+        }
+        .dow-cell .lbl { display: block; color: var(--text-muted); font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 6px; }
+        .dow-cell .ct { font-family: var(--font-display); font-style: italic; font-size: 20px; color: var(--brand); }
+
+        /* Monthly bars */
+        .months { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; align-items: end; height: 110px; margin: 8px 0 6px; }
+        .month-bar { background: var(--brand); border-radius: 3px 3px 0 0; min-height: 4px; opacity: 0.9; position: relative; }
+        .month-bar:hover { opacity: 1; }
+        .month-axis { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; font-family: var(--font-mono); font-size: 9px; color: var(--text-muted); }
+        .month-axis span { text-align: center; }
+
+        /* Two-column for projects + sources */
+        .wr-two { display: grid; grid-template-columns: 1.4fr 1fr; gap: 24px; margin-top: 24px; }
+        @media (max-width: 720px) { .wr-two { grid-template-columns: 1fr; } }
+
+        .wr-row {
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 9px 0;
+          border-bottom: 1px dashed var(--border-subtle);
+          font-size: 13.5px;
+          color: var(--text-secondary);
+        }
+        .wr-row:last-child { border-bottom: 0; }
+        .wr-row .left { color: var(--text-primary); font-family: var(--font-mono); font-size: 12.5px; }
+        .wr-row .right { color: var(--brand); font-family: var(--font-mono); font-size: 12px; }
+        .wr-bar { height: 5px; background: var(--bg-elevated); border-radius: 3px; overflow: hidden; margin-top: 6px; }
+        .wr-bar > span { display: block; height: 100%; background: var(--brand); }
+
+        .wr-foot {
+          margin-top: 30px;
+          padding-top: 18px;
+          border-top: 1px solid var(--border-subtle);
+          font-family: var(--font-mono);
+          font-size: 10.5px;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: var(--text-muted);
+          text-align: center;
+        }
+      </style>
+
+      <div class="wr-mock">
+        <span class="wr-eyebrow">crixin coder wrapped · 2026</span>
+        <h3 class="wr-title">Your year of AI pair programming, <em>in receipts</em>.</h3>
+        <p class="wr-lede">91 sessions across Claude Code, Codex CLI, and Cursor. 17,156 messages exchanged. 2,744 hours of pair programming. $27.69 of real Anthropic + OpenAI spend, computed locally from token counts (no telemetry, no inference). Below is what got written to <code style="font-family:var(--font-mono);background:var(--bg-elevated);padding:1px 5px;border-radius:3px;font-size:12px;">./crixin-coder-wrapped-2026.html</code>.</p>
+
+        <!-- Big stat tiles -->
+        <div class="wr-stats">
+          <div class="wr-stat"><div class="l">Sessions</div><div class="v">91</div><div class="s">across 3 hosts</div></div>
+          <div class="wr-stat"><div class="l">Messages</div><div class="v">17,156</div><div class="s">avg 188 / session</div></div>
+          <div class="wr-stat"><div class="l">Hours spent</div><div class="v">2,744</div><div class="s">~7.5 / day avg</div></div>
+          <div class="wr-stat"><div class="l">Est. spend</div><div class="v">$27.69</div><div class="s">real BPE counts</div></div>
+          <div class="wr-stat archetype"><div class="l">Archetype</div><div class="v">Architect</div><div class="s">long, deep sessions</div></div>
+        </div>
+
+        <!-- Hour-of-day heatmap -->
+        <div class="wr-section-h">Hour-of-day activity</div>
+        <div class="heatmap">
+          <!-- 24 cells; intensities mocked to a "night-coder" pattern -->
+          <div class="hm" style="background:rgba(245,180,82,0.12);"></div>
+          <div class="hm" style="background:rgba(245,180,82,0.04);"></div>
+          <div class="hm" style="background:rgba(245,180,82,0.02);"></div>
+          <div class="hm" style="background:rgba(245,180,82,0.02);"></div>
+          <div class="hm" style="background:rgba(245,180,82,0.02);"></div>
+          <div class="hm" style="background:rgba(245,180,82,0.03);"></div>
+          <div class="hm" style="background:rgba(245,180,82,0.05);"></div>
+          <div class="hm" style="background:rgba(245,180,82,0.10);"></div>
+          <div class="hm" style="background:rgba(245,180,82,0.18);"></div>
+          <div class="hm" style="background:rgba(245,180,82,0.30);"></div>
+          <div class="hm" style="background:rgba(245,180,82,0.42);"></div>
+          <div class="hm" style="background:rgba(245,180,82,0.40);"></div>
+          <div class="hm" style="background:rgba(245,180,82,0.34);"></div>
+          <div class="hm" style="background:rgba(245,180,82,0.50);"></div>
+          <div class="hm" style="background:rgba(245,180,82,0.62);"></div>
+          <div class="hm" style="background:rgba(245,180,82,0.58);"></div>
+          <div class="hm" style="background:rgba(245,180,82,0.48);"></div>
+          <div class="hm" style="background:rgba(245,180,82,0.45);"></div>
+          <div class="hm" style="background:rgba(245,180,82,0.55);"></div>
+          <div class="hm" style="background:rgba(245,180,82,0.68);"></div>
+          <div class="hm" style="background:rgba(245,180,82,0.80);"></div>
+          <div class="hm" style="background:rgba(245,180,82,0.95);"></div>
+          <div class="hm" style="background:rgba(245,180,82,0.70);"></div>
+          <div class="hm" style="background:rgba(245,180,82,0.32);"></div>
+        </div>
+        <div class="hm-axis">
+          <span>12a</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12p</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+        </div>
+
+        <!-- Day-of-week strip -->
+        <div class="wr-section-h">Day-of-week</div>
+        <div class="dow">
+          <div class="dow-cell"><span class="lbl">Mon</span><span class="ct">11</span></div>
+          <div class="dow-cell"><span class="lbl">Tue</span><span class="ct">14</span></div>
+          <div class="dow-cell"><span class="lbl">Wed</span><span class="ct">19</span></div>
+          <div class="dow-cell"><span class="lbl">Thu</span><span class="ct">22</span></div>
+          <div class="dow-cell"><span class="lbl">Fri</span><span class="ct">10</span></div>
+          <div class="dow-cell"><span class="lbl">Sat</span><span class="ct">8</span></div>
+          <div class="dow-cell"><span class="lbl">Sun</span><span class="ct">7</span></div>
+        </div>
+
+        <!-- Monthly bars -->
+        <div class="wr-section-h" style="margin-top:22px;">Monthly distribution</div>
+        <div class="months">
+          <div class="month-bar" style="height:35%;"></div>
+          <div class="month-bar" style="height:42%;"></div>
+          <div class="month-bar" style="height:68%;"></div>
+          <div class="month-bar" style="height:55%;"></div>
+          <div class="month-bar" style="height:88%;"></div>
+          <div class="month-bar" style="height:100%;"></div>
+          <div class="month-bar" style="height:74%;"></div>
+          <div class="month-bar" style="height:62%;"></div>
+          <div class="month-bar" style="height:48%;"></div>
+          <div class="month-bar" style="height:71%;"></div>
+          <div class="month-bar" style="height:80%;"></div>
+          <div class="month-bar" style="height:92%;"></div>
+        </div>
+        <div class="month-axis">
+          <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
+        </div>
+
+        <!-- Top projects + source breakdown -->
+        <div class="wr-two">
+          <div>
+            <div class="wr-section-h">Top projects</div>
+            <div class="wr-row"><span class="left">crixin</span><span class="right">2,134 msgs · $9.81</span></div>
+            <div class="wr-bar"><span style="width:100%"></span></div>
+            <div class="wr-row" style="margin-top:6px;"><span class="left">almadinashipping</span><span class="right">1,802 msgs · $6.40</span></div>
+            <div class="wr-bar"><span style="width:84%"></span></div>
+            <div class="wr-row" style="margin-top:6px;"><span class="left">haacpcompliance</span><span class="right">1,447 msgs · $4.92</span></div>
+            <div class="wr-bar"><span style="width:67%"></span></div>
+            <div class="wr-row" style="margin-top:6px;"><span class="left">personaldoppler</span><span class="right">988 msgs · $2.71</span></div>
+            <div class="wr-bar"><span style="width:46%"></span></div>
+            <div class="wr-row" style="margin-top:6px;"><span class="left">doppler (game)</span><span class="right">821 msgs · $1.94</span></div>
+            <div class="wr-bar"><span style="width:38%"></span></div>
+            <div class="wr-row" style="margin-top:6px;"><span class="left">compliantiep</span><span class="right">612 msgs · $1.34</span></div>
+            <div class="wr-bar"><span style="width:28%"></span></div>
+          </div>
+          <div>
+            <div class="wr-section-h">Source breakdown</div>
+            <div class="wr-row"><span class="left">Claude Code</span><span class="right">63%</span></div>
+            <div class="wr-bar"><span style="width:63%"></span></div>
+            <div class="wr-row" style="margin-top:6px;"><span class="left">Codex CLI</span><span class="right">24%</span></div>
+            <div class="wr-bar"><span style="width:24%"></span></div>
+            <div class="wr-row" style="margin-top:6px;"><span class="left">Cursor</span><span class="right">13%</span></div>
+            <div class="wr-bar"><span style="width:13%"></span></div>
+
+            <div class="wr-section-h" style="margin-top:22px;">Top models</div>
+            <div class="wr-row"><span class="left">claude-opus-4-7</span><span class="right">$18.40 · 47%</span></div>
+            <div class="wr-row"><span class="left">claude-sonnet-4-6</span><span class="right">$6.91 · 31%</span></div>
+            <div class="wr-row"><span class="left">gpt-5</span><span class="right">$2.04 · 14%</span></div>
+            <div class="wr-row"><span class="left">claude-haiku-4-5</span><span class="right">$0.34 · 8%</span></div>
+          </div>
+        </div>
+
+        <div class="wr-foot">PII auto-stripped · generated locally · shareable as a screenshot</div>
+      </div>
+
+      <p style="color:var(--text-muted);font-size:13px;margin:36px auto 0;line-height:1.6;max-width:780px;">Coder is the <strong style="color:var(--text-primary);">"being known"</strong> half of the Crixin brand: the only product that reads what your coding AI already wrote about you and tells you who it thinks you are. <a href="/voice" style="color:var(--brand);">Voice MCP</a> is the other half — the primitive that lets your AI use the phone.</p>
+    </div>
+  </section>
+
+  <footer class="site">
+    <div class="wrap" style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;">
+      <div>
+        <a href="/">crixin</a>
+        <a href="/voice">voice</a>
+        <a href="/coder">coder</a>
+        <a href="/wrapped">wrapped</a>
+        <a href="/archetype">archetype</a>
+      </div>
+      <div>
+        <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a>
+        <a href="/faq">FAQ</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

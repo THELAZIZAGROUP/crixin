@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="canonical" href="https://crixin.com/voice/agents" />
+  <title>Voice MCP — agents you can hire from a TypeScript object</title>
+  <meta name="description" content="Four voices, four personas, sixteen combinations. Configurable from a TypeScript object. Ships with the Voice half of the Crixin MCP toolkit." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" />
+  <link rel="stylesheet" href="../styles.css" />
+  <script src="/site.js" defer></script>
+
+  <style>
+    .doc-hero { padding: 130px 0 30px; text-align: center; }
+    .eyebrow {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--brand);
+      padding: 6px 12px;
+      border: 1px solid var(--brand);
+      border-radius: 9999px;
+    }
+    .doc-hero h1 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(40px, 6vw, 72px);
+      letter-spacing: -0.02em;
+      margin: 22px 0 14px;
+    }
+    .doc-hero h1 em { color: var(--brand); font-style: italic; }
+    .doc-hero p.lede {
+      font-size: 18px; color: var(--text-secondary); max-width: 680px;
+      margin: 0 auto; line-height: 1.6;
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 32px; }
+    section { padding: 50px 0; }
+    h2.section {
+      font-family: var(--font-display);
+      font-weight: 400;
+      letter-spacing: -0.015em;
+      font-size: clamp(26px, 3.5vw, 38px);
+      margin: 0 0 6px;
+    }
+    h2.section em { color: var(--brand); font-style: italic; }
+    .sublede { color: var(--text-secondary); font-size: 15.5px; max-width: 640px; line-height: 1.6; }
+
+    .voices-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px; margin-top: 28px;
+    }
+    .voice-card {
+      padding: 22px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      background: var(--bg-surface);
+      display: flex; flex-direction: column;
+    }
+    .voice-card .vname {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 30px;
+      color: var(--brand);
+      margin-bottom: 4px;
+    }
+    .voice-card .vmeta {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+    .voice-card .vsample {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 17px;
+      color: var(--text-primary);
+      line-height: 1.5;
+      margin: 0 0 14px;
+      padding-left: 14px;
+      border-left: 2px solid var(--brand);
+    }
+    .voice-card .vbest { color: var(--text-primary); font-size: 13.5px; margin-bottom: 8px; }
+    .voice-card .vdesc { color: var(--text-secondary); font-size: 13.5px; line-height: 1.6; }
+    .voice-card .vpoll {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px dashed var(--border-subtle);
+    }
+
+    .personas-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px; margin-top: 28px;
+    }
+    .persona-card {
+      padding: 22px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      background: var(--bg-surface);
+    }
+    .persona-card h3 {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 24px;
+      margin: 0 0 4px;
+      color: var(--text-primary);
+    }
+    .persona-card .pkey {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: var(--brand);
+      margin-bottom: 12px;
+    }
+    .persona-card p { color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin: 0 0 10px; }
+    .persona-card .ptags { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); }
+
+    pre.code {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.55;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 18px 22px;
+      overflow-x: auto;
+      margin: 18px 0;
+      color: var(--text-primary);
+    }
+    pre.code .c { color: var(--text-muted); }
+    pre.code .k { color: var(--brand-soft); }
+    pre.code .s { color: var(--success); }
+
+    footer.site {
+      padding: 30px 0 50px;
+      color: var(--text-muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border-subtle);
+      margin-top: 30px;
+    }
+    footer.site a { color: var(--text-secondary); margin: 0 12px; }
+  </style>
+</head>
+<body>
+  <canvas id="embers" aria-hidden="true"></canvas>
+
+  <header class="site" id="site-header">
+    <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;height:64px;padding:0 32px;">
+      <a href="/" style="font-family:var(--font-display);font-style:italic;color:var(--brand);font-size:24px;text-decoration:none;">crixin<span style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);margin-left:8px;letter-spacing:0.05em;">v0.4.0 · voice mcp</span></a>
+      <nav style="display:flex;gap:18px;font-size:14px;">
+        <a href="/voice/agentic">Agentic</a>
+        <a href="/voice/agents" style="color:var(--brand);">Agents</a>
+        <a href="/voice/compliance">Compliance</a>
+        <a href="/voice/use-cases">Use cases</a>
+        <a href="/voice/install">Install</a>
+        <a href="/voice/docs">Docs</a>
+        <a href="/voice/api">API</a>
+        <a href="/voice/pricing">Pricing</a>
+        <a href="/">crixin</a>
+        <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="doc-hero">
+    <div>
+      <span class="eyebrow">voice catalog</span>
+      <h1>Voice is a <em>parameter</em>, not a roster.</h1>
+      <p class="lede">Voice MCP doesn't ask you to configure agents or pick personas in a dashboard. Your AI host passes <code>voice: "Polly.Joanna-Neural"</code> as a parameter to <code>make_call</code> — same shape as any other tool argument. Pick a different voice on the next call. No state, no provisioning, no roster.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 class="section">Available <em>voices</em></h2>
+      <p class="sublede">Voice MCP routes the <code>voice</code> arg through Twilio's <code>&lt;Say&gt;</code> verb. That gives you the full Polly + Google neural catalog — ~30 languages, ~70 voice IDs. The four below are the ones our test suite covers; everything else in the Polly catalog works without any code change on our side.</p>
+
+      <div class="voices-grid">
+        <div class="voice-card">
+          <div class="vname">Polly.Joanna-Neural</div>
+          <div class="vmeta">en-US · warm · default</div>
+          <p class="vsample">"Hi, this is calling about your appointment Tuesday at 3pm…"</p>
+          <div class="vbest"><strong>Use when:</strong> the default English outbound voice. Soft pacing, conversational register.</div>
+          <div class="vdesc">If you don't pass <code>voice</code> on <code>make_call</code>, this is what your AI gets. Highest answer-rate of the four in informal testing.</div>
+          <div class="vpoll"><code>voice: "Polly.Joanna-Neural"</code></div>
+        </div>
+
+        <div class="voice-card">
+          <div class="vname">Polly.Matthew-Neural</div>
+          <div class="vmeta">en-US · professional · executive</div>
+          <p class="vsample">"Matthew calling on behalf of Acme — two minutes about your Q3 spend."</p>
+          <div class="vbest"><strong>Use when:</strong> B2B outreach to senior buyers — VPs, ops leaders, IT directors.</div>
+          <div class="vdesc">Tight, deliberate register. Comfortable with silence. Pass this when you want to sound like the person on the other side of the table, not a marketing call.</div>
+          <div class="vpoll"><code>voice: "Polly.Matthew-Neural"</code></div>
+        </div>
+
+        <div class="voice-card">
+          <div class="vname">Polly.Hala-Neural</div>
+          <div class="vmeta">ar-EG · natural · dialect</div>
+          <p class="vsample">"السلام عليكم، أنا بتصل من المطعم عشان موعدك بكره…"</p>
+          <div class="vbest"><strong>Use when:</strong> calling Egyptian numbers. Dialect, not MSA.</div>
+          <div class="vdesc">The reason Voice MCP matters in MENA: makes Cairo restaurant confirmations feel local, not translated. Pair with <code>language: "ar-EG"</code> on transcribe_call.</div>
+          <div class="vpoll"><code>voice: "Polly.Hala-Neural"</code></div>
+        </div>
+
+        <div class="voice-card">
+          <div class="vname">Polly.Lucia-Neural</div>
+          <div class="vmeta">es-ES · clear · structured</div>
+          <p class="vsample">"Hola, le llamo desde la clínica para confirmar su cita…"</p>
+          <div class="vbest"><strong>Use when:</strong> Castilian Spanish. Also: <code>Polly.Mia</code> (es-MX), <code>Polly.Penelope</code> (es-US).</div>
+          <div class="vdesc">LATAM Spanish has its own voice pool — Voice MCP doesn't fold them together. Pick the one that matches your destination locale.</div>
+          <div class="vpoll"><code>voice: "Polly.Lucia-Neural"</code></div>
+        </div>
+      </div>
+
+      <p class="sublede" style="margin-top:24px;">The full Polly catalog — Portuguese, French, German, Mandarin, Hindi, Italian, Japanese, Korean, and ~20 more — works without changing anything on Voice MCP's side. <a href="https://docs.aws.amazon.com/polly/latest/dg/voicelist.html" style="color:var(--brand);">Polly voice list →</a></p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 class="section">Prompt patterns <em>(not personas)</em></h2>
+      <p class="sublede">There's no <code>persona</code> arg on Voice MCP. The "persona" of a call is the system prompt your AI host wires up — that's its job, not ours. The patterns below are suggestions you can paste into your prompt; they're not a Crixin abstraction.</p>
+
+      <div class="personas-grid">
+        <div class="persona-card">
+          <h3>Discovery</h3>
+          <p>"Ask three open questions before any pitch. Don't recommend until you understand what they need."</p>
+          <p class="ptags">good for: warm leads, intro calls, B2B.</p>
+        </div>
+
+        <div class="persona-card">
+          <h3>Confirmation</h3>
+          <p>"Read back the appointment details, confirm or reschedule, hang up. Don't upsell."</p>
+          <p class="ptags">good for: appointment reminders, order confirmations.</p>
+        </div>
+
+        <div class="persona-card">
+          <h3>Warm Intro</h3>
+          <p>"Apologize for the cold call. Ask permission for 30 seconds. Invite them to hang up. Counter-intuitively converts."</p>
+          <p class="ptags">good for: cold B2B outreach.</p>
+        </div>
+
+        <div class="persona-card">
+          <h3>Receptionist</h3>
+          <p>"Greet the caller. Find out what they need. Hand off to a human via <code>send_sms</code> for anything outside your knowledge base."</p>
+          <p class="ptags">good for: inbound for SMBs.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 class="section">What an MCP call <em>actually looks like</em></h2>
+      <p class="sublede">Your AI host invokes <code>make_call</code> as a tool. Voice MCP turns the args into a Twilio REST call. No agent state, no provisioning, no roster — just a tool call with a voice parameter.</p>
+
+<pre class="code"><span class="c">// MCP tool invocation (what your AI host sends)</span>
+{
+  <span class="s">"name"</span>: <span class="s">"make_call"</span>,
+  <span class="s">"arguments"</span>: {
+    <span class="s">"to"</span>: <span class="s">"+15555550100"</span>,
+    <span class="s">"prompt"</span>: <span class="s">"Hi, calling to confirm your 3pm appointment tomorrow."</span>,
+    <span class="s">"voice"</span>: <span class="s">"Polly.Joanna-Neural"</span>,
+    <span class="s">"language"</span>: <span class="s">"en-US"</span>,
+    <span class="s">"tag"</span>: <span class="s">"appointment-reminders"</span>
+  }
+}
+
+<span class="c">// Or in TypeScript via the library (skips MCP, same primitives)</span>
+<span class="k">import</span> { TwilioClient, makeCall, loadEnv } <span class="k">from</span> <span class="s">"crixin/voice"</span>;
+
+<span class="k">const</span> client = <span class="k">new</span> TwilioClient(loadEnv());
+<span class="k">await</span> makeCall(client, {
+  to: <span class="s">"+15555550100"</span>,
+  prompt: <span class="s">"Hi, calling to confirm your 3pm appointment tomorrow."</span>,
+  voice: <span class="s">"Polly.Joanna-Neural"</span>,
+  language: <span class="s">"en-US"</span>,
+});</pre>
+
+      <p class="sublede" style="margin-top:14px;">Full type signatures + the other five tools — <a href="/voice/api" style="color:var(--brand);">see the API reference</a>.</p>
+    </div>
+  </section>
+
+  <footer class="site">
+    <div class="wrap" style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;">
+      <div>
+        <a href="/">crixin</a>
+        <a href="/voice">voice</a>
+        <a href="/voice/agentic">agentic</a>
+        <a href="/voice/agents">agents</a>
+        <a href="/voice/compliance">compliance</a>
+        <a href="/voice/pricing">pricing</a>
+      </div>
+      <div>
+        <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a>
+        <a href="https://www.npmjs.com/package/crixin">npm</a>
+        <a href="mailto:hello@crixin.com">hello@crixin.com</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

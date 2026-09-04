@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="canonical" href="https://crixin.com/login" />
+  <title>Sign in to Crixin</title>
+  <meta name="description" content="Sign in to Crixin with a magic link. No passwords. No third-party SSO. We email you a one-click link that expires in 15 minutes." />
+  <meta name="robots" content="noindex" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="/site.js" defer></script>
+
+  <style>
+    .auth-shell {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 22px 60px;
+      position: relative;
+    }
+    .auth-card {
+      width: 100%;
+      max-width: 460px;
+      padding: 40px 36px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      background: linear-gradient(180deg, var(--bg-surface), var(--bg-elevated));
+      box-shadow: 0 30px 80px -40px rgba(245, 180, 82, 0.18), 0 0 0 1px rgba(245, 180, 82, 0.05) inset;
+      position: relative;
+      z-index: 2;
+      backdrop-filter: blur(10px);
+    }
+    .auth-card .eyebrow {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--brand);
+      padding: 5px 11px;
+      border: 1px solid var(--brand);
+      border-radius: 9999px;
+      margin-bottom: 22px;
+    }
+    .auth-card h1 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 42px;
+      line-height: 1.1;
+      letter-spacing: -0.015em;
+      margin: 0 0 12px 0;
+      color: var(--text-primary);
+    }
+    .auth-card h1 em { color: var(--brand); font-style: italic; }
+    .auth-card p.lede {
+      color: var(--text-secondary);
+      font-size: 14.5px;
+      line-height: 1.55;
+      margin: 0 0 26px 0;
+    }
+    .auth-form { display: flex; flex-direction: column; gap: 12px; }
+    .auth-form label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .auth-form input[type="email"] {
+      font-family: var(--font-sans);
+      font-size: 15px;
+      padding: 13px 16px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-strong);
+      border-radius: 10px;
+      color: var(--text-primary);
+      outline: none;
+      transition: border-color 160ms var(--ease), box-shadow 160ms var(--ease);
+    }
+    .auth-form input[type="email"]::placeholder { color: var(--text-muted); }
+    .auth-form input[type="email"]:focus {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px rgba(245, 180, 82, 0.18);
+    }
+    .auth-form button {
+      font-family: var(--font-sans);
+      font-size: 14.5px;
+      font-weight: 600;
+      padding: 13px 20px;
+      background: var(--brand);
+      color: #0b0d12;
+      border: 1px solid var(--brand);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 160ms var(--ease), transform 160ms var(--ease);
+      margin-top: 4px;
+    }
+    .auth-form button:hover { background: var(--brand-soft); transform: translateY(-1px); }
+    .auth-form button:disabled { opacity: 0.55; cursor: progress; transform: none; }
+    .auth-meta {
+      margin-top: 22px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-size: 12.5px;
+      line-height: 1.6;
+    }
+    .auth-meta a { color: var(--brand); }
+    .auth-status {
+      margin-top: 16px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.5;
+      min-height: 0;
+      display: none;
+    }
+    .auth-status.show { display: block; }
+    .auth-status.ok {
+      background: rgba(123, 216, 143, 0.08);
+      border: 1px solid rgba(123, 216, 143, 0.3);
+      color: var(--success, #7bd88f);
+    }
+    .auth-status.err {
+      background: rgba(255, 120, 120, 0.06);
+      border: 1px solid rgba(255, 120, 120, 0.28);
+      color: #ff9b9b;
+    }
+    .auth-back {
+      position: absolute;
+      top: 24px;
+      left: 24px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      text-decoration: none;
+      letter-spacing: 0.05em;
+      z-index: 3;
+    }
+    .auth-back:hover { color: var(--brand); }
+    .auth-card::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: 17px;
+      pointer-events: none;
+      background: radial-gradient(circle at 70% -10%, rgba(245, 180, 82, 0.10), transparent 60%);
+      z-index: -1;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="embers" aria-hidden="true"></canvas>
+
+  <a href="/" class="auth-back">← back to crixin</a>
+
+  <main class="auth-shell">
+    <div class="auth-card">
+      <span class="eyebrow">sign in · sign up</span>
+      <h1>One link. <em>That's it.</em></h1>
+      <p class="lede">Drop your email — we send a one-click link that expires in 15 minutes. No passwords to remember, no SSO maze, no second account. Same link signs you up if you're new.</p>
+
+      <form class="auth-form" id="login-form" novalidate>
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" autocomplete="email" required placeholder="you@team.com" />
+        <button type="submit" id="submit-btn">Email me a magic link →</button>
+      </form>
+
+      <div class="auth-status" id="status"></div>
+
+      <div class="auth-meta">
+        Crixin is local-first. We only keep your email so we can send you the sign-in link and any account-related notices. Your call data, transcripts, and Voice Wrapped stay on your laptop. <a href="/faq">FAQ</a>.
+      </div>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      const form = document.getElementById("login-form");
+      const status = document.getElementById("status");
+      const btn = document.getElementById("submit-btn");
+      const emailInput = document.getElementById("email");
+
+      // Surface ?reason=… from /api/auth/verify failure redirects.
+      const params = new URLSearchParams(window.location.search);
+      const reason = params.get("reason");
+      if (reason) {
+        const map = {
+          missing: "That sign-in link was missing the token. Try requesting a new one.",
+          invalid: "That sign-in link wasn't recognized. Request a new one below.",
+          used:    "That link was already used. They're single-use — request a new one.",
+          expired: "That link expired (15-minute window). Request a new one below.",
+        };
+        showStatus(map[reason] || "We couldn't sign you in. Try again.", "err");
+      }
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = (emailInput.value || "").trim().toLowerCase();
+        if (!email) return;
+
+        btn.disabled = true;
+        btn.textContent = "Sending…";
+        hideStatus();
+
+        // Stash the email so /auth/callback can pass it back to Firebase
+        // (Firebase strips email from the link URL for security). This
+        // entry is removed after a successful sign-in.
+        try { localStorage.setItem("crixin.signin.email", email); } catch (_) {}
+
+        try {
+          const r = await fetch("/api/auth/start", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+          });
+          if (r.status === 429) {
+            showStatus("Too many attempts from this connection. Wait a few minutes, then try again.", "err");
+          } else if (!r.ok) {
+            const j = await r.json().catch(() => ({}));
+            showStatus(j.error || "Something went wrong on our end. Try again.", "err");
+          } else {
+            showStatus(
+              "Link sent. Open the email — it expires in 15 minutes and only works once. (Check spam if it doesn't show up in 60 seconds.)",
+              "ok",
+            );
+            emailInput.disabled = true;
+            btn.textContent = "Link sent ✓";
+            return; // keep button disabled
+          }
+        } catch {
+          showStatus("Couldn't reach the server. Check your connection and try again.", "err");
+        }
+        btn.disabled = false;
+        btn.textContent = "Email me a magic link →";
+      });
+
+      function showStatus(msg, kind) {
+        status.textContent = msg;
+        status.className = "auth-status show " + (kind === "ok" ? "ok" : "err");
+      }
+      function hideStatus() {
+        status.className = "auth-status";
+      }
+    })();
+  </script>
+</body>
+</html>

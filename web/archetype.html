@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="canonical" href="https://crixin.com/archetype" />
+  <title>Caller Archetype — what kind of caller is your AI, really?</title>
+  <meta name="description" content="`crixin voice archetype` reads your local call data and labels your AI: Quick Pitcher, Patient Listener, Ducker, Hard Closer, Discovery Caller, Voicemail Whisperer, Lead Burner, Steady Operator. Deterministic. No LLM calls. No telemetry." />
+  <meta name="keywords" content="ai caller archetype, sales agent classifier, ai phone agent analytics, deepgram analysis, caller style" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Caller Archetype — what kind of caller is your AI?" />
+  <meta property="og:description" content="Eight archetypes. One label that captures how your AI actually behaves on the phone. Deterministic — no LLM, just signals from your call data." />
+  <meta property="og:url" content="https://crixin.com/archetype" />
+  <meta property="og:site_name" content="Crixin" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="/site.js" defer></script>
+
+  <style>
+    .doc-hero { padding: 130px 0 60px; }
+    .eyebrow {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--brand);
+      padding: 6px 12px;
+      border: 1px solid var(--brand);
+      border-radius: 9999px;
+    }
+    .doc-hero h1 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(40px, 6vw, 76px);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin: 22px 0 18px;
+    }
+    .doc-hero h1 em { color: var(--brand); font-style: italic; }
+    .doc-hero p.lede {
+      font-size: 19px;
+      color: var(--text-secondary);
+      max-width: 720px;
+      line-height: 1.55;
+    }
+    .arch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin: 36px 0;
+    }
+    .arch-card {
+      padding: 22px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      background: var(--bg-surface);
+      transition: border-color 200ms ease, transform 200ms ease;
+    }
+    .arch-card:hover { border-color: var(--brand); transform: translateY(-2px); }
+    .arch-card .name {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 26px;
+      color: var(--brand);
+      margin-bottom: 6px;
+    }
+    .arch-card .signal {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .arch-card .desc { color: var(--text-secondary); font-size: 14px; line-height: 1.6; }
+    pre.code {
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 18px 22px;
+      margin: 18px 0;
+      color: var(--text-primary);
+      overflow-x: auto;
+    }
+    pre.code .c { color: var(--text-muted); }
+    pre.code .b { color: var(--brand); }
+    section.sm { padding: 60px 0; }
+    section.sm h2 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(28px, 4vw, 44px);
+      margin: 0 0 12px;
+    }
+    section.sm h2 em { color: var(--brand); font-style: italic; }
+    .ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+    .copy-cmd {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      padding: 12px 18px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--text-primary);
+    }
+    .copy-cmd:hover { border-color: var(--brand); color: var(--brand); }
+    .btn-primary {
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 11px 18px;
+      border-radius: 8px;
+      background: var(--brand);
+      color: #0b0d12;
+      border: 1px solid var(--brand);
+    }
+    .btn-ghost {
+      font-family: var(--font-sans);
+      font-size: 14px;
+      padding: 11px 18px;
+      border-radius: 8px;
+      border: 1px solid var(--border-strong);
+      color: var(--text-primary);
+    }
+    .btn-ghost:hover, .btn-primary:hover { border-color: var(--brand); }
+    footer.site {
+      padding: 30px 0 50px;
+      color: var(--text-muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border-subtle);
+      margin-top: 60px;
+    }
+    footer.site a { color: var(--text-secondary); margin: 0 12px; }
+  </style>
+</head>
+<body>
+  <canvas id="embers" aria-hidden="true"></canvas>
+
+  <header class="site" id="site-header">
+    <div class="wrap row">
+      <a href="/" class="brand-mark">crixin<span class="tag">v0.4.0</span></a>
+      <nav class="primary">
+        <a href="/voice">Voice MCP</a>
+        <a href="/voice/use-cases">Use cases</a>
+        
+        <a href="/coder">Coder</a><a href="/wrapped">Wrapped</a>
+        <a href="/archetype" style="color:var(--brand);">Archetype</a>
+        <a href="/voice/pricing">Pricing</a>
+        <a href="/login">Sign in</a>
+        <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="doc-hero">
+    <div class="wrap-narrow">
+      <span class="eyebrow">crixin voice · archetype</span>
+      <h1>The kind of caller your AI <em>actually</em> is.</h1>
+      <p class="lede">A deterministic classifier — no LLM, no telemetry — reads your local Twilio data + Deepgram transcripts and labels your AI's calling style. Eight archetypes. One label. The rationale always cites real numbers from your data, never vibes.</p>
+      <div class="ctas">
+        <span class="copy-cmd" onclick="navigator.clipboard.writeText('crixin voice archetype')">crixin voice archetype</span>
+        <a class="btn-primary" href="/voice/install">Install in 30 seconds</a>
+        <a class="btn-ghost" href="/wrapped">See Voice Wrapped</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="sm">
+    <div class="wrap-narrow">
+      <h2>The <em>eight</em>.</h2>
+      <p style="color:var(--text-secondary);font-size:16px;line-height:1.65;">Each label is triggered by a specific signal in your call data. Tie-break order favors the most actionable label — if your AI both ducks AND closes hard, it gets <em>Ducker</em> because that's the one worth fixing.</p>
+
+      <div class="arch-grid">
+        <div class="arch-card">
+          <div class="name">Quick Pitcher</div>
+          <div class="signal">≥40% of calls under 30s · avg call &lt; 60s</div>
+          <p class="desc">The pitch is short and the line clears fast. Great for transactional confirmation calls. Worth checking that you're not hanging up before the prospect can respond.</p>
+        </div>
+        <div class="arch-card">
+          <div class="name">Patient Listener</div>
+          <div class="signal">≥30% of calls over 3 minutes</div>
+          <p class="desc">Your AI lets the prospect talk. Strongest archetype for discovery + relationship-building inbound flows. Inbound receptionists usually land here.</p>
+        </div>
+        <div class="arch-card">
+          <div class="name">Ducker</div>
+          <div class="signal">≥15% of transcripts contain a dodge phrase</div>
+          <p class="desc">"Let me get back to you." "I'll have my team follow up." "I'm not authorized." Your AI deflects when pressed. Worth tightening the system prompt with explicit answers to your top FAQs.</p>
+        </div>
+        <div class="arch-card">
+          <div class="name">Hard Closer</div>
+          <div class="signal">≥20% of transcripts contain a close-attempt phrase</div>
+          <p class="desc">"Would you like to book?" "What time works?" "Can I confirm?" Your AI is going for the booking on every call. High intent, sometimes too aggressive — TCPA-watch.</p>
+        </div>
+        <div class="arch-card">
+          <div class="name">Discovery Caller</div>
+          <div class="signal">≥4 questions per call avg</div>
+          <p class="desc">Your AI runs discovery before pitching. Usually a good sign — leads feel heard. Make sure you're acting on what gets said, not just collecting it.</p>
+        </div>
+        <div class="arch-card">
+          <div class="name">Voicemail Whisperer</div>
+          <div class="signal">≥50% of dials hit no-answer or busy</div>
+          <p class="desc">Most of your AI's work is leaving messages. Could mean stale list, wrong call windows, or a real lead-quality problem. Run <code class="mono">crixin voice ducked</code> to see whether the messages actually trigger callbacks.</p>
+        </div>
+        <div class="arch-card">
+          <div class="name">Lead Burner</div>
+          <div class="signal">&lt;40% completion rate, &gt;5 calls</div>
+          <p class="desc">Most dials don't complete. Worth checking your list quality before scaling — burning a list across an AI agent is just as expensive as burning it across a human SDR.</p>
+        </div>
+        <div class="arch-card">
+          <div class="name">Steady Operator</div>
+          <div class="signal">no extreme signals</div>
+          <p class="desc">Your AI just shows up and does the job. Nothing extreme — moderate call length, average completion, balanced ask/listen. The default fallback when no other archetype triggers.</p>
+        </div>
+      </div>
+
+      <!-- ═══════ Three example rationale cards — what the CLI actually outputs ═══════ -->
+      <h2 style="margin-top:60px;">What it <em>looks like</em>.</h2>
+      <p style="color:var(--text-secondary);font-size:16px;line-height:1.65;max-width:720px;">Three real-shape rationales from three different operators running <code class="mono">crixin voice archetype</code> on three different call corpora. Same algorithm, three completely different reads.</p>
+
+      <style>
+        .rat-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          gap: 18px;
+          margin-top: 28px;
+        }
+        .rat-card {
+          padding: 26px 24px;
+          border: 1px solid var(--border-subtle);
+          border-radius: 14px;
+          background: linear-gradient(180deg, rgba(245, 180, 82, 0.04), var(--bg-surface));
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+        .rat-card .rat-eyebrow {
+          font-family: var(--font-mono);
+          font-size: 10px;
+          letter-spacing: 0.10em;
+          text-transform: uppercase;
+          color: var(--text-muted);
+        }
+        .rat-card .rat-label {
+          font-family: var(--font-display);
+          font-style: italic;
+          font-weight: 400;
+          font-size: 28px;
+          line-height: 1.1;
+          color: var(--brand);
+          margin: 4px 0 0;
+        }
+        .rat-card .rat-rationale {
+          color: var(--text-secondary);
+          font-size: 14px;
+          line-height: 1.6;
+          margin: 6px 0 0;
+        }
+        .rat-card .rat-rationale strong { color: var(--text-primary); font-weight: 500; }
+        .rat-card .rat-signals {
+          margin-top: 8px;
+          padding: 14px 16px;
+          background: var(--bg-elevated);
+          border: 1px solid var(--border-subtle);
+          border-radius: 8px;
+          font-family: var(--font-mono);
+          font-size: 12.5px;
+          color: var(--text-secondary);
+        }
+        .rat-card .rat-signals .sig-h {
+          color: var(--text-muted);
+          font-size: 10px;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          margin-bottom: 8px;
+        }
+        .rat-card .rat-signals .sig-row {
+          display: flex;
+          justify-content: space-between;
+          padding: 3px 0;
+        }
+        .rat-card .rat-signals .sig-row .name { color: var(--text-secondary); }
+        .rat-card .rat-signals .sig-row .val { color: var(--brand); }
+        .rat-card .rat-foot {
+          font-family: var(--font-mono);
+          font-size: 11px;
+          color: var(--text-muted);
+          padding-top: 8px;
+          border-top: 1px dashed var(--border-subtle);
+        }
+      </style>
+
+      <div class="rat-grid">
+        <!-- Card 1: Patient Listener (B2B SaaS) -->
+        <div class="rat-card">
+          <div class="rat-eyebrow">$ crixin voice archetype</div>
+          <div class="rat-label">Patient Listener</div>
+          <p class="rat-rationale"><strong>31.2%</strong> of your calls run past 3 minutes — your AI lets the prospect talk. Sage-ish caller behavior; if you wanted more closes, this is the dial to turn.</p>
+          <div class="rat-signals">
+            <div class="sig-h">Top signals (corpus: 1,247 calls)</div>
+            <div class="sig-row"><span class="name">longCallRate</span><span class="val">0.312</span></div>
+            <div class="sig-row"><span class="name">questionRate</span><span class="val">5.4</span></div>
+            <div class="sig-row"><span class="name">completedRate</span><span class="val">0.78</span></div>
+          </div>
+          <div class="rat-foot">Acme PLG · B2B SaaS activation calls</div>
+        </div>
+
+        <!-- Card 2: Hard Closer (sales team) -->
+        <div class="rat-card">
+          <div class="rat-eyebrow">$ crixin voice archetype</div>
+          <div class="rat-label">Hard Closer</div>
+          <p class="rat-rationale"><strong>22.7%</strong> of transcripts contain a close-attempt phrase ("can I schedule", "shall we get you on the calendar"). Your AI is going for the booking on every call. High intent. TCPA-watch: are these all consented?</p>
+          <div class="rat-signals">
+            <div class="sig-h">Top signals (corpus: 832 calls)</div>
+            <div class="sig-row"><span class="name">closeRate</span><span class="val">0.227</span></div>
+            <div class="sig-row"><span class="name">avgCallSeconds</span><span class="val">72</span></div>
+            <div class="sig-row"><span class="name">completedRate</span><span class="val">0.61</span></div>
+          </div>
+          <div class="rat-foot">Apex Sales · outbound B2B discovery</div>
+        </div>
+
+        <!-- Card 3: Ducker (a warning) -->
+        <div class="rat-card" style="border-color:#ff9b9b;background:linear-gradient(180deg,rgba(255,155,155,0.05),var(--bg-surface));">
+          <div class="rat-eyebrow">$ crixin voice archetype</div>
+          <div class="rat-label" style="color:#ff9b9b;">Ducker</div>
+          <p class="rat-rationale"><strong>18.4%</strong> of transcripts contain a dodge phrase ("let me get back to you", "I'll have my team follow up", "I'm not authorized"). Your AI deflects when pressed. Tighten the system prompt with explicit answers to your top FAQs.</p>
+          <div class="rat-signals">
+            <div class="sig-h">Top signals (corpus: 442 calls)</div>
+            <div class="sig-row"><span class="name">dodgeRate</span><span class="val">0.184</span></div>
+            <div class="sig-row"><span class="name">avgCallSeconds</span><span class="val">58</span></div>
+            <div class="sig-row"><span class="name">closeRate</span><span class="val">0.041</span></div>
+          </div>
+          <div class="rat-foot">Maria's Pizza · AI receptionist (needs more menu RAG)</div>
+        </div>
+      </div>
+
+      <h2 style="margin-top:60px;">Run it <em>locally</em>.</h2>
+<pre class="code">npm i -g crixin
+crixin voice ingest                <span class="c"># pull recent Twilio calls + Deepgram transcripts</span>
+crixin voice archetype             <span class="c"># prints one of the above cards, computed from YOUR corpus</span></pre>
+
+      <p style="color:var(--text-secondary);font-size:14px;margin-top:20px;">No LLM. No prompt fragility. Same input → same label, every time. The 9 signals (shortCallRate, longCallRate, dodgeRate, closeRate, noAnswerRate, questionRate, completedRate, etc.) are computed in SQL against your local DB. You can audit the math in <code class="mono">src/voice/analyze.ts</code>.</p>
+    </div>
+  </section>
+
+  <footer class="site">
+    <div class="wrap" style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;">
+      <div>
+        <a href="/">crixin</a>
+        <a href="/voice">voice</a>
+        <a href="/wrapped">wrapped</a>
+        <a href="/archetype">archetype</a>
+        <a href="/voice/pricing">pricing</a>
+      </div>
+      <div>
+        <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a>
+        <a href="/faq">FAQ</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

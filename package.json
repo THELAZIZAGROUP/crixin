@@ -1,0 +1,86 @@
+{
+  "name": "crixin",
+  "mcpName": "com.crixin/voice",
+  "version": "0.7.2",
+  "description": "The MCP toolkit for AI agents. Voice MCP gives your AI a phone line through your own Twilio. Coder MCP gives it a memory across every Claude Code, Codex CLI, and Cursor session. One npm package, two capability modules, local SQLite, no SaaS in the middle.",
+  "license": "MIT",
+  "author": "Mosab Abdallah",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "crixin": "./bin/crixin.js"
+  },
+  "main": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./voice": "./dist/voice/index.js",
+    "./voice/mcp": "./dist/voice/mcp.js"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/cli/index.ts",
+    "start": "node dist/cli/index.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --import tsx --test test/*.test.ts test/**/*.test.ts",
+    "test:watch": "node --import tsx --test --watch test/*.test.ts test/**/*.test.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.19.14",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "hono": "^4.12.18",
+    "js-tiktoken": "^1.0.21",
+    "kleur": "^4.1.5",
+    "open": "^10.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@vercel/node": "^5.7.15",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/THELAZIZAGROUP/crixin.git"
+  },
+  "homepage": "https://crixin.com",
+  "bugs": {
+    "url": "https://github.com/THELAZIZAGROUP/crixin/issues"
+  },
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "mcp-toolkit",
+    "model-context-protocol",
+    "ai-agent",
+    "ai-agent-infrastructure",
+    "ai-agent-capabilities",
+    "twilio",
+    "twilio-mcp",
+    "ai-phone-calls",
+    "deepgram",
+    "voice-ai",
+    "ai-memory",
+    "claude-code",
+    "cursor",
+    "codex-cli",
+    "claude-desktop",
+    "local-first",
+    "voice-wrapped",
+    "caller-archetype",
+    "anthropic",
+    "openai",
+    "cli"
+  ]
+}

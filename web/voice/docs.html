@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="canonical" href="https://crixin.com/voice/docs" />
+  <title>crixin voice — MCP tool reference</title>
+  <meta name="description" content="Full reference for every tool the Crixin voice MCP server exposes: make_call, get_call, list_calls, list_recordings, transcribe_call, send_sms." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" />
+  <link rel="stylesheet" href="../styles.css" />
+  <script src="/site.js" defer></script>
+
+  <style>
+    .doc-hero { padding: 130px 0 40px; }
+    .doc-hero .eyebrow {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--brand);
+      padding: 6px 12px;
+      border: 1px solid var(--brand);
+      border-radius: 9999px;
+    }
+    .doc-hero h1 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(32px, 5vw, 52px);
+      letter-spacing: -0.02em;
+      margin: 22px 0 14px;
+    }
+    .doc-hero h1 em { color: var(--brand); font-style: italic; }
+    .doc-hero p.lede {
+      font-size: 16px;
+      color: var(--text-secondary);
+      max-width: 720px;
+      line-height: 1.6;
+    }
+
+    .doc-layout {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 40px;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+    @media (max-width: 800px) {
+      .doc-layout { grid-template-columns: 1fr; }
+      .toc { position: static !important; max-height: none !important; }
+    }
+    .toc {
+      position: sticky; top: 90px; align-self: start;
+      max-height: calc(100vh - 110px);
+      overflow-y: auto;
+      font-size: 14px;
+      border-left: 1px solid var(--border-subtle);
+      padding-left: 18px;
+    }
+    .toc h4 {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin: 0 0 10px;
+    }
+    .toc a {
+      display: block;
+      padding: 6px 0;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+    .toc a:hover { color: var(--brand); }
+
+    .doc-content section { padding: 36px 0; border-top: 1px dashed var(--border-subtle); }
+    .doc-content section:first-child { border-top: 0; padding-top: 16px; }
+    .doc-content h2 {
+      font-family: var(--font-mono);
+      font-size: 22px;
+      color: var(--brand);
+      margin: 0 0 6px;
+      letter-spacing: -0.005em;
+    }
+    .doc-content h2 .verb {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-left: 12px;
+      letter-spacing: 0;
+    }
+    .doc-content p.tagline {
+      color: var(--text-secondary);
+      margin: 0 0 16px;
+      max-width: 720px;
+      line-height: 1.6;
+    }
+    .doc-content h3 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 18px;
+      margin: 22px 0 8px;
+      color: var(--text-primary);
+    }
+    pre.code {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.55;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 16px 18px;
+      overflow-x: auto;
+      margin: 12px 0;
+      color: var(--text-primary);
+      white-space: pre;
+    }
+    pre.code .c { color: var(--text-muted); }
+    pre.code .k { color: var(--brand-soft); }
+    pre.code .s { color: var(--success); }
+    table.params {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 13.5px;
+    }
+    table.params th {
+      text-align: left;
+      padding: 10px 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    table.params td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      vertical-align: top;
+      color: var(--text-secondary);
+    }
+    table.params td:first-child {
+      font-family: var(--font-mono);
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+    table.params td .req {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--brand);
+      margin-left: 6px;
+    }
+    table.params td .opt {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-left: 6px;
+    }
+    code.inline {
+      font-family: var(--font-mono);
+      font-size: 0.92em;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+    footer.site {
+      padding: 30px 0 50px;
+      color: var(--text-muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border-subtle);
+      margin-top: 30px;
+    }
+    footer.site a { color: var(--text-secondary); margin: 0 12px; }
+  </style>
+</head>
+<body>
+  <canvas id="embers" aria-hidden="true"></canvas>
+
+  <header class="site" id="site-header">
+    <div class="wrap row" style="display:flex;align-items:center;justify-content:space-between;height:64px;">
+      <a href="/" class="brand-mark" style="font-family:var(--font-display);font-style:italic;color:var(--brand);font-size:24px;text-decoration:none;">crixin<span class="tag" style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);margin-left:8px;letter-spacing:0.05em;">v0.4.0 · voice mcp</span></a>
+      <nav class="primary" style="display:flex;gap:18px;font-size:14px;">
+        <a href="/voice/agentic">Agentic</a>
+        <a href="/voice/agents">Agents</a>
+        <a href="/voice/compliance">Compliance</a>
+        <a href="/voice/use-cases">Use cases</a>
+        <a href="/voice/install">Install</a>
+        <a href="/voice/docs" style="color:var(--brand);">Docs</a>
+        <a href="/voice/api">API</a>
+        <a href="/voice/pricing">Pricing</a>
+        <a href="/">crixin</a>
+        <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="doc-hero">
+    <div class="wrap-narrow">
+      <span class="eyebrow">tools · v0.0.1</span>
+      <h1>The <em>tool reference</em>.</h1>
+      <p class="lede">Every tool the Crixin voice MCP server exposes — what it does, the JSON schema it accepts, and a copy-pasteable example. Use these names verbatim when prompting your AI host: <code>make_call</code>, <code>send_sms</code>, etc.</p>
+    </div>
+  </section>
+
+  <div class="doc-layout">
+    <aside class="toc" aria-label="Tool index">
+      <h4>Tools</h4>
+      <a href="#make_call">make_call</a>
+      <a href="#get_call">get_call</a>
+      <a href="#list_calls">list_calls</a>
+      <a href="#list_recordings">list_recordings</a>
+      <a href="#transcribe_call">transcribe_call</a>
+      <a href="#send_sms">send_sms</a>
+      <h4 style="margin-top:18px;">Reference</h4>
+      <a href="#voices">TTS voices</a>
+      <a href="#twiml">Inline TwiML</a>
+      <a href="#errors">Error handling</a>
+    </aside>
+
+    <main class="doc-content">
+
+      <section id="make_call">
+        <h2>make_call <span class="verb">— place an outbound voice call</span></h2>
+        <p class="tagline">Pass <code>to</code> + a <code>prompt</code> and the assistant will speak it; the recipient's reply is recorded for up to 60 seconds by default. Or pass raw <code>twiml</code> for full control. Inline TwiML means no public webhook required.</p>
+
+        <h3>Parameters</h3>
+        <table class="params">
+          <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>to <span class="req">required</span></td><td>string</td><td>E.164 destination number, e.g. <code>+15555550100</code>.</td></tr>
+            <tr><td>prompt <span class="opt">optional</span></td><td>string</td><td>What the assistant should say when the recipient picks up. If <code>record</code> isn't false, a recording prompt is appended.</td></tr>
+            <tr><td>closing_message <span class="opt">optional</span></td><td>string</td><td>Final line spoken before hangup.</td></tr>
+            <tr><td>twiml <span class="opt">optional</span></td><td>string</td><td>Inline TwiML XML to use instead of the prompt/record flow. If set, <code>prompt</code> is ignored.</td></tr>
+            <tr><td>url <span class="opt">optional</span></td><td>string</td><td>Public URL Twilio fetches for TwiML. Use only for stateful flows.</td></tr>
+            <tr><td>record <span class="opt">optional</span></td><td>boolean</td><td>Record the recipient's reply. Default <code>true</code>. Ignored when <code>twiml</code> or <code>url</code> is supplied.</td></tr>
+            <tr><td>voice <span class="opt">optional</span></td><td>string</td><td>Twilio TTS voice. See <a href="#voices">voices</a>. Default <code>Polly.Joanna-Neural</code>.</td></tr>
+            <tr><td>language <span class="opt">optional</span></td><td>string</td><td>Locale tag matching the voice, e.g. <code>en-US</code>, <code>ar-EG</code>.</td></tr>
+            <tr><td>max_recording_seconds <span class="opt">optional</span></td><td>integer</td><td>Default 60. Max 14400.</td></tr>
+            <tr><td>machine_detection <span class="opt">optional</span></td><td>enum</td><td><code>Enable</code> · <code>DetectMessageEnd</code> · <code>none</code>. Default <code>Enable</code>.</td></tr>
+            <tr><td>status_callback <span class="opt">optional</span></td><td>string</td><td>Public URL Twilio POSTs to as the call progresses.</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Example</h3>
+<pre class="code"><span class="c">// In your AI host's chat:</span>
+"<span class="s">use crixin voice to call +15555550100 and ask in Egyptian Arabic
+what time their basketball court opens; record their reply for 60 seconds.</span>"
+
+<span class="c">// What the agent calls:</span>
+make_call({
+  to: "+15555550100",
+  prompt: "<span class="s">السلام عليكم، هل ممكن تقولولي إيه مواعيد ملعب كرة السلة عندكم؟</span>",
+  voice: "<span class="k">Polly.Hala-Neural</span>",
+  language: "ar-EG",
+  max_recording_seconds: 60
+})
+
+<span class="c">// Returns:</span>
+{
+  "sid": "CA94e1d8…3a02",
+  "status": "queued",
+  "to": "+15555550100",
+  "from": "+15555550100",
+  "direction": "outbound-api",
+  "start_time": null
+}</pre>
+      </section>
+
+      <section id="get_call">
+        <h2>get_call <span class="verb">— look up one call by SID</span></h2>
+        <p class="tagline">Returns status, duration, price, start/end timestamps. Useful right after <code>make_call</code> to poll until the call moves to <code>completed</code>.</p>
+        <table class="params">
+          <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>call_sid <span class="req">required</span></td><td>string</td><td>The SID returned by <code>make_call</code>, e.g. <code>CA94e1d8…</code>.</td></tr>
+          </tbody>
+        </table>
+<pre class="code">get_call({ call_sid: "CA94e1d8…3a02" })
+
+<span class="c">// → status: 'completed', duration: '47', price: '-0.0085', price_unit: 'USD'</span></pre>
+      </section>
+
+      <section id="list_calls">
+        <h2>list_calls <span class="verb">— recent call history</span></h2>
+        <p class="tagline">Filter by destination, source, status, or start window.</p>
+        <table class="params">
+          <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>to <span class="opt">optional</span></td><td>string</td><td>E.164 filter on the called number.</td></tr>
+            <tr><td>from <span class="opt">optional</span></td><td>string</td><td>E.164 filter on the calling number.</td></tr>
+            <tr><td>status <span class="opt">optional</span></td><td>enum</td><td><code>queued</code>, <code>ringing</code>, <code>in-progress</code>, <code>completed</code>, <code>busy</code>, <code>failed</code>, <code>no-answer</code>, <code>canceled</code>.</td></tr>
+            <tr><td>start_time_after <span class="opt">optional</span></td><td>string</td><td>ISO 8601 timestamp.</td></tr>
+            <tr><td>page_size <span class="opt">optional</span></td><td>integer</td><td>1–1000. Default 50.</td></tr>
+          </tbody>
+        </table>
+<pre class="code">list_calls({
+  status: "completed",
+  start_time_after: "2026-05-01T00:00:00Z",
+  page_size: 100
+})</pre>
+      </section>
+
+      <section id="list_recordings">
+        <h2>list_recordings <span class="verb">— recordings attached to a call</span></h2>
+        <p class="tagline">Returns SIDs, durations, and direct media URLs. The media URLs require your Twilio auth header to fetch — they're not public.</p>
+<pre class="code">list_recordings({ call_sid: "CA94e1d8…3a02" })
+
+<span class="c">// →
+[{
+  sid: "RE5b8c…",
+  call_sid: "CA94e1d8…3a02",
+  duration: "47",
+  status: "completed",
+  media_url: "https://api.twilio.com/.../Recordings/RE5b8c….mp3"
+}]</span></pre>
+      </section>
+
+      <section id="transcribe_call">
+        <h2>transcribe_call <span class="verb">— Deepgram-powered transcription</span></h2>
+        <p class="tagline">Pulls the audio and runs it through Deepgram. <strong>30+ languages including Arabic, Spanish, Portuguese, Mandarin.</strong> Returns transcript, confidence, word-level timestamps, and detected language. Requires <code>DEEPGRAM_API_KEY</code> in env.</p>
+        <table class="params">
+          <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>recording_sid <span class="req">required</span></td><td>string</td><td>From <code>list_recordings</code>, e.g. <code>RE5b8c…</code>.</td></tr>
+            <tr><td>language <span class="opt">optional</span></td><td>string</td><td>ISO 639-1 code: <code>ar</code>, <code>en</code>, <code>es</code>, etc. Pass <code>auto</code> to detect.</td></tr>
+            <tr><td>model <span class="opt">optional</span></td><td>string</td><td>Deepgram model. Default <code>nova-2</code>.</td></tr>
+            <tr><td>diarize <span class="opt">optional</span></td><td>boolean</td><td>Detect distinct speakers. Adds latency.</td></tr>
+          </tbody>
+        </table>
+<pre class="code">transcribe_call({
+  recording_sid: "RE5b8c…",
+  language: "ar"
+})
+
+<span class="c">// →
+{
+  recording_sid: "RE5b8c…",
+  language: "ar",
+  duration_seconds: 47,
+  transcript: "<span class="s">أهلاً، الملعب بيفتح الساعة سبعة الصبح وبيقفل الساعة عشرة بالليل…</span>",
+  confidence: 0.91,
+  word_count: 38
+}</span></pre>
+      </section>
+
+      <section id="send_sms">
+        <h2>send_sms <span class="verb">— SMS / MMS</span></h2>
+        <p class="tagline">Optional <code>messaging_service_sid</code> for sticky-sender behavior across countries; optional <code>media_url</code> for MMS attachments.</p>
+        <table class="params">
+          <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>to <span class="req">required</span></td><td>string</td><td>E.164.</td></tr>
+            <tr><td>body <span class="req">required</span></td><td>string</td><td>SMS text. Auto-segments past 160 chars.</td></tr>
+            <tr><td>messaging_service_sid <span class="opt">optional</span></td><td>string</td><td>Use a Messaging Service for routing.</td></tr>
+            <tr><td>media_url <span class="opt">optional</span></td><td>string</td><td>Image / PDF URL for MMS.</td></tr>
+            <tr><td>status_callback <span class="opt">optional</span></td><td>string</td><td>Delivery status callback URL.</td></tr>
+          </tbody>
+        </table>
+<pre class="code">send_sms({
+  to: "+15555550100",
+  body: "Reminder: 3pm appointment at Mansoura Stadium basketball court."
+})</pre>
+      </section>
+
+      <section id="voices">
+        <h2>TTS voices <span class="verb">— neural + standard</span></h2>
+        <p class="tagline">Twilio routes the <code>voice</code> parameter to Amazon Polly or Google TTS. Pick a neural voice when available — they're noticeably more natural.</p>
+        <table class="params">
+          <thead><tr><th>Assistant</th><th>Language</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>Polly.Joanna-Neural</td><td>en-US</td><td>Default. Female, neural.</td></tr>
+            <tr><td>Polly.Matthew-Neural</td><td>en-US</td><td>Male, neural.</td></tr>
+            <tr><td>Polly.Hala-Neural</td><td>ar-EG</td><td>Egyptian Arabic, neural. Strong for Cairo/Mansoura/Alexandria.</td></tr>
+            <tr><td>Polly.Zeina</td><td>ar</td><td>Modern Standard Arabic.</td></tr>
+            <tr><td>Polly.Lucia-Neural</td><td>es-ES</td><td>Castilian Spanish.</td></tr>
+            <tr><td>Polly.Camila-Neural</td><td>pt-BR</td><td>Brazilian Portuguese.</td></tr>
+            <tr><td>Google.en-US-Wavenet-D</td><td>en-US</td><td>Google Wavenet, male.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="twiml">
+        <h2>Inline TwiML <span class="verb">— full control without webhooks</span></h2>
+        <p class="tagline">Pass raw TwiML XML in the <code>twiml</code> parameter when the prompt/record flow isn't enough — multi-step menus, DTMF input, conferencing, etc.</p>
+<pre class="code">make_call({
+  to: "+15555550100",
+  twiml: `<span class="s">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;Response&gt;
+  &lt;Say voice="Polly.Joanna-Neural"&gt;Press 1 for hours, 2 for prices.&lt;/Say&gt;
+  &lt;Gather numDigits="1" action="https://example.com/menu"&gt;
+    &lt;Say&gt;Waiting...&lt;/Say&gt;
+  &lt;/Gather&gt;
+&lt;/Response&gt;</span>`
+})</pre>
+        <p style="color:var(--text-secondary);font-size:14px;">For multi-step flows you'll need a public callback (<code>action="…"</code>). For single-shot prompts, the built-in <code>prompt</code> + <code>record</code> covers most use cases.</p>
+      </section>
+
+      <section id="errors">
+        <h2>Error handling <span class="verb">— what goes wrong, and why</span></h2>
+        <p class="tagline">Every tool returns either a JSON payload or a structured MCP error with <code>isError: true</code>. The error message is the underlying Twilio (or Deepgram) error verbatim — easy to grep, easy to retry.</p>
+<pre class="code"><span class="c">// Common shapes:</span>
+"Error: TwilioApiError: POST /Calls.json failed: <span class="s">{ &quot;code&quot;: 21211, &quot;message&quot;: &quot;Invalid 'To' Phone Number&quot; }</span>"
+"Error: Deepgram transcribe failed (401): <span class="s">Invalid credentials</span>"
+"Error: Missing TWILIO_ACCOUNT_SID. Set it in your environment or Doppler."</pre>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="site">
+    <div class="wrap" style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;">
+      <div>
+        <a href="/">crixin</a>
+        <a href="/voice">voice</a>
+        <a href="/voice/install">install</a>
+        <a href="/voice/api">api</a>
+        <a href="/voice/pricing">pricing</a>
+      </div>
+      <div>
+        <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a>
+        <a href="https://www.npmjs.com/package/crixin">npm</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

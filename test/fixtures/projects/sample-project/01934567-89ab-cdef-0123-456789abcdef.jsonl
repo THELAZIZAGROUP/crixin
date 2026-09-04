@@ -1,0 +1,4 @@
+{"type":"user","content":"how do i set up vitest in a typescript project","timestamp":"2026-04-30T12:00:00.000Z"}
+{"type":"assistant","content":[{"type":"text","text":"You install vitest as a devDependency, add a `test` script to package.json, and write tests in `*.test.ts`."}],"timestamp":"2026-04-30T12:00:02.500Z","model":"claude-opus-4-7"}
+{"type":"user","content":"do i need a config file?","timestamp":"2026-04-30T12:00:30.000Z"}
+{"type":"assistant","content":[{"type":"text","text":"Not for TypeScript projects — vitest reads tsconfig.json for compiler options."}],"timestamp":"2026-04-30T12:00:32.000Z","model":"claude-opus-4-7"}

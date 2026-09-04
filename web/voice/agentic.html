@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="canonical" href="https://crixin.com/voice/agentic" />
+  <title>crixin voice — your AI agent just placed a call</title>
+  <meta name="description" content="An MCP-first demo. Install the package, tell Claude to call your nearest leads, watch sub-agents fan out and make the calls in parallel — without you touching the dialer." />
+  <meta name="keywords" content="mcp server, claude code, agentic ai, ai phone calls, ai sub-agents, parallel agents, twilio mcp" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="crixin voice — your AI just placed a call" />
+  <meta property="og:description" content="MCP-first. Tell Claude to call your leads — sub-agents fan out, calls happen in parallel, you keep coding." />
+  <meta property="og:url" content="https://crixin.com/voice/agentic" />
+  <meta property="og:site_name" content="Crixin" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" />
+  <link rel="stylesheet" href="../styles.css" />
+  <script src="/site.js" defer></script>
+
+  <style>
+    :root {
+      --reel-step-bg: var(--bg-surface);
+      --reel-step-border: var(--border-subtle);
+      --terminal-bg: #08090d;
+      --terminal-border: #1c1f29;
+      --terminal-fg: #e6e6e6;
+      --terminal-dim: #6c7080;
+      --terminal-prompt: var(--brand);
+      --terminal-success: #7bd88f;
+      --terminal-info: #7aa2f7;
+    }
+
+    .doc-hero { padding: 130px 0 30px; text-align: center; }
+    .eyebrow {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--brand);
+      padding: 6px 12px;
+      border: 1px solid var(--brand);
+      border-radius: 9999px;
+    }
+    .doc-hero h1 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(40px, 6vw, 76px);
+      letter-spacing: -0.02em;
+      margin: 22px 0 14px;
+      line-height: 1.05;
+    }
+    .doc-hero h1 em { color: var(--brand); font-style: italic; }
+    .doc-hero p.lede {
+      font-size: 18px; color: var(--text-secondary); max-width: 720px;
+      margin: 0 auto; line-height: 1.6;
+    }
+    .doc-hero .ctas {
+      margin-top: 28px;
+      display: flex; flex-wrap: wrap; gap: 12px;
+      justify-content: center;
+    }
+
+    .copy-cmd {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      padding: 12px 18px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--text-primary);
+      transition: border-color 160ms var(--ease), color 160ms var(--ease);
+    }
+    .copy-cmd:hover { border-color: var(--brand); color: var(--brand); }
+    .btn-primary {
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 11px 18px;
+      border-radius: 8px;
+      background: var(--brand);
+      color: #0b0d12;
+      border: 1px solid var(--brand);
+      transition: background 160ms var(--ease), transform 160ms var(--ease);
+    }
+    .btn-primary:hover { background: var(--brand-soft); transform: translateY(-1px); }
+
+    /* === The reel === */
+    .reel { padding: 30px 0 80px; }
+    .reel-track {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 32px;
+      position: relative;
+    }
+    .reel-track::before {
+      content: "";
+      position: absolute;
+      left: 60px;
+      top: 60px;
+      bottom: 80px;
+      width: 1px;
+      background: linear-gradient(180deg,
+        transparent,
+        var(--brand) 8%,
+        var(--brand) 92%,
+        transparent);
+      opacity: 0.4;
+    }
+    .reel-step {
+      position: relative;
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 20px;
+      align-items: start;
+      padding: 26px 0;
+    }
+    .reel-marker {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--bg-elevated);
+      border: 2px solid var(--brand);
+      color: var(--brand);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 12px; font-weight: 600;
+      margin-left: 47px;
+      box-shadow: 0 0 0 6px rgba(8,9,13,1);
+      flex: 0 0 auto;
+    }
+    .reel-marker.live {
+      background: var(--brand);
+      color: #0b0d12;
+      animation: marker-glow 2.4s ease infinite;
+    }
+    @keyframes marker-glow {
+      0%, 100% { box-shadow: 0 0 0 6px rgba(8,9,13,1), 0 0 0 8px rgba(245,180,82,0.3); }
+      50%      { box-shadow: 0 0 0 6px rgba(8,9,13,1), 0 0 0 14px rgba(245,180,82,0); }
+    }
+    .reel-content { min-width: 0; }
+    .reel-content .step-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .reel-content h3 {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(22px, 2.8vw, 32px);
+      color: var(--text-primary);
+      margin: 0 0 6px;
+      line-height: 1.2;
+    }
+    .reel-content h3 em { color: var(--brand); font-style: italic; }
+    .reel-content p.note {
+      color: var(--text-secondary);
+      font-size: 14.5px;
+      line-height: 1.6;
+      margin: 0 0 16px;
+      max-width: 620px;
+    }
+
+    /* === Terminal panel === */
+    .terminal {
+      background: var(--terminal-bg);
+      border: 1px solid var(--terminal-border);
+      border-radius: 10px;
+      box-shadow: 0 24px 70px -32px rgba(0,0,0,0.75);
+      overflow: hidden;
+      max-width: 760px;
+      margin: 0;
+    }
+    .terminal-bar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 14px;
+      background: linear-gradient(180deg, #0e1015, #0a0c11);
+      border-bottom: 1px solid var(--terminal-border);
+    }
+    .terminal-bar .light {
+      width: 11px; height: 11px; border-radius: 50%;
+    }
+    .terminal-bar .light.r { background: #ff5f57; }
+    .terminal-bar .light.y { background: #febb2e; }
+    .terminal-bar .light.g { background: #27c93f; }
+    .terminal-bar .title {
+      flex: 1 1 auto; text-align: center;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: var(--terminal-dim);
+      letter-spacing: 0.04em;
+    }
+    .terminal-body {
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      line-height: 1.7;
+      color: var(--terminal-fg);
+      padding: 18px 20px;
+      white-space: pre;
+      overflow-x: auto;
+    }
+    .terminal-body .prompt { color: var(--terminal-prompt); }
+    .terminal-body .cmd    { color: var(--terminal-fg); }
+    .terminal-body .ok     { color: var(--terminal-success); }
+    .terminal-body .info   { color: var(--terminal-info); }
+    .terminal-body .dim    { color: var(--terminal-dim); }
+    .terminal-body .arg    { color: var(--brand); }
+    .terminal-body .cursor {
+      display: inline-block;
+      width: 8px; height: 1.05em;
+      background: var(--terminal-fg);
+      vertical-align: -2px;
+      margin-left: 1px;
+      animation: blink 1.05s steps(2) infinite;
+    }
+    @keyframes blink {
+      0%, 49.99% { opacity: 1; }
+      50%, 100%  { opacity: 0; }
+    }
+
+    /* === Chat panel === */
+    .chat {
+      max-width: 760px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      background: linear-gradient(180deg, var(--bg-surface), var(--bg-elevated));
+      padding: 18px;
+      box-shadow: 0 24px 70px -40px rgba(0,0,0,0.55);
+    }
+    .chat .msg {
+      display: flex; gap: 12px; padding: 10px 4px;
+      align-items: flex-start;
+    }
+    .chat .msg + .msg { border-top: 1px dashed var(--border-subtle); }
+    .chat .who {
+      flex: 0 0 auto;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      width: 76px;
+      padding-top: 2px;
+    }
+    .chat .who.user      { color: var(--text-muted); }
+    .chat .who.claude    { color: var(--brand); }
+    .chat .who.tool      { color: var(--success); }
+    .chat .body {
+      flex: 1 1 auto;
+      color: var(--text-primary);
+      font-size: 14.5px;
+      line-height: 1.65;
+    }
+    .chat .body code {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      background: var(--bg-elevated);
+      padding: 1px 6px;
+      border-radius: 4px;
+      color: var(--brand-soft);
+    }
+    .chat .body strong { color: var(--text-primary); font-weight: 500; }
+    .chat .body .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .chat .body .summary-grid .cell {
+      padding: 10px 12px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      background: var(--bg-surface);
+      font-size: 13px;
+    }
+    .chat .body .summary-grid .cell .num {
+      display: block;
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 26px;
+      color: var(--brand);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .chat .body .summary-grid .cell .lab {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* === Fan-out grid === */
+    .fanout {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 4px;
+      max-width: 860px;
+    }
+    .agent-tile {
+      padding: 16px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      background: var(--bg-surface);
+      position: relative;
+      overflow: hidden;
+      transition: border-color 250ms var(--ease), transform 250ms var(--ease);
+    }
+    .agent-tile::before {
+      content: "";
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 100% 0%, rgba(245,180,82,0.10), transparent 55%);
+      pointer-events: none;
+    }
+    .agent-tile.connected { border-color: var(--brand); }
+    .agent-tile.done { border-color: var(--success); }
+    .agent-tile .at-head {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: 6px;
+    }
+    .agent-tile .at-id {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+    .agent-tile .at-name {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 22px;
+      color: var(--brand);
+      line-height: 1;
+    }
+    .agent-tile .at-target {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+    .agent-tile .at-stage {
+      display: flex; align-items: center; gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    .agent-tile .at-stage .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      flex: 0 0 auto;
+      background: var(--text-muted);
+    }
+    .agent-tile.calling .at-stage .dot { background: var(--brand-soft); animation: pulse-call 1.6s ease infinite; }
+    .agent-tile.connected .at-stage .dot { background: var(--brand); animation: pulse-call 1.6s ease infinite; }
+    .agent-tile.done .at-stage .dot { background: var(--success); animation: none; }
+    @keyframes pulse-call {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(245,180,82,0.6); }
+      50%      { box-shadow: 0 0 0 6px rgba(245,180,82,0); }
+    }
+    .agent-tile .at-outcome {
+      margin-top: 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      opacity: 0;
+      transition: opacity 280ms var(--ease);
+    }
+    .agent-tile.done .at-outcome { opacity: 1; }
+    .agent-tile.done .at-outcome.win  { color: var(--success); }
+    .agent-tile.done .at-outcome.warm { color: var(--brand); }
+    .agent-tile.done .at-outcome.cold { color: var(--text-muted); }
+
+    /* Wave bars while connected */
+    .agent-tile .wave {
+      display: none;
+      align-items: end; gap: 2px; height: 14px; margin-top: 8px;
+    }
+    .agent-tile.connected .wave { display: flex; }
+    .agent-tile .wave span {
+      width: 2.5px; background: var(--brand); border-radius: 2px;
+      animation: bar 1.0s ease infinite;
+    }
+    .agent-tile .wave span:nth-child(1) { animation-delay: 0.0s; height: 30%; }
+    .agent-tile .wave span:nth-child(2) { animation-delay: 0.1s; height: 70%; }
+    .agent-tile .wave span:nth-child(3) { animation-delay: 0.2s; height: 100%; }
+    .agent-tile .wave span:nth-child(4) { animation-delay: 0.3s; height: 60%; }
+    .agent-tile .wave span:nth-child(5) { animation-delay: 0.4s; height: 90%; }
+    .agent-tile .wave span:nth-child(6) { animation-delay: 0.5s; height: 40%; }
+    @keyframes bar {
+      0%, 100% { transform: scaleY(0.4); opacity: 0.7; }
+      50%      { transform: scaleY(1.0); opacity: 1.0; }
+    }
+
+    /* Aside: small persistent IDE in corner showing user keeps coding */
+    .ide-aside {
+      max-width: 560px;
+      margin-top: 24px;
+      padding: 18px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      background: var(--bg-surface);
+      display: flex; gap: 14px; align-items: flex-start;
+    }
+    .ide-aside .ide-icon {
+      width: 38px; height: 38px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(245,180,82,0.18), rgba(122,162,247,0.12));
+      border: 1px solid var(--border-subtle);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display);
+      font-style: italic;
+      color: var(--brand);
+      font-size: 22px;
+      flex: 0 0 auto;
+    }
+    .ide-aside .ide-text {
+      color: var(--text-secondary);
+      font-size: 13.5px;
+      line-height: 1.55;
+    }
+    .ide-aside .ide-text strong { color: var(--text-primary); font-weight: 500; }
+
+    /* Footer CTA */
+    .footer-cta {
+      padding: 80px 0 100px; text-align: center;
+    }
+    .footer-cta h2 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(26px, 4vw, 42px);
+      margin: 0 0 8px;
+    }
+    .footer-cta h2 em { color: var(--brand); font-style: italic; }
+    .footer-cta p { color: var(--text-secondary); margin: 0 0 22px; }
+
+    footer.site {
+      padding: 30px 0 50px;
+      color: var(--text-muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border-subtle);
+      margin-top: 30px;
+    }
+    footer.site a { color: var(--text-secondary); margin: 0 12px; }
+    footer.site a:first-child { margin-left: 0; }
+
+    /* Mobile */
+    @media (max-width: 720px) {
+      .reel-track::before { display: none; }
+      .reel-step { grid-template-columns: 1fr; gap: 8px; }
+      .reel-marker { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="embers" aria-hidden="true"></canvas>
+
+  <header class="site" id="site-header">
+    <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;height:64px;padding:0 32px;max-width:1200px;margin:0 auto;">
+      <a href="/" style="font-family:var(--font-display);font-style:italic;color:var(--brand);font-size:24px;text-decoration:none;">crixin<span style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);margin-left:8px;letter-spacing:0.05em;">v0.4.0 · voice mcp</span></a>
+      <nav style="display:flex;gap:18px;font-size:14px;">
+        <a href="/voice/agentic" style="color:var(--brand);">Agentic</a>
+        <a href="/voice/agents">Agents</a>
+        <a href="/voice/compliance">Compliance</a>
+        <a href="/voice/use-cases">Use cases</a>
+        <a href="/voice/install">Install</a>
+        <a href="/voice/docs">Docs</a>
+        <a href="/voice/api">API</a>
+        <a href="/voice/pricing">Pricing</a>
+        <a href="/">crixin</a>
+        <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="doc-hero">
+    <div>
+      <span class="eyebrow">agentic · MCP-first</span>
+      <h1>Your AI agent <em>just</em><br />placed a call.</h1>
+      <p class="lede">An MCP-first walkthrough. Install Voice MCP. Tell Claude to dial a number. Watch the tool fire — dial, speak, record, transcribe, classify — every step transparent and auditable. No campaign UI, no agent dashboard, no orchestration layer to learn.</p>
+      <div class="ctas">
+        <span class="copy-cmd" onclick="navigator.clipboard.writeText('npm i -g crixin && crixin install')">npm i -g crixin &amp;&amp; crixin install</span>
+        <a class="btn-primary" href="/install">Install in 30 seconds</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="reel">
+    <div class="reel-track">
+
+      <!-- STEP 01 — install -->
+      <div class="reel-step">
+        <div class="reel-marker live">01</div>
+        <div class="reel-content">
+          <div class="step-eyebrow">terminal · 30 seconds · once</div>
+          <h3>Install the <em>npm package</em>.</h3>
+          <p class="note">A single global install. <code>crixin voice install</code> wires the MCP server into every AI host on your machine — Claude Code, Cursor, Codex CLI, Claude Desktop. No SaaS account. No webhooks. No API key swap.</p>
+          <div class="terminal" aria-label="terminal">
+            <div class="terminal-bar">
+              <span class="light r"></span><span class="light y"></span><span class="light g"></span>
+              <span class="title">~ — zsh</span>
+            </div>
+            <div class="terminal-body"><span class="prompt">$</span> <span class="cmd">npm i -g crixin</span>
+<span class="ok">added 1 package in 4s</span>
+
+<span class="prompt">$</span> <span class="cmd">crixin install</span>
+<span class="ok">✓</span> claude code     <span class="dim">~/.claude/settings.json</span>      <span class="dim">+ crixin-voice + crixin-coder</span>
+<span class="ok">✓</span> cursor          <span class="dim">~/.cursor/mcp.json</span>             <span class="dim">+ crixin-voice + crixin-coder</span>
+<span class="ok">✓</span> codex cli       <span class="dim">~/.codex/config.toml</span>          <span class="dim">+ crixin-voice + crixin-coder</span>
+<span class="ok">✓</span> claude desktop  <span class="dim">~/Library/.../claude_desktop_config.json</span>
+
+<span class="info">restart your AI host once.</span>
+<span class="prompt">$</span> <span class="cursor"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 02 — the prompt -->
+      <div class="reel-step">
+        <div class="reel-marker live">02</div>
+        <div class="reel-content">
+          <div class="step-eyebrow">claude code · same window you ship from</div>
+          <h3>Tell Claude what you <em>want done</em>.</h3>
+          <p class="note">No new tab. No new dashboard. Just the AI host you already have open. Voice MCP's tools (<code>make_call</code>, <code>send_sms</code>, <code>transcribe_call</code>) are now first-class — the agent reasons about them like it would about <code>read_file</code> or <code>bash</code>.</p>
+          <div class="chat">
+            <div class="msg">
+              <div class="who user">you</div>
+              <div class="body">use <code>crixin-voice</code> to call Tony's Pizza at <code>+14155550142</code>. confirm they're open and ask if they take orders for tomorrow's lunch (~20 pizzas). use Polly.Joanna-Neural and tag the call <code>office-lunch-prep</code>.</div>
+            </div>
+            <div class="msg">
+              <div class="who claude">claude</div>
+              <div class="body">on it. calling now via <code>crixin-voice.make_call</code>. i'll show you the SID + transcript when it lands.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 03 — the call -->
+      <div class="reel-step">
+        <div class="reel-marker live">03</div>
+        <div class="reel-content">
+          <div class="step-eyebrow">voice mcp · one call · ~42 seconds</div>
+          <h3>Voice MCP places the call. <em>Every stage is visible.</em></h3>
+          <p class="note">No campaign UI, no fanout abstraction, no orchestration layer. <code>make_call</code> is one tool invocation: dial → connect → speak (Polly TwiML) → record (Twilio) → transcribe (Deepgram, optional) → return. Each stage emits to the MCP host so the agent — and you — can audit it.</p>
+
+          <div class="fanout">
+            <div class="agent-tile done">
+              <div class="at-head"><span class="at-name">stage 1 · dial</span><span class="at-id">CA94e1…</span></div>
+              <div class="at-target">→ Tony's Pizza · +1 (415) 555-0142</div>
+              <div class="at-stage"><span class="dot"></span> queued → ringing → in-progress · 2.3s</div>
+            </div>
+
+            <div class="agent-tile done">
+              <div class="at-head"><span class="at-name">stage 2 · speak</span><span class="at-id">Polly.Joanna-Neural</span></div>
+              <div class="at-target">"Hi, this is Joanna calling — quick question for tomorrow's lunch order…"</div>
+              <div class="at-stage"><span class="dot"></span> TwiML &lt;Say&gt; · 6.1s</div>
+            </div>
+
+            <div class="agent-tile connected">
+              <div class="at-head"><span class="at-name">stage 3 · record</span><span class="at-id">RE5b…</span></div>
+              <div class="at-target">recipient speaking · max 60s · max silence 4s</div>
+              <div class="at-stage"><span class="dot"></span> recording · listening for hangup</div>
+              <div class="wave"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+            </div>
+
+            <div class="agent-tile calling">
+              <div class="at-head"><span class="at-name">stage 4 · transcribe</span><span class="at-id">deepgram · nova-2 · en-US</span></div>
+              <div class="at-target">recording finalizes → POST to Deepgram → JSON back</div>
+              <div class="at-stage"><span class="dot"></span> pending (optional — needs DEEPGRAM_API_KEY)</div>
+            </div>
+
+            <div class="agent-tile calling">
+              <div class="at-head"><span class="at-name">stage 5 · return</span><span class="at-id">make_call → tool result</span></div>
+              <div class="at-target">{ call_sid, status, duration, recording_url, transcript? }</div>
+              <div class="at-stage"><span class="dot"></span> the agent sees the result inline and decides next step</div>
+            </div>
+          </div>
+
+          <div class="ide-aside">
+            <div class="ide-icon">⌘</div>
+            <div class="ide-text">Meanwhile, you're on line 184 of <strong>routes/checkout.ts</strong>, rewriting the Stripe webhook. The call happens on the agent's task tree — it doesn't pause your editor, it doesn't steal your terminal, it doesn't ask you a single question.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 04 — Claude reports back -->
+      <div class="reel-step">
+        <div class="reel-marker live">04</div>
+        <div class="reel-content">
+          <div class="step-eyebrow">claude · ~42 seconds later</div>
+          <h3>Result <em>comes back</em>. Same chat. No context-switch.</h3>
+          <p class="note">The call settles, the agent reads the tool result, summarizes back into your chat, and the row lands in your local SQLite. Every artifact is auditable: Twilio call SID, recording URL (in your Twilio account), Deepgram transcript (if enabled), the exact tool args your AI sent. No black box.</p>
+          <div class="chat">
+            <div class="msg">
+              <div class="who claude">claude</div>
+              <div class="body">call done. 42s on the line.
+                <div class="summary-grid">
+                  <div class="cell"><span class="num">42s</span><span class="lab">duration</span></div>
+                  <div class="cell"><span class="num">$0.04</span><span class="lab">twilio</span></div>
+                  <div class="cell"><span class="num">yes</span><span class="lab">they take orders</span></div>
+                  <div class="cell"><span class="num">$11.50</span><span class="lab">per large pizza</span></div>
+                </div>
+                <p style="margin-top:10px;"><strong>Tony's Pizza</strong> confirmed: open tomorrow 10am–10pm, can take an order of 20 large pizzas if I call back by 9am. Asked me to text the address. Tagged <code>office-lunch-prep</code> in your local DB.</p>
+                <p style="margin-top:10px;color:var(--text-muted);font-size:13px;">transcript → <code>~/.crixin/crixin.db</code> · recording lives in your Twilio account (<code>RE5b…</code>)</p>
+              </div>
+            </div>
+            <div class="msg">
+              <div class="who user">you</div>
+              <div class="body">remind me to call them back at 8:30am tomorrow.</div>
+            </div>
+            <div class="msg">
+              <div class="who tool">tool</div>
+              <div class="body"><code>cron.schedule</code> · reminder set for 2026-05-13 08:30. done.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="footer-cta">
+    <div style="max-width: 800px; margin: 0 auto; padding: 0 32px;">
+      <h2>Free. <em>MCP-first.</em> Open source.</h2>
+      <p>Install the package, restart your AI host, ask it to make calls. Bring your own Twilio. Bring your own LLM. Nothing else.</p>
+      <div class="ctas" style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;">
+        <span class="copy-cmd" onclick="navigator.clipboard.writeText('npm i -g crixin && crixin install')">npm i -g crixin &amp;&amp; crixin install</span>
+        <a class="btn-primary" href="/install">Install guide</a>
+        <a href="/voice/docs" style="font-family:var(--font-sans);font-size:14px;font-weight:500;padding:11px 18px;border:1px solid var(--border-strong);border-radius:8px;color:var(--text-primary);">Tool reference</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site">
+    <div style="max-width: 1100px; margin: 0 auto; padding: 0 32px; display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;">
+      <div>
+        <a href="/">crixin</a>
+        <a href="/voice">voice</a>
+        <a href="/voice/agentic">agentic</a>
+        <a href="/voice/agents">agents</a>
+        <a href="/voice/pricing">pricing</a>
+      </div>
+      <div>
+        <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a>
+        <a href="https://www.npmjs.com/package/crixin">npm</a>
+        <a href="mailto:hello@crixin.com">hello@crixin.com</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

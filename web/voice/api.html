@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="canonical" href="https://crixin.com/voice/api" />
+  <title>crixin voice — programmatic API (npm)</title>
+  <meta name="description" content="Use Voice MCP as a library, not just an MCP server. TypeScript types, zero runtime deps beyond the MCP SDK, and a thin Twilio REST wrapper you can audit in 10 minutes." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" />
+  <link rel="stylesheet" href="../styles.css" />
+  <script src="/site.js" defer></script>
+
+  <style>
+    .doc-hero { padding: 130px 0 40px; }
+    .eyebrow {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--brand);
+      padding: 6px 12px;
+      border: 1px solid var(--brand);
+      border-radius: 9999px;
+    }
+    .doc-hero h1 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(36px, 5vw, 56px);
+      letter-spacing: -0.02em;
+      margin: 22px 0 14px;
+    }
+    .doc-hero h1 em { color: var(--brand); font-style: italic; }
+    .doc-hero p.lede {
+      font-size: 16px; color: var(--text-secondary); max-width: 700px; line-height: 1.6;
+    }
+    section.s { padding: 36px 0; border-top: 1px dashed var(--border-subtle); }
+    section.s:first-of-type { border-top: 0; }
+    section.s h2 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 28px;
+      letter-spacing: -0.015em;
+      margin: 0 0 8px;
+    }
+    section.s h2 em { color: var(--brand); font-style: italic; }
+    section.s p { color: var(--text-secondary); max-width: 720px; line-height: 1.6; }
+    pre.code {
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      line-height: 1.55;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 18px 22px;
+      overflow-x: auto;
+      margin: 16px 0;
+      color: var(--text-primary);
+      white-space: pre;
+    }
+    pre.code .c { color: var(--text-muted); }
+    pre.code .k { color: var(--brand-soft); }
+    pre.code .s { color: var(--success); }
+    .imports { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin: 16px 0; }
+    .imports .ic {
+      padding: 16px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      background: var(--bg-surface);
+    }
+    .imports .ic h4 {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--brand);
+      margin: 0 0 6px;
+    }
+    .imports .ic p { font-size: 13.5px; margin: 0; color: var(--text-secondary); }
+    footer.site {
+      padding: 30px 0 50px;
+      color: var(--text-muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border-subtle);
+      margin-top: 30px;
+    }
+    footer.site a { color: var(--text-secondary); margin: 0 12px; }
+  </style>
+</head>
+<body>
+  <canvas id="embers" aria-hidden="true"></canvas>
+
+  <header class="site" id="site-header">
+    <div class="wrap row" style="display:flex;align-items:center;justify-content:space-between;height:64px;">
+      <a href="/" class="brand-mark" style="font-family:var(--font-display);font-style:italic;color:var(--brand);font-size:24px;text-decoration:none;">crixin<span class="tag" style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);margin-left:8px;letter-spacing:0.05em;">v0.4.0 · voice mcp</span></a>
+      <nav class="primary" style="display:flex;gap:18px;font-size:14px;">
+        <a href="/voice/agentic">Agentic</a>
+        <a href="/voice/agents">Agents</a>
+        <a href="/voice/compliance">Compliance</a>
+        <a href="/voice/use-cases">Use cases</a>
+        <a href="/voice/install">Install</a>
+        <a href="/voice/docs">Docs</a>
+        <a href="/voice/api" style="color:var(--brand);">API</a>
+        <a href="/voice/pricing">Pricing</a>
+        <a href="/">crixin</a>
+        <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="doc-hero">
+    <div class="wrap-narrow">
+      <span class="eyebrow">programmatic api</span>
+      <h1>Skip the MCP server. <em>Use the library.</em></h1>
+      <p class="lede">Need to call Twilio from a Node script, a Vercel Function, or a long-running worker? Import the same primitives the MCP server is built on. Full TypeScript types. Zero runtime dependencies beyond the MCP SDK (the Twilio REST wrapper is hand-rolled with <code>fetch</code>).</p>
+    </div>
+  </section>
+
+  <div class="wrap-narrow">
+
+    <section class="s">
+      <h2>Install</h2>
+<pre class="code">npm i crixin</pre>
+    </section>
+
+    <section class="s">
+      <h2>Three <em>entry points</em></h2>
+      <div class="imports">
+        <div class="ic">
+          <h4>crixin/voice</h4>
+          <p>Everything: Twilio client, calls, SMS, transcription, TwiML helpers.</p>
+        </div>
+        <div class="ic">
+          <h4>crixin/voice/twilio</h4>
+          <p>Just <code>TwilioClient</code> + REST helpers. Drop into existing infra.</p>
+        </div>
+        <div class="ic">
+          <h4>crixin/voice/mcp</h4>
+          <p><code>startMcpServer()</code> if you want to embed the MCP server in a custom binary.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="s">
+      <h2>Place a call</h2>
+<pre class="code"><span class="k">import</span> { TwilioClient, makeCall, loadEnv } <span class="k">from</span> <span class="s">"crixin/voice"</span>;
+
+<span class="k">const</span> client = <span class="k">new</span> TwilioClient(loadEnv());
+
+<span class="k">const</span> call = <span class="k">await</span> makeCall(client, {
+  to: <span class="s">"+15555550100"</span>,
+  prompt: <span class="s">"Hi, is this Roses Island Club? I'm following up on basketball court hours."</span>,
+  voice: <span class="s">"Polly.Joanna-Neural"</span>,
+  language: <span class="s">"en-US"</span>,
+  maxRecordingSeconds: 60,
+  machineDetection: <span class="s">"Enable"</span>,
+});
+
+console.log(call.sid, call.status); <span class="c">// CA94e1d8…3a02 → queued</span></pre>
+    </section>
+
+    <section class="s">
+      <h2>Send an SMS</h2>
+<pre class="code"><span class="k">import</span> { TwilioClient, sendSms, loadEnv } <span class="k">from</span> <span class="s">"crixin/voice"</span>;
+
+<span class="k">const</span> client = <span class="k">new</span> TwilioClient(loadEnv());
+<span class="k">await</span> sendSms(client, {
+  to: <span class="s">"+15555550100"</span>,
+  body: <span class="s">"Reminder: 3pm appointment."</span>,
+});</pre>
+    </section>
+
+    <section class="s">
+      <h2>Transcribe a recording</h2>
+<pre class="code"><span class="k">import</span> {
+  TwilioClient, makeCall, listRecordingsForCall,
+  transcribeRecording, loadEnv,
+} <span class="k">from</span> <span class="s">"crixin/voice"</span>;
+
+<span class="k">const</span> client = <span class="k">new</span> TwilioClient(loadEnv());
+
+<span class="k">const</span> call = <span class="k">await</span> makeCall(client, {
+  to: <span class="s">"+201234567890"</span>,
+  prompt: <span class="s">"السلام عليكم، هل ممكن نعرف مواعيد الملعب؟"</span>,
+  voice: <span class="s">"Polly.Hala-Neural"</span>,
+  language: <span class="s">"ar-EG"</span>,
+  maxRecordingSeconds: 60,
+});
+
+<span class="c">// Wait for the call to complete (poll get_call or use status_callback)…</span>
+<span class="k">const</span> recordings = <span class="k">await</span> listRecordingsForCall(client, call.sid);
+<span class="k">if</span> (recordings[0]) {
+  <span class="k">const</span> result = <span class="k">await</span> transcribeRecording(client, {
+    recordingSid: recordings[0].sid,
+    language: <span class="s">"ar"</span>,
+  });
+  console.log(result.transcript);
+}</pre>
+    </section>
+
+    <section class="s">
+      <h2>Build TwiML <em>by hand</em></h2>
+      <p>The same XML helpers the MCP server uses are exported. Compose anything Twilio supports.</p>
+<pre class="code"><span class="k">import</span> { say, record, hangup, wrap } <span class="k">from</span> <span class="s">"crixin/voice"</span>;
+
+<span class="k">const</span> twiml = wrap(
+  say(<span class="s">"Press 1 for hours, 2 for prices."</span>, { voice: <span class="s">"Polly.Joanna-Neural"</span> }) +
+  record({ maxLength: 30, transcribe: <span class="k">false</span> }) +
+  hangup()
+);
+
+<span class="c">// Pass to makeCall via { twiml }, or serve it from your own webhook.</span></pre>
+    </section>
+
+    <section class="s">
+      <h2>Embed the <em>MCP server</em> in your own binary</h2>
+<pre class="code"><span class="c">#!/usr/bin/env node</span>
+<span class="k">import</span> { startMcpServer } <span class="k">from</span> <span class="s">"crixin/voice/mcp"</span>;
+
+<span class="c">// Add custom auth, logging, or rate-limit middleware around it.</span>
+startMcpServer().catch((<span class="k">err</span>) =&gt; {
+  console.error(err);
+  process.exit(1);
+});</pre>
+    </section>
+
+    <section class="s">
+      <h2>Audit trail</h2>
+      <p>Every entry point is &lt;200 LOC. The Twilio REST client is a single file with one <code>fetch</code> per HTTP verb — no generated SDK, no hidden state, no telemetry. <a href="https://github.com/THELAZIZAGROUP/crixin" style="color:var(--brand);">Read it on GitHub.</a></p>
+    </section>
+
+  </div>
+
+  <footer class="site">
+    <div class="wrap" style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;">
+      <div>
+        <a href="/">crixin</a>
+        <a href="/voice">voice</a>
+        <a href="/voice/install">install</a>
+        <a href="/voice/docs">docs</a>
+        <a href="/voice/pricing">pricing</a>
+      </div>
+      <div>
+        <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a>
+        <a href="https://www.npmjs.com/package/crixin">npm</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

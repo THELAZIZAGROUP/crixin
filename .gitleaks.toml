@@ -1,0 +1,9 @@
+# gitleaks configuration for the public crixin repo.
+# Test fixtures use obviously fake crx_live_ keys; everything else is env-driven.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Fake credentials used by the test-suite"
+paths = ['''^test/.*''']
+regexes = ['''crx_live_(test|fake|example|dummy)[A-Za-z0-9_-]*''']

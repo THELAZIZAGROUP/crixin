@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Approve device — Crixin Sync</title>
+  <meta name="description" content="Approve a Crixin CLI device for cross-machine metadata sync." />
+  <meta name="robots" content="noindex" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" />
+  <link rel="stylesheet" href="/styles.css" />
+  <script src="/site.js" defer></script>
+
+  <style>
+    .lk-shell {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 22px;
+    }
+    .lk-card {
+      width: 100%;
+      max-width: 520px;
+      padding: 38px 34px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      background: linear-gradient(180deg, var(--bg-surface), var(--bg-elevated));
+      box-shadow: 0 30px 80px -40px rgba(245, 180, 82, 0.18);
+      position: relative;
+      z-index: 2;
+    }
+    .lk-card .eyebrow {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--brand);
+      padding: 5px 11px;
+      border: 1px solid var(--brand);
+      border-radius: 9999px;
+      margin-bottom: 22px;
+    }
+    .lk-card h1 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 32px;
+      line-height: 1.15;
+      letter-spacing: -0.015em;
+      margin: 0 0 12px 0;
+      color: var(--text-primary);
+    }
+    .lk-card h1 em { color: var(--brand); font-style: italic; }
+    .lk-card p { color: var(--text-secondary); font-size: 14.5px; line-height: 1.6; margin: 0 0 18px; }
+    .lk-meta-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+    .lk-meta-row span:first-child { color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+    .lk-meta-row span:last-child  { color: var(--text-primary); word-break: break-all; text-align: right; }
+    .lk-actions { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+    .lk-btn {
+      flex: 1 1 auto;
+      padding: 12px 20px;
+      border-radius: 10px;
+      border: 1px solid var(--border-strong);
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .lk-btn:hover { border-color: var(--brand); color: var(--brand); }
+    .lk-btn.lk-primary {
+      background: var(--brand);
+      border-color: var(--brand);
+      color: #1a1208;
+      font-weight: 600;
+    }
+    .lk-btn.lk-primary:hover { background: var(--brand-strong, var(--brand)); color: #1a1208; }
+    .lk-token-box {
+      margin-top: 24px;
+      padding: 16px;
+      background: rgba(245, 180, 82, 0.05);
+      border: 1px solid var(--brand);
+      border-radius: 10px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      word-break: break-all;
+      color: var(--text-primary);
+      line-height: 1.45;
+    }
+    .lk-token-cmd {
+      margin-top: 14px;
+      padding: 12px 14px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-secondary);
+      word-break: break-all;
+    }
+    .lk-warn {
+      margin-top: 14px;
+      padding: 10px 12px;
+      border-left: 3px solid var(--brand);
+      background: rgba(245, 180, 82, 0.05);
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    .lk-hidden { display: none; }
+  </style>
+</head>
+<body>
+  <canvas id="embers" aria-hidden="true"></canvas>
+
+  <main class="lk-shell">
+    <div class="lk-card">
+      <span class="eyebrow">crixin sync</span>
+      <h1 id="lk-title"><em>Approve this device?</em></h1>
+      <p id="lk-intro">
+        A Crixin CLI on the device below is asking to sync metadata with your account.
+        Only session metadata is shared — never message bodies, transcripts, or credentials.
+      </p>
+
+      <div id="lk-meta">
+        <div class="lk-meta-row"><span>device id</span><span id="lk-dev-id">—</span></div>
+        <div class="lk-meta-row"><span>device name</span><span id="lk-dev-name">—</span></div>
+        <div class="lk-meta-row"><span>hostname</span><span id="lk-dev-host">—</span></div>
+        <div class="lk-meta-row"><span>os</span><span id="lk-dev-os">—</span></div>
+        <div class="lk-meta-row"><span>signed in as</span><span id="lk-acct-email">—</span></div>
+      </div>
+
+      <div class="lk-actions" id="lk-actions-row">
+        <button class="lk-btn lk-primary" id="lk-approve">Approve device</button>
+        <button class="lk-btn" id="lk-cancel">Cancel</button>
+      </div>
+
+      <div id="lk-result" class="lk-hidden">
+        <p style="margin-top: 22px; color: var(--text-primary);"><strong>Device approved.</strong> Copy the token below and paste it into the CLI:</p>
+        <div class="lk-token-box" id="lk-token">…</div>
+        <div class="lk-token-cmd">crixin sync link --token &lt;token-above&gt;</div>
+        <div class="lk-warn">
+          Treat this token like a password. Anyone with it can read and write your sync namespace.
+          To revoke, run <code>crixin sync disable --forget</code> on the device, or remove the device from this account.
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    (async function() {
+      const params = new URLSearchParams(window.location.search);
+      const device_id   = params.get("device_id")   || "";
+      const device_name = params.get("device_name") || "";
+      const hostname    = params.get("hostname")    || "";
+      const os          = params.get("os")          || "";
+
+      document.getElementById("lk-dev-id").textContent   = device_id   || "—";
+      document.getElementById("lk-dev-name").textContent = device_name || "—";
+      document.getElementById("lk-dev-host").textContent = hostname    || "—";
+      document.getElementById("lk-dev-os").textContent   = os          || "—";
+
+      // Validate device_id format up front.
+      if (!/^[0-9a-f]{16,64}$/.test(device_id)) {
+        document.getElementById("lk-title").innerHTML = "<em>Invalid link.</em>";
+        document.getElementById("lk-intro").textContent = "This page was opened without a valid device id. Re-run `crixin sync link` from your CLI.";
+        document.getElementById("lk-actions-row").classList.add("lk-hidden");
+        document.getElementById("lk-meta").classList.add("lk-hidden");
+        return;
+      }
+
+      // Make sure the user is signed in.
+      let me = null;
+      try {
+        const r = await fetch("/api/auth/me", { credentials: "same-origin" });
+        if (r.ok) me = await r.json();
+      } catch {}
+
+      if (!me || !me.email) {
+        // Bounce through /login then back.
+        const next = encodeURIComponent(window.location.pathname + window.location.search);
+        window.location.href = "/login?next=" + next;
+        return;
+      }
+      document.getElementById("lk-acct-email").textContent = me.email;
+
+      const approveBtn = document.getElementById("lk-approve");
+      const cancelBtn  = document.getElementById("lk-cancel");
+      const actions    = document.getElementById("lk-actions-row");
+      const result     = document.getElementById("lk-result");
+      const tokenBox   = document.getElementById("lk-token");
+
+      cancelBtn.addEventListener("click", function() {
+        window.close();
+        // If the tab can't close itself, send the user home.
+        setTimeout(function() { window.location.href = "/"; }, 200);
+      });
+
+      approveBtn.addEventListener("click", async function() {
+        approveBtn.disabled = true;
+        approveBtn.textContent = "Approving…";
+        try {
+          const r = await fetch("/api/sync/link", {
+            method: "POST",
+            credentials: "same-origin",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ device_id: device_id, device_name: device_name, hostname: hostname, os: os }),
+          });
+          if (!r.ok) {
+            const j = await r.json().catch(function() { return {}; });
+            throw new Error(j.error || ("server returned " + r.status));
+          }
+          const j = await r.json();
+          tokenBox.textContent = j.device_token;
+          actions.classList.add("lk-hidden");
+          result.classList.remove("lk-hidden");
+          document.getElementById("lk-title").innerHTML = "<em>Device approved.</em>";
+          document.getElementById("lk-intro").textContent = "Copy the token below into your CLI to finish linking.";
+        } catch (err) {
+          approveBtn.disabled = false;
+          approveBtn.textContent = "Approve device";
+          document.getElementById("lk-title").innerHTML = "<em>Could not approve.</em>";
+          document.getElementById("lk-intro").textContent = (err && err.message) ? err.message : "Unknown error.";
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Signing you in… — Crixin</title>
+  <meta name="robots" content="noindex" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" />
+  <link rel="stylesheet" href="/styles.css" />
+  <script src="/site.js" defer></script>
+
+  <style>
+    .cb-shell {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 22px;
+    }
+    .cb-card {
+      width: 100%;
+      max-width: 440px;
+      padding: 40px 36px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      background: linear-gradient(180deg, var(--bg-surface), var(--bg-elevated));
+      text-align: center;
+      position: relative;
+      z-index: 2;
+      box-shadow: 0 30px 80px -40px rgba(245, 180, 82, 0.18);
+    }
+    .cb-card .eyebrow {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--brand);
+      padding: 5px 11px;
+      border: 1px solid var(--brand);
+      border-radius: 9999px;
+      margin-bottom: 22px;
+    }
+    .cb-card h1 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 36px;
+      line-height: 1.15;
+      letter-spacing: -0.015em;
+      margin: 0 0 12px 0;
+      color: var(--text-primary);
+    }
+    .cb-card h1 em { color: var(--brand); font-style: italic; }
+    .cb-card p { color: var(--text-secondary); font-size: 14.5px; line-height: 1.55; margin: 0 0 18px; }
+    .spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border-strong);
+      border-top-color: var(--brand);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      vertical-align: -3px;
+      margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .cb-meta {
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+    .cb-meta a { color: var(--brand); }
+  </style>
+</head>
+<body>
+  <canvas id="embers" aria-hidden="true"></canvas>
+
+  <main class="cb-shell">
+    <div class="cb-card">
+      <span class="eyebrow">verifying</span>
+      <h1 id="cb-title"><span class="spinner"></span><em>Signing you in…</em></h1>
+      <p id="cb-msg">One quick handshake with Firebase Auth — should take a second.</p>
+      <div class="cb-meta">
+        Stuck? <a href="/login">Request a fresh link</a>.
+      </div>
+    </div>
+  </main>
+
+  <!-- Firebase JS SDK (Auth only — no Firestore SDK on the client) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import {
+      getAuth,
+      isSignInWithEmailLink,
+      signInWithEmailLink,
+    } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+
+    const titleEl = document.getElementById("cb-title");
+    const msgEl = document.getElementById("cb-msg");
+
+    function fail(reason) {
+      window.location.href = "/login?reason=" + encodeURIComponent(reason);
+    }
+    function showError(text) {
+      titleEl.innerHTML = "<em>Couldn't sign in.</em>";
+      msgEl.textContent = text;
+      msgEl.style.color = "#ff9b9b";
+    }
+
+    (async () => {
+      let firebaseConfig;
+      try {
+        const r = await fetch("/api/auth/config", { credentials: "same-origin" });
+        if (!r.ok) throw new Error("auth not configured");
+        firebaseConfig = await r.json();
+      } catch (e) {
+        showError("Auth isn't configured on this deployment. Email hello@crixin.com.");
+        return;
+      }
+
+      try {
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        if (!isSignInWithEmailLink(auth, window.location.href)) {
+          fail("invalid");
+          return;
+        }
+
+        // Firebase strips the email from the URL for security; we keep our own
+        // copy in localStorage when /login submitted, OR we ask now.
+        let email = localStorage.getItem("crixin.signin.email");
+        if (!email) {
+          // Last-resort prompt — rare path (cross-device click).
+          email = window.prompt("Confirm the email you used to request this link:") ?? "";
+        }
+        if (!email) {
+          fail("missing");
+          return;
+        }
+
+        const result = await signInWithEmailLink(auth, email, window.location.href);
+        localStorage.removeItem("crixin.signin.email");
+        const idToken = await result.user.getIdToken();
+        const r = await fetch("/api/auth/session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ idToken }),
+          credentials: "same-origin",
+        });
+        if (!r.ok) {
+          const j = await r.json().catch(() => ({}));
+          showError(j.detail || j.error || "Server rejected the sign-in.");
+          return;
+        }
+        titleEl.innerHTML = "<em>You're in.</em>";
+        msgEl.textContent = "Redirecting to your account…";
+        window.location.href = "/account";
+      } catch (err) {
+        const code = (err && err.code) || "";
+        if (code === "auth/invalid-action-code" || code === "auth/expired-action-code") {
+          fail("expired");
+        } else if (code === "auth/invalid-email") {
+          fail("invalid");
+        } else {
+          showError(err && err.message ? err.message : "Auth failed.");
+        }
+      }
+    })();
+  </script>
+</body>
+</html>

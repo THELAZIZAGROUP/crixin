@@ -1,0 +1,126 @@
+{
+  "manifest_version": "0.3",
+  "name": "crixin-voice",
+  "display_name": "Crixin Voice",
+  "version": "0.7.2",
+  "description": "Give your AI a real phone — place calls, send SMS, fetch recordings and transcripts.",
+  "long_description": "Crixin Voice lets Claude place real phone calls and send SMS on your behalf. Use it hosted with a Crixin key (unlimited calls, one monthly fee — no telecom account needed), or bring your own Twilio credentials and run everything locally. Six tools: make_call, get_call, list_calls, list_recordings, transcribe_call, send_sms. Calls to the US, UK, EU, Australia and New Zealand require you to attest prior consent; the extension refuses to dial otherwise.",
+  "author": {
+    "name": "The La Ziza Group LLC",
+    "url": "https://github.com/THELAZIZAGROUP"
+  },
+  "homepage": "https://crixin.com",
+  "documentation": "https://crixin.com/voice/docs",
+  "support": "https://crixin.com/faq",
+  "icon": "icon.png",
+  "license": "MIT",
+  "keywords": [
+    "phone",
+    "voice",
+    "calls",
+    "sms",
+    "twilio",
+    "telephony",
+    "assistant"
+  ],
+  "privacy_policies": [
+    "https://crixin.com/legal/privacy"
+  ],
+  "server": {
+    "type": "node",
+    "entry_point": "bin/crixin.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/bin/crixin.js",
+        "voice",
+        "mcp"
+      ],
+      "env": {
+        "CRIXIN_API_KEY": "${user_config.crixin_api_key}",
+        "TWILIO_ACCOUNT_SID": "${user_config.twilio_account_sid}",
+        "TWILIO_AUTH_TOKEN": "${user_config.twilio_auth_token}",
+        "TWILIO_PHONE_NUMBER": "${user_config.twilio_phone_number}",
+        "DEEPGRAM_API_KEY": "${user_config.deepgram_api_key}"
+      }
+    }
+  },
+  "tools": [
+    {
+      "name": "make_call",
+      "description": "Place an outbound phone call and optionally record the reply."
+    },
+    {
+      "name": "get_call",
+      "description": "Look up a call's status, duration and price by SID."
+    },
+    {
+      "name": "list_calls",
+      "description": "List recent calls with optional filters."
+    },
+    {
+      "name": "list_recordings",
+      "description": "List recordings attached to a call."
+    },
+    {
+      "name": "transcribe_call",
+      "description": "Transcribe a call recording."
+    },
+    {
+      "name": "send_sms",
+      "description": "Send an SMS or MMS."
+    }
+  ],
+  "user_config": {
+    "crixin_api_key": {
+      "type": "string",
+      "title": "Crixin API key",
+      "description": "crx_live_… key from the Crixin dashboard. Hosted mode: no Twilio account needed. Leave blank to use your own Twilio credentials below.",
+      "sensitive": true,
+      "required": false
+    },
+    "twilio_account_sid": {
+      "type": "string",
+      "title": "Twilio Account SID",
+      "description": "Only for bring-your-own-Twilio mode.",
+      "sensitive": false,
+      "required": false
+    },
+    "twilio_auth_token": {
+      "type": "string",
+      "title": "Twilio Auth Token",
+      "description": "Only for bring-your-own-Twilio mode.",
+      "sensitive": true,
+      "required": false
+    },
+    "twilio_phone_number": {
+      "type": "string",
+      "title": "Twilio caller number",
+      "description": "E.164, e.g. +15551234567. Only for bring-your-own-Twilio mode.",
+      "sensitive": false,
+      "required": false
+    },
+    "deepgram_api_key": {
+      "type": "string",
+      "title": "Deepgram API key",
+      "description": "Optional. Enables transcribe_call in bring-your-own-Twilio mode.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "compatibility": {
+    "claude_desktop": ">=0.10.0",
+    "platforms": [
+      "darwin",
+      "win32",
+      "linux"
+    ],
+    "runtimes": {
+      "node": ">=22.0.0"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/THELAZIZAGROUP/crixin"
+  }
+}

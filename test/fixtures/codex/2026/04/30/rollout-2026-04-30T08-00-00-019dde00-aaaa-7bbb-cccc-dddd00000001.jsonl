@@ -1,0 +1,8 @@
+{"type":"session_meta","payload":{"id":"019dde00-aaaa-7bbb-cccc-dddd00000001","cwd":"/Users/test/myapp","cli_version":"0.125.0","timestamp":"2026-04-30T08:00:00.000Z"},"timestamp":"2026-04-30T08:00:00.000Z"}
+{"type":"turn_context","payload":{"model":"gpt-5","cwd":"/Users/test/myapp"},"timestamp":"2026-04-30T08:00:01.000Z"}
+{"type":"response_item","payload":{"role":"developer","type":"message","content":[{"type":"input_text","text":"<system>You are a helpful coding assistant.</system>"}]},"timestamp":"2026-04-30T08:00:01.500Z"}
+{"type":"response_item","payload":{"role":"user","type":"message","content":[{"type":"input_text","text":"how do i parse jsonl in rust"}]},"timestamp":"2026-04-30T08:00:05.000Z"}
+{"type":"event_msg","payload":{"type":"task_started","turn_id":"t1"},"timestamp":"2026-04-30T08:00:05.100Z"}
+{"type":"response_item","payload":{"role":"assistant","type":"message","content":[{"type":"output_text","text":"Use serde_json's StreamDeserializer or read line-by-line with BufRead and serde_json::from_str on each line."}]},"timestamp":"2026-04-30T08:00:08.000Z"}
+{"type":"response_item","payload":{"role":"user","type":"message","content":[{"type":"input_text","text":"is line-by-line slower?"}]},"timestamp":"2026-04-30T08:00:30.000Z"}
+{"type":"response_item","payload":{"role":"assistant","type":"message","content":[{"type":"output_text","text":"Negligible. Both are I/O-bound; the difference is buffering, not parsing."}]},"timestamp":"2026-04-30T08:00:33.000Z"}

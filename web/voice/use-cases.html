@@ -1,0 +1,794 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="canonical" href="https://crixin.com/voice/use-cases" />
+  <title>Use cases — Voice MCP for developers</title>
+  <meta name="description" content="What you'd actually build with Voice MCP. Six real client scenarios — AI receptionist, appointment confirmations, SaaS activation, B2B discovery, field service triage, NPS calls — with code snippets and the receipts you'll see afterward." />
+  <meta name="keywords" content="ai receptionist developer, twilio mcp use cases, ai phone agent restaurant, dental clinic ai, saas activation call, b2b ai discovery, mcp server examples" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Voice MCP — use cases for developers" />
+  <meta property="og:description" content="Six client scenarios. Code-first. Receipts you can show your client." />
+  <meta property="og:url" content="https://crixin.com/voice/use-cases" />
+  <meta property="og:site_name" content="Crixin" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" />
+  <link rel="stylesheet" href="../styles.css" />
+  <script src="/site.js" defer></script>
+
+  <style>
+    /* ── Hero ─────────────────────────────────────────────── */
+    .uc-hero { padding: 130px 0 50px; }
+    .eyebrow {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--brand);
+      padding: 6px 12px;
+      border: 1px solid var(--brand);
+      border-radius: 9999px;
+    }
+    .uc-hero h1 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(40px, 6vw, 72px);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin: 22px 0 16px;
+    }
+    .uc-hero h1 em { color: var(--brand); font-style: italic; }
+    .uc-hero p.lede {
+      font-size: 19px; color: var(--text-secondary); max-width: 760px;
+      line-height: 1.55;
+    }
+    .ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+    .copy-cmd { font-family: var(--font-mono); font-size: 14px; padding: 12px 18px; background: var(--bg-elevated); border: 1px solid var(--border-strong); border-radius: 8px; cursor: pointer; color: var(--text-primary); }
+    .copy-cmd:hover { border-color: var(--brand); color: var(--brand); }
+    .btn-primary { font-family: var(--font-sans); font-size: 14px; font-weight: 600; padding: 11px 18px; border-radius: 8px; background: var(--brand); color: #0b0d12; border: 1px solid var(--brand); }
+    .btn-ghost { font-family: var(--font-sans); font-size: 14px; padding: 11px 18px; border-radius: 8px; border: 1px solid var(--border-strong); color: var(--text-primary); }
+    .btn-ghost:hover, .btn-primary:hover { border-color: var(--brand); }
+
+    /* ── Pattern (3-step flow) ───────────────────────────── */
+    .flow { margin: 36px 0 12px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .flow-step {
+      padding: 22px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      background: var(--bg-surface);
+      position: relative;
+    }
+    .flow-step .num {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .flow-step h3 {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 24px;
+      color: var(--brand);
+      margin: 0 0 8px;
+    }
+    .flow-step p { color: var(--text-secondary); font-size: 13.5px; line-height: 1.55; margin: 0; }
+    .flow-step code {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      background: var(--bg-elevated);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--text-primary);
+      margin-top: 6px;
+    }
+    @media (max-width: 720px) { .flow { grid-template-columns: 1fr; } }
+
+    /* ── Use case sections ───────────────────────────────── */
+    section.uc { padding: 70px 0; border-top: 1px solid var(--border-subtle); }
+    section.uc h2 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(28px, 4vw, 40px);
+      line-height: 1.1;
+      letter-spacing: -0.015em;
+      margin: 0 0 8px;
+    }
+    section.uc h2 em { color: var(--brand); font-style: italic; }
+    section.uc .who {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+    section.uc .who strong { color: var(--brand); font-weight: 500; }
+    section.uc p.problem {
+      color: var(--text-secondary);
+      font-size: 15.5px;
+      line-height: 1.65;
+      max-width: 720px;
+      margin: 0 0 24px;
+    }
+    section.uc p.problem strong { color: var(--text-primary); font-weight: 500; }
+
+    .uc-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 22px;
+      align-items: start;
+    }
+    @media (max-width: 880px) { .uc-grid { grid-template-columns: 1fr; } }
+
+    pre.code {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.55;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin: 0;
+      color: var(--text-primary);
+      overflow-x: auto;
+    }
+    pre.code .c { color: var(--text-muted); }
+    pre.code .k { color: var(--brand-soft); }
+    pre.code .s { color: #7bd88f; }
+    pre.code .v { color: var(--brand); }
+
+    /* ── Mock receipt card (wrapped-style) ───────────────── */
+    .receipt {
+      padding: 22px 22px 20px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      background: var(--bg-surface);
+      box-shadow: 0 30px 80px -50px rgba(245, 180, 82, 0.16);
+    }
+    .receipt::before {
+      content: "";
+      display: block;
+      width: 80px;
+      height: 4px;
+      background: repeating-linear-gradient(90deg, var(--brand), var(--brand) 6px, transparent 6px, transparent 10px);
+      margin: 0 auto 16px;
+      opacity: 0.55;
+    }
+    .receipt .r-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 18px;
+    }
+    .r-stat-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .r-stat {
+      padding: 13px 14px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+    }
+    .r-stat .l { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+    .r-stat .v {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 26px;
+      line-height: 1.05;
+      color: var(--brand);
+    }
+    .r-stat .s { color: var(--text-secondary); font-size: 11.5px; margin-top: 2px; }
+    .r-line {
+      display: flex; justify-content: space-between;
+      padding: 9px 0;
+      border-bottom: 1px dashed var(--border-subtle);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    .r-line:last-child { border-bottom: 0; }
+    .r-line .lhs { color: var(--text-primary); }
+    .r-line .rhs { color: var(--brand); }
+    .r-divider {
+      height: 1px;
+      background: repeating-linear-gradient(90deg, var(--border-subtle), var(--border-subtle) 4px, transparent 4px, transparent 8px);
+      margin: 12px 0 10px;
+    }
+    .r-total {
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding-top: 4px;
+    }
+    .r-total .lab { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.10em; text-transform: uppercase; color: var(--text-muted); }
+    .r-total .num { font-family: var(--font-display); font-style: italic; font-size: 24px; color: var(--brand); }
+    .r-footer {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-subtle);
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    /* ── Big "receipts you'll get" dashboard mock ────────── */
+    .dash {
+      margin: 50px 0 0;
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      background: var(--bg-surface);
+      padding: 32px 28px;
+      box-shadow: 0 50px 120px -60px rgba(245, 180, 82, 0.20);
+    }
+    .dash-head {
+      display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 12px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 22px;
+    }
+    .dash-head h3 {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 32px;
+      color: var(--brand);
+      margin: 0;
+    }
+    .dash-head .meta { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+    .dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 22px; }
+    .dash-stat { padding: 16px 18px; background: var(--bg-elevated); border: 1px solid var(--border-subtle); border-radius: 10px; }
+    .dash-stat .l { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+    .dash-stat .v { font-family: var(--font-display); font-style: italic; font-size: 30px; color: var(--brand); line-height: 1.05; }
+    .dash-stat .s { color: var(--text-secondary); font-size: 12px; margin-top: 4px; }
+    .dash-two { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+    @media (max-width: 720px) { .dash-two { grid-template-columns: 1fr; } }
+    .dash-panel h4 { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 12px; }
+    .dash-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--border-subtle); font-size: 13.5px; color: var(--text-secondary); }
+    .dash-row:last-child { border: 0; }
+    .dash-row strong { color: var(--text-primary); font-weight: 500; }
+    .dash-row .pct { color: var(--brand); font-family: var(--font-mono); font-size: 12px; }
+    .dash-bar { height: 6px; background: var(--bg-elevated); border-radius: 4px; overflow: hidden; margin-top: 6px; }
+    .dash-bar > span { display: block; height: 100%; background: var(--brand); }
+    .arch-pill {
+      display: inline-block;
+      padding: 4px 11px;
+      border: 1px solid var(--brand);
+      border-radius: 9999px;
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 18px;
+      color: var(--brand);
+      margin-top: 6px;
+    }
+
+    /* ── Footer CTA ─────────────────────────────────────── */
+    .uc-footer-cta { padding: 80px 0 100px; text-align: center; }
+    .uc-footer-cta h2 { margin-bottom: 8px; }
+    .uc-footer-cta p { color: var(--text-secondary); margin: 0 auto 22px; max-width: 580px; line-height: 1.6; }
+
+    footer.site {
+      padding: 30px 0 50px;
+      color: var(--text-muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border-subtle);
+      margin-top: 30px;
+    }
+    footer.site a { color: var(--text-secondary); margin: 0 12px; }
+  </style>
+</head>
+<body>
+  <canvas id="embers" aria-hidden="true"></canvas>
+
+  <header class="site" id="site-header">
+    <div class="wrap row" style="display:flex;align-items:center;justify-content:space-between;height:64px;">
+      <a href="/" class="brand-mark" style="font-family:var(--font-display);font-style:italic;color:var(--brand);font-size:24px;text-decoration:none;">crixin<span class="tag" style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);margin-left:8px;letter-spacing:0.05em;">v0.4.0 · voice mcp</span></a>
+      <nav class="primary" style="display:flex;gap:18px;font-size:14px;">
+        <a href="/voice/use-cases" style="color:var(--brand);">Use cases</a>
+        <a href="/voice/install">Install</a>
+        <a href="/voice/docs">Docs</a>
+        <a href="/voice/pricing">Pricing</a>
+        <a href="/">crixin</a>
+        <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════
+       HERO
+       ═══════════════════════════════════════════════════════ -->
+  <section class="uc-hero">
+    <div class="wrap-narrow">
+      <span class="eyebrow">use cases</span>
+      <h1>Build what your client needs. <em>We handle the phone.</em></h1>
+      <p class="lede">
+        Voice MCP is the <strong style="color:var(--text-primary)">phone primitive</strong> for developers shipping voice AI to clients. The MCP server gives your AI agent <code class="mono" style="background:var(--bg-elevated);padding:2px 6px;border-radius:4px;font-size:13px;">make_call</code>, <code class="mono" style="background:var(--bg-elevated);padding:2px 6px;border-radius:4px;font-size:13px;">send_sms</code>, <code class="mono" style="background:var(--bg-elevated);padding:2px 6px;border-radius:4px;font-size:13px;">transcribe_call</code>. Every call lands in local SQLite — auditable, searchable, Wrapped-ready. You build the application; Crixin is the dial tone underneath.
+      </p>
+      <div class="ctas">
+        <span class="copy-cmd" onclick="navigator.clipboard.writeText('npm i -g crixin && crixin voice install')">npm i -g crixin &amp;&amp; crixin voice install</span>
+        <a class="btn-primary" href="/voice/install">Install in 30 seconds</a>
+        <a class="btn-ghost" href="/voice/docs">Tool reference</a>
+      </div>
+
+      <!-- 3-step pattern -->
+      <div class="flow">
+        <div class="flow-step">
+          <div class="num">STEP 01</div>
+          <h3>Install</h3>
+          <p>One npm install. Wires the MCP into Claude Code, Cursor, Codex CLI, Claude Desktop. Your AI agent can now place calls.</p>
+          <code>crixin voice install</code>
+        </div>
+        <div class="flow-step">
+          <div class="num">STEP 02</div>
+          <h3>Wire your logic</h3>
+          <p>Your client's app calls <code>make_call</code> with a TwiML prompt or persona. CRM trigger, cron, webhook — your choice.</p>
+          <code>await makeCall(client, { to, prompt })</code>
+        </div>
+        <div class="flow-step">
+          <div class="num">STEP 03</div>
+          <h3>Read the receipts</h3>
+          <p>Every call mirrored to local SQLite + (optional) Deepgram transcripts. Voice Wrapped + Caller Archetype + Ducked rebuilt for any time window.</p>
+          <code>crixin voice wrapped</code>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       USE CASE 01 — Restaurant AI Receptionist
+       ═══════════════════════════════════════════════════════ -->
+  <section class="uc">
+    <div class="wrap-narrow">
+      <h2>01 — <em>Restaurant AI receptionist</em></h2>
+      <div class="who"><strong>You're building for:</strong> &nbsp; a restaurant client whose phone goes unanswered during dinner rush · &nbsp;Maria's Pizza, Joe's Diner, the local taqueria</div>
+      <p class="problem">
+        <strong>The pain.</strong> 40% of inbound calls miss the host stand between 6–9pm. Each missed call is a probable reservation lost. Hiring a hostess just for the phone costs $14/hr + benefits. <strong>The fix.</strong> Twilio routes inbound to your endpoint. Crixin's MCP server speaks for you — Polly-Hala-Neural in Spanish or English, knows the menu (RAG over a Notion doc), books a reservation in the POS, hangs up. Average call: 38 seconds.
+      </p>
+    </div>
+
+    <div class="wrap">
+      <div class="uc-grid">
+        <!-- Code side -->
+        <pre class="code"><span class="c">// app/api/twilio/inbound.ts — Vercel function on your client's project</span>
+<span class="k">import</span> { speakOnly, wrap, say } <span class="k">from</span> <span class="s">"crixin/voice"</span>;
+<span class="k">import</span> { getMenu, reserveTable } <span class="k">from</span> <span class="s">"./pos"</span>;
+
+<span class="k">export default async function</span> handler(req, res) {
+  <span class="k">const</span> caller = req.body.From;
+  <span class="k">const</span> menu = <span class="k">await</span> getMenu();
+
+  <span class="c">// Inbound call lands here as a Twilio webhook. Return TwiML.</span>
+  <span class="k">const</span> twiml = <span class="v">`&lt;Response&gt;
+    &lt;Gather input="speech" action="/api/twilio/handle" language="es-MX,en-US"&gt;
+      &lt;Say voice="Polly.Hala-Neural" language="es-MX"&gt;
+        ${menu.greeting}
+      &lt;/Say&gt;
+    &lt;/Gather&gt;
+  &lt;/Response&gt;`</span>;
+
+  res.setHeader(<span class="s">"Content-Type"</span>, <span class="s">"text/xml"</span>);
+  res.send(twiml);
+}
+
+<span class="c">// Your AI agent picks up via the crixin-voice MCP server,
+// classifies intent (reservation / hours / menu / human),
+// and either books via reserveTable() or speaks back.</span></pre>
+
+        <!-- Receipt side -->
+        <div class="receipt">
+          <div class="r-eyebrow">Maria's Pizza · this week</div>
+          <div class="r-stat-row">
+            <div class="r-stat"><div class="l">Calls answered</div><div class="v">187</div><div class="s">100% pickup, 0 misses</div></div>
+            <div class="r-stat"><div class="l">Reservations</div><div class="v">94</div><div class="s">avg party: 4.2</div></div>
+          </div>
+          <div class="r-line"><span class="lhs">Avg call duration</span><span class="rhs">38s</span></div>
+          <div class="r-line"><span class="lhs">Spanish (es-MX)</span><span class="rhs">61%</span></div>
+          <div class="r-line"><span class="lhs">Menu Q&amp;A</span><span class="rhs">42 calls</span></div>
+          <div class="r-line"><span class="lhs">Transfers to human</span><span class="rhs">3</span></div>
+          <div class="r-divider"></div>
+          <div class="r-total"><span class="lab">Twilio spend</span><span class="num">$1.84</span></div>
+          <div class="r-footer">vs. $1,120 hostess shift / week</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       USE CASE 02 — Dental clinic confirmations
+       ═══════════════════════════════════════════════════════ -->
+  <section class="uc">
+    <div class="wrap-narrow">
+      <h2>02 — <em>Dental clinic confirmations</em></h2>
+      <div class="who"><strong>You're building for:</strong> &nbsp; a dental practice with a 28% no-show rate · &nbsp;clinics, physical therapy, salons, anyone with a calendar</div>
+      <p class="problem">
+        <strong>The pain.</strong> 28% of scheduled appointments no-show, costing the clinic ~$8K/month in lost chair time. The front desk is supposed to confirm 24h prior — they don't, because they're already drowning in walk-ins and insurance calls. <strong>The fix.</strong> A cron job at 9am pulls tomorrow's appointments from the EHR, fires <code class="mono" style="background:var(--bg-elevated);padding:2px 6px;border-radius:4px;font-size:13px;">make_call</code> for each. AI confirms, reschedules, or cancels. Writes back to the EHR. Done by 9:08am.
+      </p>
+    </div>
+
+    <div class="wrap">
+      <div class="uc-grid">
+        <pre class="code"><span class="c">// scripts/morning-confirms.ts — runs daily at 9am via cron</span>
+<span class="k">import</span> { TwilioClient, makeCall, loadEnv } <span class="k">from</span> <span class="s">"crixin/voice"</span>;
+<span class="k">import</span> { tomorrowsAppointments, recordOutcome } <span class="k">from</span> <span class="s">"./ehr"</span>;
+
+<span class="k">const</span> client = <span class="k">new</span> TwilioClient(loadEnv());
+<span class="k">const</span> appts = <span class="k">await</span> tomorrowsAppointments();
+
+<span class="k">for</span> (<span class="k">const</span> a <span class="k">of</span> appts) {
+  <span class="k">const</span> call = <span class="k">await</span> makeCall(client, {
+    to: a.phone,
+    prompt: <span class="v">`Hi ${a.firstName}, this is Apex Dental confirming
+    your ${a.procedure} appointment tomorrow at ${a.time}.
+    Press 1 to confirm, 2 to reschedule, 3 to cancel.`</span>,
+    voice: <span class="s">"Polly.Joanna-Neural"</span>,
+    record: <span class="v">true</span>,
+    maxRecordingSeconds: <span class="v">20</span>,
+    consented: <span class="v">true</span>, <span class="c">// existing patient relationship</span>
+  });
+  recordOutcome(a.id, call.sid);
+}</pre>
+
+        <div class="receipt">
+          <div class="r-eyebrow">Apex Dental · last 30 days</div>
+          <div class="r-stat-row">
+            <div class="r-stat"><div class="l">Confirms made</div><div class="v">412</div><div class="s">100% next-day coverage</div></div>
+            <div class="r-stat"><div class="l">No-show rate</div><div class="v">9.2%</div><div class="s">was 28% before</div></div>
+          </div>
+          <div class="r-line"><span class="lhs">Confirmed</span><span class="rhs">324</span></div>
+          <div class="r-line"><span class="lhs">Rescheduled</span><span class="rhs">51</span></div>
+          <div class="r-line"><span class="lhs">Cancelled (slot freed)</span><span class="rhs">37</span></div>
+          <div class="r-line"><span class="lhs">Avg call duration</span><span class="rhs">26s</span></div>
+          <div class="r-divider"></div>
+          <div class="r-total"><span class="lab">Recovered revenue</span><span class="num">$7,840</span></div>
+          <div class="r-footer">~$0.21 of Twilio per confirmed slot</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       USE CASE 03 — SaaS activation calls
+       ═══════════════════════════════════════════════════════ -->
+  <section class="uc">
+    <div class="wrap-narrow">
+      <h2>03 — <em>SaaS activation calls</em></h2>
+      <div class="who"><strong>You're building for:</strong> &nbsp; a B2B SaaS where 60% of trials never reach "aha" · &nbsp;PLG product, devtool, vertical SaaS</div>
+      <p class="problem">
+        <strong>The pain.</strong> Trial users sign up, send 3 messages, then ghost. The activation team is one person, and they're busy. Email nudges convert at 4%. <strong>The fix.</strong> 3 days into the trial, if the user hasn't hit the activation event, your app fires <code class="mono" style="background:var(--bg-elevated);padding:2px 6px;border-radius:4px;font-size:13px;">make_call</code>. AI walks them through the missing step, answers questions, books a Calendly with a human if they want one. Tracked back to Mixpanel.
+      </p>
+    </div>
+
+    <div class="wrap">
+      <div class="uc-grid">
+        <pre class="code"><span class="c">// services/activation-checker.ts — runs hourly</span>
+<span class="k">import</span> { TwilioClient, makeCall, loadEnv } <span class="k">from</span> <span class="s">"crixin/voice"</span>;
+<span class="k">import</span> { stalledTrials, trackEvent } <span class="k">from</span> <span class="s">"./analytics"</span>;
+
+<span class="k">const</span> client = <span class="k">new</span> TwilioClient(loadEnv());
+
+<span class="k">for</span> (<span class="k">const</span> user <span class="k">of</span> <span class="k">await</span> stalledTrials({ daysSinceSignup: <span class="v">3</span>, activatedEvent: <span class="v">false</span> })) {
+  <span class="k">await</span> makeCall(client, {
+    to: user.phone,
+    prompt: <span class="v">`Hi ${user.firstName}, I'm calling from Acme. I saw you
+    signed up Tuesday but haven't connected your first data source yet.
+    It's a 90-second step. Can I walk you through it, or would you rather
+    book 15 minutes with someone on our team?`</span>,
+    voice: <span class="s">"Polly.Joanna-Neural"</span>,
+    consented: <span class="v">true</span>, <span class="c">// signup ToS captures consent</span>
+  });
+  trackEvent(user.id, <span class="s">"activation_call_placed"</span>);
+}</pre>
+
+        <div class="receipt">
+          <div class="r-eyebrow">Acme PLG · Q2 trial cohort</div>
+          <div class="r-stat-row">
+            <div class="r-stat"><div class="l">Calls placed</div><div class="v">512</div><div class="s">to stalled trials</div></div>
+            <div class="r-stat"><div class="l">Activation lift</div><div class="v">+34%</div><div class="s">vs. email-only control</div></div>
+          </div>
+          <div class="r-line"><span class="lhs">Activated within 24h</span><span class="rhs">189</span></div>
+          <div class="r-line"><span class="lhs">Booked a Calendly</span><span class="rhs">47</span></div>
+          <div class="r-line"><span class="lhs">Asked to be removed</span><span class="rhs">12 → opt-out honored</span></div>
+          <div class="r-line"><span class="lhs">Caller archetype</span><span class="rhs">Patient Listener</span></div>
+          <div class="r-divider"></div>
+          <div class="r-total"><span class="lab">Cost / activation</span><span class="num">$0.41</span></div>
+          <div class="r-footer">vs. ~$180 / SDR-touched activation</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       USE CASE 04 — B2B discovery (sales)
+       ═══════════════════════════════════════════════════════ -->
+  <section class="uc">
+    <div class="wrap-narrow">
+      <h2>04 — <em>B2B sales discovery</em></h2>
+      <div class="who"><strong>You're building for:</strong> &nbsp; a small B2B sales team that can't afford 4 SDRs · &nbsp;outbound to business numbers, B2B-only</div>
+      <p class="problem">
+        <strong>The pain.</strong> Founder/AE needs to qualify 100 leads/week. Hiring SDRs costs $4–6K/mo loaded. Outreach platforms send email — but the lead in question already gets 200 emails/week. <strong>The fix.</strong> AI agent calls businesses on the lead list (B2B = looser TCPA), asks 4–5 discovery questions, books the qualified ones into the founder's Calendly. Disqualifies the rest. Founder gets meetings, not a list.
+      </p>
+    </div>
+
+    <div class="wrap">
+      <div class="uc-grid">
+        <pre class="code"><span class="c">// scripts/b2b-discovery.ts — fed leads from Clay / Apollo / Google Places</span>
+<span class="k">import</span> { TwilioClient, makeCall, loadEnv } <span class="k">from</span> <span class="s">"crixin/voice"</span>;
+<span class="k">import</span> { qualifyLead, bookMeeting } <span class="k">from</span> <span class="s">"./crm"</span>;
+
+<span class="k">const</span> client = <span class="k">new</span> TwilioClient(loadEnv());
+
+<span class="k">for</span> (<span class="k">const</span> lead <span class="k">of</span> leads) {
+  <span class="c">// Geo-gate auto-enforces: this is a US business landline.</span>
+  <span class="c">// crixin voice doctor confirmed our setup.</span>
+  <span class="k">const</span> call = <span class="k">await</span> makeCall(client, {
+    to: lead.businessPhone,
+    prompt: <span class="v">`Hi, this is James from Apex. I'm calling because
+    I noticed ${lead.companyName} just expanded to a second location —
+    nice. Quick question — who handles your POS integration these days?
+    Looking to chat about a 15% margin lift if you're open to it.`</span>,
+    voice: <span class="s">"Polly.Joanna-Neural"</span>,
+    record: <span class="v">true</span>,
+    maxRecordingSeconds: <span class="v">120</span>,
+    machineDetection: <span class="s">"DetectMessageEnd"</span>,
+    <span class="c">// B2B landline + no DNC: no --consented needed under TCPA carve-out</span>
+  });
+
+  <span class="k">const</span> outcome = <span class="k">await</span> qualifyLead(call.sid); <span class="c">// transcribe + classify</span>
+  <span class="k">if</span> (outcome === <span class="s">"qualified"</span>) <span class="k">await</span> bookMeeting(lead);
+}</pre>
+
+        <div class="receipt">
+          <div class="r-eyebrow">Apex Sales · last month</div>
+          <div class="r-stat-row">
+            <div class="r-stat"><div class="l">Dials made</div><div class="v">832</div><div class="s">B2B landlines only</div></div>
+            <div class="r-stat"><div class="l">Meetings booked</div><div class="v">41</div><div class="s">conversion: 4.9%</div></div>
+          </div>
+          <div class="r-line"><span class="lhs">Qualified callbacks</span><span class="rhs">213</span></div>
+          <div class="r-line"><span class="lhs">Voicemails left</span><span class="rhs">311</span></div>
+          <div class="r-line"><span class="lhs">Avg call duration</span><span class="rhs">1m 12s</span></div>
+          <div class="r-line"><span class="lhs">Caller archetype</span><span class="rhs">Discovery Caller</span></div>
+          <div class="r-line"><span class="lhs">Duck rate</span><span class="rhs">8% (target &lt;10%)</span></div>
+          <div class="r-divider"></div>
+          <div class="r-total"><span class="lab">Cost / booked meeting</span><span class="num">$1.78</span></div>
+          <div class="r-footer">vs. ~$95 SDR-touched on Outreach</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       USE CASE 05 — Field service after-hours triage
+       ═══════════════════════════════════════════════════════ -->
+  <section class="uc">
+    <div class="wrap-narrow">
+      <h2>05 — <em>Field-service after-hours triage</em></h2>
+      <div class="who"><strong>You're building for:</strong> &nbsp; HVAC / plumbing / locksmith / roadside SaaS · &nbsp;ServiceTitan-adjacent, Housecall Pro</div>
+      <p class="problem">
+        <strong>The pain.</strong> The on-call tech can't take every after-hours call — most are not emergencies (it's a thermostat reset, or "what time do you open"). But the few that ARE emergencies (no heat in February, water actively flooding) need a human in 5 minutes. <strong>The fix.</strong> Inbound → AI agent triages. Reads the answer back, classifies urgency, pages the on-call tech via SMS only if the situation is real. Logs everything to the CRM ticketing system.
+      </p>
+    </div>
+
+    <div class="wrap">
+      <div class="uc-grid">
+        <pre class="code"><span class="c">// app/api/triage.ts — inbound webhook from Twilio</span>
+<span class="k">import</span> { promptAndRecord } <span class="k">from</span> <span class="s">"crixin/voice"</span>;
+<span class="k">import</span> { TwilioClient, sendSms, transcribeRecording } <span class="k">from</span> <span class="s">"crixin/voice"</span>;
+<span class="k">import</span> { classifyUrgency, pageOnCall, createTicket } <span class="k">from</span> <span class="s">"./crm"</span>;
+
+<span class="c">// 1. Inbound TwiML: ask what the issue is, record 30s.</span>
+<span class="k">export const</span> twimlPrompt = promptAndRecord({
+  prompt: <span class="s">"You've reached Houston HVAC after hours. Tell me what's going on — be specific."</span>,
+  voice: <span class="s">"Polly.Joanna-Neural"</span>,
+  recordOptions: { maxLength: <span class="v">30</span> },
+});
+
+<span class="c">// 2. Recording webhook: transcribe → classify → route.</span>
+<span class="k">export async function</span> onRecording(req, res) {
+  <span class="k">const</span> t = <span class="k">await</span> transcribeRecording(client, {
+    recordingSid: req.body.RecordingSid,
+  });
+  <span class="k">const</span> urgency = <span class="k">await</span> classifyUrgency(t.transcript);
+
+  <span class="k">await</span> createTicket({ phone: req.body.From, transcript: t.transcript, urgency });
+  <span class="k">if</span> (urgency === <span class="s">"emergency"</span>) <span class="k">await</span> pageOnCall(t.transcript);
+}</pre>
+
+        <div class="receipt">
+          <div class="r-eyebrow">Houston HVAC · last 14 nights</div>
+          <div class="r-stat-row">
+            <div class="r-stat"><div class="l">Calls triaged</div><div class="v">142</div><div class="s">11pm – 7am</div></div>
+            <div class="r-stat"><div class="l">Real emergencies</div><div class="v">17</div><div class="s">paged in &lt;90s</div></div>
+          </div>
+          <div class="r-line"><span class="lhs">"What time do you open"</span><span class="rhs">38 calls</span></div>
+          <div class="r-line"><span class="lhs">Thermostat / reset help</span><span class="rhs">29 calls</span></div>
+          <div class="r-line"><span class="lhs">Scheduled callback (AM)</span><span class="rhs">58 calls</span></div>
+          <div class="r-line"><span class="lhs">Paged on-call tech</span><span class="rhs">17 — all confirmed real</span></div>
+          <div class="r-line"><span class="lhs">Tech sleep restored</span><span class="rhs">88% of nights</span></div>
+          <div class="r-divider"></div>
+          <div class="r-total"><span class="lab">Twilio + Deepgram</span><span class="num">$11.20</span></div>
+          <div class="r-footer">~14¢ per call · 1 tech kept on staff</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       USE CASE 06 — E-comm NPS / review request
+       ═══════════════════════════════════════════════════════ -->
+  <section class="uc">
+    <div class="wrap-narrow">
+      <h2>06 — <em>E-commerce NPS &amp; review calls</em></h2>
+      <div class="who"><strong>You're building for:</strong> &nbsp; a Shopify brand that ships premium goods · &nbsp;DTC, mid-market e-comm, agencies serving them</div>
+      <p class="problem">
+        <strong>The pain.</strong> Post-purchase email surveys hit 2% response rate. The product-page review widget gets 4%. The brand wants real NPS data + a Google review at-scale. <strong>The fix.</strong> 7 days post-delivery, AI agent calls the customer (with their checkout-time consent), asks two questions — *"Did the espresso machine arrive in good shape?"* and *"On a scale of 1–10, how likely are you to recommend us?"* — and offers to send a Google-review link via SMS if they say 9+. Calls take ~45 seconds.
+      </p>
+    </div>
+
+    <div class="wrap">
+      <div class="uc-grid">
+        <pre class="code"><span class="c">// queues/post-delivery-nps.ts — fires 7 days after fulfillment</span>
+<span class="k">import</span> { TwilioClient, makeCall, sendSms, loadEnv } <span class="k">from</span> <span class="s">"crixin/voice"</span>;
+<span class="k">import</span> { orderById, saveNPS } <span class="k">from</span> <span class="s">"./shopify"</span>;
+
+<span class="k">const</span> client = <span class="k">new</span> TwilioClient(loadEnv());
+
+<span class="k">export async function</span> processNPS(orderId: <span class="k">string</span>) {
+  <span class="k">const</span> order = <span class="k">await</span> orderById(orderId);
+
+  <span class="k">const</span> call = <span class="k">await</span> makeCall(client, {
+    to: order.customer.phone,
+    prompt: <span class="v">`Hi ${order.customer.firstName}, this is Anna from
+    ${order.brand}. Quick 30 seconds — did your ${order.itemName} arrive
+    in good shape, and on a scale of 1 to 10, how likely are you to
+    recommend us to a friend?`</span>,
+    voice: <span class="s">"Polly.Joanna-Neural"</span>,
+    record: <span class="v">true</span>,
+    maxRecordingSeconds: <span class="v">30</span>,
+    consented: <span class="v">true</span>, <span class="c">// captured at checkout</span>
+  });
+
+  <span class="k">const</span> { score, sentiment } = <span class="k">await</span> saveNPS(call.sid);
+  <span class="k">if</span> (score &gt;= <span class="v">9</span>) {
+    <span class="k">await</span> sendSms(client, {
+      to: order.customer.phone,
+      body: <span class="v">`Thanks! If you have 60s, would love a Google review: ${order.reviewUrl}`</span>,
+    });
+  }
+}</pre>
+
+        <div class="receipt">
+          <div class="r-eyebrow">Lumen Coffee · Q1 launch</div>
+          <div class="r-stat-row">
+            <div class="r-stat"><div class="l">NPS calls placed</div><div class="v">1,247</div><div class="s">100% post-purchase</div></div>
+            <div class="r-stat"><div class="l">Response rate</div><div class="v">71%</div><div class="s">vs. 4% email survey</div></div>
+          </div>
+          <div class="r-line"><span class="lhs">NPS score</span><span class="rhs">62 (great)</span></div>
+          <div class="r-line"><span class="lhs">9–10 promoters</span><span class="rhs">621 callers</span></div>
+          <div class="r-line"><span class="lhs">Google reviews triggered</span><span class="rhs">441 SMS sent</span></div>
+          <div class="r-line"><span class="lhs">Net Google reviews +30d</span><span class="rhs">+187</span></div>
+          <div class="r-line"><span class="lhs">Avg call duration</span><span class="rhs">42s</span></div>
+          <div class="r-divider"></div>
+          <div class="r-total"><span class="lab">Cost / NPS data point</span><span class="num">$0.24</span></div>
+          <div class="r-footer">vs. ~$3.20 panel-based survey</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       THE BIG DASHBOARD — what you'll see
+       ═══════════════════════════════════════════════════════ -->
+  <section class="uc">
+    <div class="wrap">
+      <h2 style="text-align:center;margin-bottom:6px;">After 30 days, <em>you'll see this</em>.</h2>
+      <p style="color:var(--text-secondary);text-align:center;max-width:680px;margin:0 auto 8px;font-size:15.5px;line-height:1.65;">
+        <code class="mono" style="background:var(--bg-elevated);padding:2px 6px;border-radius:4px;font-size:13px;">crixin voice ingest</code> mirrors your Twilio history into local SQLite. <code class="mono" style="background:var(--bg-elevated);padding:2px 6px;border-radius:4px;font-size:13px;">crixin voice wrapped</code> writes this as a single self-contained HTML file. Drop it into a client report; screenshot it for a deck; share it with your team.
+      </p>
+
+      <div class="dash">
+        <div class="dash-head">
+          <h3>Voice Wrapped <em>· Q2 2026</em></h3>
+          <span class="meta">Acme PLG · client snapshot</span>
+        </div>
+
+        <div class="dash-grid">
+          <div class="dash-stat"><div class="l">Total calls</div><div class="v">3,418</div><div class="s">across 6 use cases</div></div>
+          <div class="dash-stat"><div class="l">Total minutes</div><div class="v">2,089</div><div class="s">avg 36s / call</div></div>
+          <div class="dash-stat"><div class="l">Twilio + Deepgram</div><div class="v">$58.24</div><div class="s">$0.017 / call avg</div></div>
+          <div class="dash-stat"><div class="l">Unique destinations</div><div class="v">1,612</div><div class="s">US / CA / MX</div></div>
+          <div class="dash-stat"><div class="l">Caller archetype</div><div class="v" style="font-size:22px;">Quick Pitcher</div><div class="s">avg call &lt; 60s</div></div>
+          <div class="dash-stat"><div class="l">Duck rate</div><div class="v">7.4%</div><div class="s">below industry avg</div></div>
+        </div>
+
+        <div class="dash-two">
+          <div class="dash-panel">
+            <h4>Top use cases by call volume</h4>
+            <div class="dash-row"><span><strong>NPS &amp; review calls</strong></span><span class="pct">36%</span></div>
+            <div class="dash-bar"><span style="width:36%"></span></div>
+            <div class="dash-row" style="margin-top:8px;"><span><strong>Restaurant receptionist</strong></span><span class="pct">22%</span></div>
+            <div class="dash-bar"><span style="width:22%"></span></div>
+            <div class="dash-row" style="margin-top:8px;"><span><strong>B2B discovery</strong></span><span class="pct">17%</span></div>
+            <div class="dash-bar"><span style="width:17%"></span></div>
+            <div class="dash-row" style="margin-top:8px;"><span><strong>Field service triage</strong></span><span class="pct">11%</span></div>
+            <div class="dash-bar"><span style="width:11%"></span></div>
+            <div class="dash-row" style="margin-top:8px;"><span><strong>SaaS activation</strong></span><span class="pct">9%</span></div>
+            <div class="dash-bar"><span style="width:9%"></span></div>
+            <div class="dash-row" style="margin-top:8px;"><span><strong>Appointment confirms</strong></span><span class="pct">5%</span></div>
+            <div class="dash-bar"><span style="width:5%"></span></div>
+          </div>
+          <div class="dash-panel">
+            <h4>Outcome distribution</h4>
+            <div class="dash-row"><span>Booked / confirmed / completed</span><strong>1,891</strong></div>
+            <div class="dash-row"><span>Voicemail / no-answer</span><strong>704</strong></div>
+            <div class="dash-row"><span>Callback scheduled</span><strong>438</strong></div>
+            <div class="dash-row"><span>Transferred to human</span><strong>197</strong></div>
+            <div class="dash-row"><span>Opted out (DNC honored)</span><strong>52</strong></div>
+            <div class="dash-row"><span>Errored</span><strong>136</strong></div>
+
+            <h4 style="margin-top:24px;">Language mix</h4>
+            <div class="dash-row"><span>en-US</span><span class="pct">71%</span></div>
+            <div class="dash-row"><span>es-MX / es-US</span><span class="pct">22%</span></div>
+            <div class="dash-row"><span>ar-EG</span><span class="pct">7%</span></div>
+
+            <h4 style="margin-top:24px;">What your AI ducked when asked</h4>
+            <div class="dash-row"><span style="font-family:var(--font-mono);font-size:12px;">"let me get back to you"</span><strong>47×</strong></div>
+            <div class="dash-row"><span style="font-family:var(--font-mono);font-size:12px;">"that's a great question"</span><strong>38×</strong></div>
+            <div class="dash-row"><span style="font-family:var(--font-mono);font-size:12px;">"I'll have my team follow up"</span><strong>21×</strong></div>
+          </div>
+        </div>
+
+        <div style="margin-top:22px;padding-top:18px;border-top:1px solid var(--border-subtle);text-align:center;color:var(--text-muted);font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;">
+          Generated locally · PII auto-stripped · shareable as a screenshot
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       FOOTER CTA
+       ═══════════════════════════════════════════════════════ -->
+  <section class="uc-footer-cta">
+    <div class="wrap-narrow">
+      <span class="eyebrow">ship one this week</span>
+      <h2 style="font-family:var(--font-display);font-weight:400;font-size:clamp(32px,5vw,52px);line-height:1.05;margin:18px 0 14px;">Pick one. <em>Build it tonight.</em></h2>
+      <p>Open-source under MIT. Bring your own Twilio. Your AI agent gets <code class="mono" style="background:var(--bg-elevated);padding:2px 6px;border-radius:4px;font-size:13px;">make_call</code> in 60 seconds. Your client gets receipts they've never seen before.</p>
+      <div class="ctas" style="justify-content:center;">
+        <span class="copy-cmd" onclick="navigator.clipboard.writeText('npm i -g crixin && crixin voice install')">npm i -g crixin &amp;&amp; crixin voice install</span>
+        <a class="btn-primary" href="/voice/install">Install guide</a>
+        <a class="btn-ghost" href="/voice/docs">Tool reference</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site">
+    <div class="wrap" style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;">
+      <div>
+        <a href="/">crixin</a>
+        <a href="/voice">assistant</a>
+        <a href="/coder">coder</a>
+        <a href="/wrapped">wrapped</a>
+        <a href="/voice/pricing">pricing</a>
+      </div>
+      <div>
+        <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a>
+        <a href="https://www.npmjs.com/package/crixin">npm</a>
+        <a href="/faq">FAQ</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

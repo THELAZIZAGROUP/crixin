@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="canonical" href="https://crixin.com/voice/compliance" />
+  <title>crixin voice — compliance, by default</title>
+  <meta name="description" content="TCPA call windows, DNC list management, answering machine detection, consent verification, and auto-DNC on opt-out — enforced before TwiML ever leaves your machine." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" />
+  <link rel="stylesheet" href="../styles.css" />
+  <script src="/site.js" defer></script>
+
+  <style>
+    .doc-hero { padding: 130px 0 30px; text-align: center; }
+    .eyebrow {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--brand);
+      padding: 6px 12px;
+      border: 1px solid var(--brand);
+      border-radius: 9999px;
+    }
+    .doc-hero h1 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(38px, 5.5vw, 66px);
+      letter-spacing: -0.02em;
+      margin: 22px 0 14px;
+    }
+    .doc-hero h1 em { color: var(--brand); font-style: italic; }
+    .doc-hero p.lede {
+      font-size: 18px; color: var(--text-secondary); max-width: 700px;
+      margin: 0 auto; line-height: 1.6;
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 32px; }
+    section { padding: 50px 0; }
+    h2.section {
+      font-family: var(--font-display);
+      font-weight: 400;
+      letter-spacing: -0.015em;
+      font-size: clamp(26px, 3.5vw, 38px);
+      margin: 0 0 6px;
+    }
+    h2.section em { color: var(--brand); font-style: italic; }
+    .sublede { color: var(--text-secondary); font-size: 15.5px; max-width: 680px; line-height: 1.65; }
+
+    .gates-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px; margin-top: 28px;
+    }
+    .gate {
+      padding: 24px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      background: var(--bg-surface);
+    }
+    .gate h3 {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 24px;
+      margin: 0 0 4px;
+      color: var(--text-primary);
+    }
+    .gate .gid {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: var(--brand);
+      margin-bottom: 12px;
+    }
+    .gate p { color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin: 0 0 10px; }
+    .gate .when { font-family: var(--font-mono); font-size: 11.5px; color: var(--text-muted); }
+
+    pre.code {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.55;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 18px 22px;
+      overflow-x: auto;
+      margin: 18px 0;
+      color: var(--text-primary);
+    }
+    pre.code .c { color: var(--text-muted); }
+    pre.code .k { color: var(--brand-soft); }
+    pre.code .s { color: var(--success); }
+
+    .disclaimer {
+      max-width: 800px;
+      margin: 30px auto 0;
+      padding: 22px;
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--text-muted);
+      border-radius: 10px;
+      background: var(--bg-surface);
+      color: var(--text-secondary);
+      font-size: 13.5px;
+      line-height: 1.65;
+    }
+    .disclaimer strong { color: var(--text-primary); }
+
+    footer.site {
+      padding: 30px 0 50px;
+      color: var(--text-muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border-subtle);
+      margin-top: 30px;
+    }
+    footer.site a { color: var(--text-secondary); margin: 0 12px; }
+  </style>
+</head>
+<body>
+  <canvas id="embers" aria-hidden="true"></canvas>
+
+  <header class="site" id="site-header">
+    <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;height:64px;padding:0 32px;">
+      <a href="/" style="font-family:var(--font-display);font-style:italic;color:var(--brand);font-size:24px;text-decoration:none;">crixin<span style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);margin-left:8px;letter-spacing:0.05em;">v0.4.0 · voice mcp</span></a>
+      <nav style="display:flex;gap:18px;font-size:14px;">
+        <a href="/voice/agentic">Agentic</a>
+        <a href="/voice/agents">Agents</a>
+        <a href="/voice/compliance" style="color:var(--brand);">Compliance</a>
+        <a href="/voice/use-cases">Use cases</a>
+        <a href="/voice/install">Install</a>
+        <a href="/voice/docs">Docs</a>
+        <a href="/voice/api">API</a>
+        <a href="/voice/pricing">Pricing</a>
+        <a href="/">crixin</a>
+        <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="doc-hero">
+    <div>
+      <span class="eyebrow">compliance</span>
+      <h1>Five gates. <em>Off by default means broken.</em></h1>
+      <p class="lede">Cold-calling regulations are why most "AI sales agent" demos never make it into production. Voice MCP ships every guard-rail we ran in the hosted Teams product — TCPA windows, DNC, answering machine detection, consent, opt-out — wired in before any TwiML ever leaves your machine. Disable them deliberately, not accidentally.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 class="section">The <em>five gates</em></h2>
+      <p class="sublede">Each gate runs as a pre-dial check. If a gate fails, no Twilio API call is made and the lead is moved to the appropriate state — <code>blocked_tcpa</code>, <code>dnc</code>, or <code>do_not_recontact</code>.</p>
+
+      <div class="gates-grid">
+        <div class="gate">
+          <h3>TCPA window</h3>
+          <div class="gid">tcpa_window</div>
+          <p>Outbound calls only between <strong>8:00 AM and 9:00 PM</strong> in the lead's local time, derived from area code → US state → time zone. A call queued at midnight UTC for a 415 number won't dial until 8 AM Pacific.</p>
+          <div class="when">runs: pre-dial · failure → reschedule to next valid window</div>
+        </div>
+
+        <div class="gate">
+          <h3>DNC check</h3>
+          <div class="gid">dnc_check</div>
+          <p>Numbers added to your tenant's DNC list are blocked permanently. The list is local — it's a Firestore collection in the hosted product, a JSON file or the <code>--dnc-list</code> path in the OSS one. Federal DNC scrubbing is your responsibility (see disclaimer below).</p>
+          <div class="when">runs: pre-dial · failure → lead state <code>dnc</code></div>
+        </div>
+
+        <div class="gate">
+          <h3>Consent verification</h3>
+          <div class="gid">consent_check</div>
+          <p>Every lead must carry a <code>consent_basis</code> field — <code>express_written</code>, <code>existing_business_relationship</code>, <code>b2b_office</code>, or <code>none</code>. Calls with <code>none</code> are blocked unless you set <code>requireConsent: false</code> at hire time.</p>
+          <div class="when">runs: pre-dial · failure → lead state <code>blocked_no_consent</code></div>
+        </div>
+
+        <div class="gate">
+          <h3>Answering machine detection</h3>
+          <div class="gid">amd</div>
+          <p>Twilio's AMD is enabled on every call (<code>MachineDetection=DetectMessageEnd</code>). If a machine answers, the agent waits for the beep, drops the configured voicemail TwiML, hangs up. No human ever hears a half-spoken pitch into voicemail.</p>
+          <div class="when">runs: in-call · machine → voicemail prompt; human → opener prompt</div>
+        </div>
+
+        <div class="gate">
+          <h3>Auto-DNC on opt-out</h3>
+          <div class="gid">opt_out_listener</div>
+          <p>Every call recording is transcribed and scanned for opt-out phrases ("don't call me", "remove me from your list", "stop calling", + 30+ variants and Spanish equivalents). Match → number is added to DNC immediately and the lead is set to <code>do_not_recontact</code>.</p>
+          <div class="when">runs: post-call · trigger → DNC append + lead lock</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 class="section">All five, in <em>one config</em>.</h2>
+      <p class="sublede">Defaults are on. You can soften individual gates per-agent or per-campaign, but the surface is explicit — a forgotten flag won't land you in court.</p>
+
+<pre class="code"><span class="c">// crixin.config.ts</span>
+<span class="k">import</span> { defineConfig } <span class="k">from</span> <span class="s">"crixin/voice"</span>;
+
+<span class="k">export default</span> defineConfig({
+  compliance: {
+    tcpaWindow: { start: <span class="s">"08:00"</span>, end: <span class="s">"21:00"</span> },
+    dncList: <span class="s">"./dnc.json"</span>,
+    requireConsent: <span class="k">true</span>,
+    amd: <span class="s">"DetectMessageEnd"</span>,
+    optOutPhrases: <span class="s">"./opt-out.json"</span>,        <span class="c">// or "default"</span>
+    onOptOut: <span class="s">"auto_dnc_and_lock"</span>,         <span class="c">// or "log_only"</span>
+  },
+});</pre>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 class="section">What you log when a <em>regulator asks</em></h2>
+      <p class="sublede">Every call writes a compliance row. Hosted product writes to Firestore <code>teams_compliance_log</code>; OSS writes to whatever durable store you configure (default: a JSONL file).</p>
+
+<pre class="code">{
+  <span class="s">"call_sid"</span>: <span class="s">"CAabc…"</span>,
+  <span class="s">"to"</span>: <span class="s">"+14155550100"</span>,
+  <span class="s">"from"</span>: <span class="s">"+14155551111"</span>,
+  <span class="s">"timestamp_utc"</span>: <span class="s">"2026-05-09T17:42:18Z"</span>,
+  <span class="s">"local_time"</span>: <span class="s">"2026-05-09 10:42 PT"</span>,
+  <span class="s">"tcpa_window_passed"</span>: <span class="k">true</span>,
+  <span class="s">"dnc_check_passed"</span>: <span class="k">true</span>,
+  <span class="s">"consent_basis"</span>: <span class="s">"existing_business_relationship"</span>,
+  <span class="s">"amd_result"</span>: <span class="s">"human"</span>,
+  <span class="s">"opt_out_detected"</span>: <span class="k">false</span>,
+  <span class="s">"recording_url"</span>: <span class="s">"https://api.twilio.com/.../RE5b…/Recordings/RE5b…"</span>,
+  <span class="s">"transcript_excerpt"</span>: <span class="s">"…thanks for calling, please send the deck."</span>
+}</pre>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 class="section">Limits &amp; <em>what we don't do</em></h2>
+      <div class="disclaimer">
+        <p><strong>Voice MCP is a tool, not a compliance program.</strong> The five gates above are the same defenses we ran in production — but production for our SaaS, with our DNC list, our consent collection, our retention rules. You are responsible for:</p>
+        <p>· Scrubbing against the <strong>federal DNC registry</strong> (donotcall.gov) before importing leads into the system. Voice MCP does not auto-scrub.</p>
+        <p>· Capturing <strong>express written consent</strong> where required (TCPA, your state, your industry). The <code>consent_basis</code> field is a record of what you claim, not what we verified.</p>
+        <p>· State-specific rules (e.g., <strong>Florida HB 761</strong>'s prior express written consent requirement, <strong>Oklahoma's TCPA mini-statute</strong>, <strong>Washington's RCW 80.36.400</strong>).</p>
+        <p>· Recording disclosure. Two-party-consent states (CA, FL, IL, MD, MA, MT, NH, PA, WA) require you to announce the recording at the start of the call. The default opener TwiML includes the disclosure; if you swap it out, that's on you.</p>
+        <p>· <strong>This page is not legal advice.</strong> Talk to a TCPA-class-action defense attorney before running any high-volume campaign.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site">
+    <div class="wrap" style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;">
+      <div>
+        <a href="/">crixin</a>
+        <a href="/voice">voice</a>
+        <a href="/voice/agentic">agentic</a>
+        <a href="/voice/agents">agents</a>
+        <a href="/voice/compliance">compliance</a>
+        <a href="/voice/pricing">pricing</a>
+      </div>
+      <div>
+        <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a>
+        <a href="https://www.npmjs.com/package/crixin">npm</a>
+        <a href="mailto:hello@crixin.com">hello@crixin.com</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

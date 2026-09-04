@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="canonical" href="https://crixin.com/install" />
+  <title>Install Crixin — wire both MCPs (voice + coder) into Claude Code, Cursor, Codex, Desktop</title>
+  <meta name="description" content="One npm install. `crixin install` wires BOTH MCPs — Voice (phone calls) + Coder (memory across coding sessions) — into Claude Code, Cursor, Codex CLI, and Claude Desktop. Local SQLite, no SaaS." />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Install Crixin — both MCPs in 30 seconds" />
+  <meta property="og:description" content="One npm install + one CLI command wires both MCPs into every AI host on your machine. Bring your own Twilio." />
+  <meta property="og:url" content="https://crixin.com/install" />
+  <meta property="og:site_name" content="Crixin" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="/site.js" defer></script>
+
+  <style>
+    .doc-hero { padding: 130px 0 50px; }
+    .eyebrow { display: inline-block; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--brand); padding: 6px 12px; border: 1px solid var(--brand); border-radius: 9999px; }
+    .doc-hero h1 { font-family: var(--font-display); font-weight: 400; font-size: clamp(40px, 6vw, 76px); line-height: 1.05; letter-spacing: -0.02em; margin: 22px 0 18px; }
+    .doc-hero h1 em { color: var(--brand); font-style: italic; }
+    .doc-hero p.lede { font-size: 19px; color: var(--text-secondary); max-width: 720px; line-height: 1.55; }
+    .step {
+      padding: 26px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      background: var(--bg-surface);
+      margin-bottom: 16px;
+    }
+    .step .num {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--brand);
+      margin-bottom: 6px;
+    }
+    .step h3 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 26px;
+      margin: 0 0 8px;
+      color: var(--text-primary);
+    }
+    .step h3 em { color: var(--brand); font-style: italic; }
+    .step p { color: var(--text-secondary); font-size: 14px; line-height: 1.65; margin: 0 0 14px; }
+    pre.code {
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 18px 22px;
+      margin: 12px 0 0;
+      color: var(--text-primary);
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    pre.code .c { color: var(--text-muted); }
+    pre.code .b { color: var(--brand); }
+    .host-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+      margin: 24px 0;
+    }
+    .host-card {
+      padding: 22px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      background: var(--bg-surface);
+    }
+    .host-card h3 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 22px;
+      margin: 0 0 8px;
+      color: var(--text-primary);
+    }
+    section.sm { padding: 60px 0; }
+    section.sm h2 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(28px, 4vw, 44px);
+      margin: 0 0 12px;
+    }
+    section.sm h2 em { color: var(--brand); font-style: italic; }
+    .ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+    .copy-cmd { font-family: var(--font-mono); font-size: 14px; padding: 12px 18px; background: var(--bg-elevated); border: 1px solid var(--border-strong); border-radius: 8px; cursor: pointer; color: var(--text-primary); }
+    .copy-cmd:hover { border-color: var(--brand); color: var(--brand); }
+    .btn-primary { font-family: var(--font-sans); font-size: 14px; font-weight: 600; padding: 11px 18px; border-radius: 8px; background: var(--brand); color: #0b0d12; border: 1px solid var(--brand); }
+    .btn-ghost { font-family: var(--font-sans); font-size: 14px; padding: 11px 18px; border-radius: 8px; border: 1px solid var(--border-strong); color: var(--text-primary); }
+    .btn-ghost:hover, .btn-primary:hover { border-color: var(--brand); }
+    footer.site { padding: 30px 0 50px; color: var(--text-muted); font-size: 13px; border-top: 1px solid var(--border-subtle); margin-top: 60px; }
+    footer.site a { color: var(--text-secondary); margin: 0 12px; }
+  </style>
+</head>
+<body>
+  <canvas id="embers" aria-hidden="true"></canvas>
+
+  <header class="site" id="site-header">
+    <div class="wrap row">
+      <a href="/" class="brand-mark">crixin<span class="tag">v0.5.0</span></a>
+      <nav class="primary">
+        <a href="/voice">Voice</a>
+        <a href="/coder">Coder</a>
+        <a href="/wrapped">Wrapped</a>
+        <a href="/install" style="color:var(--brand);">Install</a>
+        <a href="/voice/pricing">Pricing</a>
+        <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="doc-hero">
+    <div class="wrap-narrow">
+      <span class="eyebrow">install · 5 steps · 30 seconds</span>
+      <h1>Wire <em>both MCPs</em> into your AI host.</h1>
+      <p class="lede">One npm install. One umbrella command. Both MCPs (voice + coder) land in every supported AI host on your machine. Set your Twilio creds. Done. Your AI agent gets a phone line and a memory before your coffee's cold.</p>
+      <div class="ctas">
+        <span class="copy-cmd" onclick="navigator.clipboard.writeText('npm i -g crixin && crixin install')">npm i -g crixin &amp;&amp; crixin install</span>
+        <a class="btn-ghost" href="/voice/docs">Tool reference</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="sm">
+    <div class="wrap-narrow">
+
+      <div class="step">
+        <div class="num">STEP 01</div>
+        <h3>Install <em>from npm</em>.</h3>
+        <p>One global package. Includes the CLI, both MCP servers (<code>crixin-voice</code> + <code>crixin-coder</code>), all the Wrapped + Archetype engines, and a local SQLite at <code>~/.crixin/crixin.db</code>.</p>
+<pre class="code">npm i -g crixin
+crixin --version  <span class="c"># 0.5.0</span></pre>
+      </div>
+
+      <div class="step">
+        <div class="num">STEP 02</div>
+        <h3>Wire <em>both MCPs</em> in one shot.</h3>
+        <p><code class="mono">crixin install</code> writes BOTH MCP entries (<code>crixin-voice</code> and <code>crixin-coder</code>) into every supported host config: Claude Desktop, Claude Code, Cursor, Codex CLI. Idempotent. Atomic writes — never corrupts existing config.</p>
+<pre class="code">crixin install
+<span class="c"># ✓ claude code     ~/.claude/settings.json       (+ crixin-voice + crixin-coder)
+# ✓ cursor          ~/.cursor/mcp.json            (+ crixin-voice + crixin-coder)
+# ✓ codex cli       ~/.codex/config.toml          (+ crixin-voice + crixin-coder)
+# ✓ claude desktop  ~/Library/.../claude_desktop_config.json</span></pre>
+        <p style="margin-top:14px;">Or do it manually per-host:</p>
+        <div class="host-grid">
+          <div class="host-card">
+            <h3>Claude Code</h3>
+<pre class="code">claude mcp add crixin-voice -- \
+  npx -y crixin voice mcp
+claude mcp add crixin-coder -- \
+  npx -y crixin coder mcp</pre>
+          </div>
+          <div class="host-card">
+            <h3>Cursor</h3>
+<pre class="code">// ~/.cursor/mcp.json
+{
+  "mcpServers": {
+    "crixin-voice": {
+      "command": "npx",
+      "args": ["-y","crixin","voice","mcp"]
+    },
+    "crixin-coder": {
+      "command": "npx",
+      "args": ["-y","crixin","coder","mcp"]
+    }
+  }
+}</pre>
+          </div>
+          <div class="host-card">
+            <h3>Codex CLI</h3>
+<pre class="code"># ~/.codex/config.toml
+[mcp_servers.crixin-voice]
+command = "npx"
+args = ["-y","crixin","voice","mcp"]
+
+[mcp_servers.crixin-coder]
+command = "npx"
+args = ["-y","crixin","coder","mcp"]</pre>
+          </div>
+          <div class="host-card">
+            <h3>Claude Desktop</h3>
+<pre class="code">// ~/Library/.../claude_desktop_config.json
+{
+  "mcpServers": {
+    "crixin-voice": { "command": "npx",
+      "args": ["-y","crixin","voice","mcp"] },
+    "crixin-coder": { "command": "npx",
+      "args": ["-y","crixin","coder","mcp"] }
+  }
+}</pre>
+          </div>
+        </div>
+        <p style="margin-top:14px;font-size:13px;color:var(--text-muted);">Restart your AI host once after install. The new tools show up in the Tools menu (Cursor / Claude Desktop) or as available MCPs (Claude Code / Codex).</p>
+      </div>
+
+      <div class="step">
+        <div class="num">STEP 03</div>
+        <h3>Set Twilio creds <em>(Voice MCP only)</em>.</h3>
+        <p>Voice MCP reads creds from the env your AI host launches from. Use whatever secrets manager you like — Doppler, 1Password, Vault, or a plain <code>.env</code>. Coder MCP needs no env — it reads files your AI host already wrote to disk.</p>
+<pre class="code">export TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+export TWILIO_AUTH_TOKEN=your_auth_token
+export TWILIO_PHONE_NUMBER=+15555550100
+
+<span class="c"># Optional — needed for transcribe_call + Voice Wrapped + Caller Archetype</span>
+export DEEPGRAM_API_KEY=...
+
+crixin voice doctor</pre>
+        <p style="margin-top:14px;font-size:13px;color:var(--text-muted);">Doctor probes the live Twilio API once (zero charges) and surfaces stale-token errors before you try to dial a customer. If your token was rotated and your secrets manager hasn't caught up, this catches it instantly.</p>
+      </div>
+
+      <div class="step">
+        <div class="num">STEP 04</div>
+        <h3>Ingest your AI coding history <em>(Coder MCP)</em>.</h3>
+        <p>Reads JSONLs your AI host already wrote to disk — <code>~/.claude/projects/</code>, <code>~/.codex/sessions/</code>, Cursor app data. Drops everything into local SQLite. Takes ~15 seconds even on heavy users.</p>
+<pre class="code">crixin coder ingest
+<span class="c"># scanning ~/.claude/projects/        (387 sessions)
+# scanning ~/.codex/sessions/         ( 42 sessions)
+# scanning ~/Library/.../cursor-state ( 18 sessions)
+# ingested 447 sessions, 312,841 messages → ~/.crixin/crixin.db</span></pre>
+      </div>
+
+      <div class="step">
+        <div class="num">STEP 05</div>
+        <h3>Ask your AI host. <em>This is the aha.</em></h3>
+        <p>The whole point. Open your AI host. Type one of these.</p>
+<pre class="code"><span class="c"># Voice MCP — phone</span>
+use crixin-voice to call +14155550142 and confirm tomorrow's order.
+
+<span class="c"># Coder MCP — memory</span>
+use crixin-coder to find when we last discussed the auth refactor.
+
+<span class="c"># Both at once</span>
+use crixin-coder to find what we agreed about Tony's Pizza last week,
+then use crixin-voice to call them and confirm.</pre>
+        <p style="margin-top:14px;font-size:13px;color:var(--text-muted);">No campaign UI, no agent roster, no dashboard. Two MCP tool surfaces, one chat window, one phone ringing.</p>
+      </div>
+
+      <div class="step" style="border-top: 1px solid var(--border-subtle); padding-top: 32px; margin-top: 32px;">
+        <div class="num">BONUS</div>
+        <h3>See the <em>year-end receipts</em>.</h3>
+<pre class="code">crixin voice wrapped --year 2026     <span class="c"># heatmap, archetype, top destinations</span>
+crixin coder wrapped --year 2026     <span class="c"># heatmap, archetype, top projects</span></pre>
+        <p style="margin-top:14px;font-size:13px;color:var(--text-muted);">Each writes a self-contained HTML file you can open, screenshot, or share. Generated locally. PII auto-stripped.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="site">
+    <div class="wrap" style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;">
+      <div>
+        <a href="/">crixin</a>
+        <a href="/voice">voice</a>
+        <a href="/wrapped">wrapped</a>
+        <a href="/archetype">archetype</a>
+        <a href="/voice/pricing">pricing</a>
+      </div>
+      <div>
+        <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a>
+        <a href="/faq">FAQ</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="canonical" href="https://crixin.com/voice/install" />
+  <title>Install crixin voice — MCP server for Claude Code, Cursor, Codex CLI</title>
+  <meta name="description" content="One npm install. Wires the Crixin voice MCP server into Claude Code, Cursor, or Codex CLI. Set TWILIO_* env vars and your AI agent can place calls." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" />
+  <link rel="stylesheet" href="../styles.css" />
+  <script src="/site.js" defer></script>
+
+  <style>
+    .doc-hero { padding: 130px 0 50px; }
+    .doc-hero .eyebrow {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--brand);
+      padding: 6px 12px;
+      border: 1px solid var(--brand);
+      border-radius: 9999px;
+    }
+    .doc-hero h1 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(36px, 5vw, 56px);
+      letter-spacing: -0.02em;
+      margin: 22px 0 14px;
+    }
+    .doc-hero h1 em { color: var(--brand); font-style: italic; }
+    .doc-hero p.lede {
+      font-size: 17px;
+      color: var(--text-secondary);
+      max-width: 640px;
+      margin: 0;
+      line-height: 1.55;
+    }
+    section.step {
+      padding: 30px 0;
+      border-top: 1px dashed var(--border-subtle);
+    }
+    section.step:first-of-type { border-top: 0; }
+    section.step h2 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 28px;
+      letter-spacing: -0.015em;
+      margin: 0 0 6px;
+    }
+    section.step h2 em { color: var(--brand); font-style: italic; }
+    section.step .num {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    section.step p { color: var(--text-secondary); max-width: 720px; line-height: 1.6; }
+    pre.code {
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      line-height: 1.55;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 16px 20px;
+      overflow-x: auto;
+      margin: 16px 0;
+      color: var(--text-primary);
+      white-space: pre;
+    }
+    pre.code .c { color: var(--text-muted); }
+    .host-tabs {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px; margin-top: 16px;
+    }
+    .host-tab {
+      padding: 18px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      background: var(--bg-surface);
+    }
+    .host-tab h3 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 20px;
+      margin: 0 0 8px;
+    }
+    .host-tab pre { margin: 0; padding: 12px 14px; font-size: 12.5px; }
+    .callout {
+      margin: 18px 0;
+      padding: 14px 18px;
+      border-left: 3px solid var(--brand);
+      background: rgba(245, 180, 82, 0.05);
+      border-radius: 6px;
+      color: var(--text-secondary);
+      font-size: 14.5px;
+      line-height: 1.5;
+    }
+    .callout strong { color: var(--text-primary); }
+    .verify { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+    .verify code {
+      font-family: var(--font-mono);
+      background: var(--bg-elevated);
+      padding: 6px 10px; border-radius: 6px;
+      border: 1px solid var(--border-subtle);
+      color: var(--success);
+    }
+    footer.site {
+      padding: 30px 0 50px;
+      color: var(--text-muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border-subtle);
+      margin-top: 30px;
+    }
+    footer.site a { color: var(--text-secondary); margin: 0 12px; }
+  </style>
+</head>
+<body>
+  <canvas id="embers" aria-hidden="true"></canvas>
+
+  <header class="site" id="site-header">
+    <div class="wrap row" style="display:flex;align-items:center;justify-content:space-between;height:64px;">
+      <a href="/" class="brand-mark" style="font-family:var(--font-display);font-style:italic;color:var(--brand);font-size:24px;text-decoration:none;">crixin<span class="tag" style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);margin-left:8px;letter-spacing:0.05em;">v0.4.0 · voice mcp</span></a>
+      <nav class="primary" style="display:flex;gap:18px;font-size:14px;">
+        <a href="/voice/agentic">Agentic</a>
+        <a href="/voice/agents">Agents</a>
+        <a href="/voice/compliance">Compliance</a>
+        <a href="/voice/use-cases">Use cases</a>
+        <a href="/voice/install" style="color:var(--brand);">Install</a>
+        <a href="/voice/docs">Docs</a>
+        <a href="/voice/api">API</a>
+        <a href="/voice/pricing">Pricing</a>
+        <a href="/">crixin</a>
+        <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="doc-hero">
+    <div class="wrap-narrow">
+      <span class="eyebrow">install · 30 seconds</span>
+      <h1>From zero to <em>"the agent placed the call"</em>.</h1>
+      <p class="lede">Three steps. One npm install, one Twilio setup, one MCP wire-up. Pick your AI host below — same package, same env, different one-liner.</p>
+    </div>
+  </section>
+
+  <div class="wrap-narrow">
+
+    <section class="step">
+      <span class="num">step 01</span>
+      <h2>Install the <em>npm package</em></h2>
+      <p>Global install gets you the <code>crixin</code> binary in every terminal — voice lives under <code>crixin voice</code> — plus instant access from your AI host via <code>npx</code>.</p>
+<pre class="code">npm i -g crixin
+
+<span class="c"># or, no global install — npx fetches on demand:</span>
+npx -y crixin voice help</pre>
+    </section>
+
+    <section class="step">
+      <span class="num">step 02</span>
+      <h2>Wire up <em>Twilio credentials</em></h2>
+      <p>Crixin doesn't ship with credentials baked in. You need a Twilio account (free trial gives you a sandbox number), then export three env vars:</p>
+<pre class="code">export TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+export TWILIO_AUTH_TOKEN=your_auth_token
+export TWILIO_PHONE_NUMBER=+15555550100
+
+<span class="c"># Optional — only needed if you call transcribe_call</span>
+export DEEPGRAM_API_KEY=...</pre>
+      <div class="callout">
+        <strong>Pro tip.</strong> Use <a href="https://www.doppler.com/" style="color:var(--brand);">Doppler</a>, <code>direnv</code>, or <code>1Password CLI</code> to inject these per-shell so they're not sitting in <code>~/.zshrc</code> in plain text. Whatever you use, your AI host launches from that environment.
+      </div>
+      <p>Verify with the doctor:</p>
+<pre class="code">crixin voice doctor</pre>
+      <div class="verify">
+        <code>TWILIO_ACCOUNT_SID  ✓</code>
+        <code>TWILIO_AUTH_TOKEN   ✓</code>
+        <code>TWILIO_PHONE_NUMBER ✓ (+15555550100)</code>
+      </div>
+    </section>
+
+    <section class="step">
+      <span class="num">step 03</span>
+      <h2>Wire it into <em>your AI host</em></h2>
+      <p>Same npm package, same stdio MCP transport. The host-specific config is one line each.</p>
+
+      <div class="host-tabs">
+        <div class="host-tab">
+          <h3>Claude Code</h3>
+<pre class="code">claude mcp add crixin-voice -- \
+  npx -y crixin voice mcp</pre>
+          <p style="font-size:13px;color:var(--text-muted);margin:10px 0 0;">Restart your Claude Code session once. The agent now has <code>make_call</code>, <code>send_sms</code>, and the rest.</p>
+        </div>
+        <div class="host-tab">
+          <h3>Cursor</h3>
+<pre class="code">// ~/.cursor/mcp.json
+{
+  "mcpServers": {
+    "crixin/voice": {
+      "command": "npx",
+      "args": ["-y", "crixin", "voice", "mcp"]
+    }
+  }
+}</pre>
+          <p style="font-size:13px;color:var(--text-muted);margin:10px 0 0;">Cursor auto-reloads. Open the Composer and ask: "use crixin voice to call +15555550100 and ask their hours."</p>
+        </div>
+        <div class="host-tab">
+          <h3>Codex CLI</h3>
+<pre class="code"># ~/.codex/config.toml
+[mcp_servers.crixin-voice]
+command = "npx"
+args = ["-y", "crixin", "voice", "mcp"]</pre>
+          <p style="font-size:13px;color:var(--text-muted);margin:10px 0 0;">Restart codex. <code>codex mcp list</code> should show <code>crixin-voice</code> as the entry name.</p>
+        </div>
+        <div class="host-tab">
+          <h3>Claude Desktop</h3>
+<pre class="code">// ~/Library/Application Support/Claude/claude_desktop_config.json
+{
+  "mcpServers": {
+    "crixin/voice": {
+      "command": "npx",
+      "args": ["-y", "crixin", "voice", "mcp"]
+    }
+  }
+}</pre>
+          <p style="font-size:13px;color:var(--text-muted);margin:10px 0 0;">Restart Claude Desktop. The hammer icon shows the new tools.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="step">
+      <span class="num">verify</span>
+      <h2>Place the <em>first call</em></h2>
+      <p>Simplest possible smoke test — the CLI bypasses MCP and calls Twilio directly. Replace the destination with your own number.</p>
+<pre class="code">crixin voice call +15555550100 "Hello, this is a test call from Crixin."</pre>
+      <p>You should see:</p>
+<pre class="code">Call placed: CA94e1d8…3a02 → queued</pre>
+      <p>Then ask your AI host the same question and watch it call <code>make_call</code> on your behalf.</p>
+    </section>
+
+    <section class="step">
+      <span class="num">troubleshooting</span>
+      <h2>If something <em>didn't</em> work</h2>
+      <ul style="line-height:1.8;color:var(--text-secondary);padding-left:20px;">
+        <li><strong>"Missing TWILIO_ACCOUNT_SID."</strong> — env vars aren't reaching the AI host. On macOS, GUI apps don't see <code>~/.zshrc</code>. Use <code>launchctl setenv</code> or run the host from a terminal.</li>
+        <li><strong>"E.164 required."</strong> — your <code>TWILIO_PHONE_NUMBER</code> needs the leading <code>+</code> and country code, e.g. <code>+15555550100</code>.</li>
+        <li><strong>Call queued forever.</strong> — destination might be in a region your Twilio account hasn't enabled. In Console → Voice → Geographic Permissions, allow the country.</li>
+        <li><strong>Recipient hears silence.</strong> — Twilio Trial accounts require destination numbers to be verified first. Verify in Console → Phone Numbers → Verified Caller IDs.</li>
+      </ul>
+    </section>
+
+  </div>
+
+  <footer class="site">
+    <div class="wrap" style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;">
+      <div>
+        <a href="/">crixin</a>
+        <a href="/voice">voice</a>
+        <a href="/voice/docs">docs</a>
+        <a href="/voice/api">api</a>
+        <a href="/voice/pricing">pricing</a>
+      </div>
+      <div>
+        <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a>
+        <a href="https://www.npmjs.com/package/crixin">npm</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

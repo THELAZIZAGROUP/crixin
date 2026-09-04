@@ -1,0 +1,82 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "com.crixin/voice",
+  "title": "Crixin Voice",
+  "description": "Give your AI a real phone: place calls, send SMS, fetch recordings and transcripts. Local or hosted.",
+  "websiteUrl": "https://crixin.com",
+  "repository": {
+    "url": "https://github.com/THELAZIZAGROUP/crixin",
+    "source": "github"
+  },
+  "version": "0.7.2",
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "crixin",
+      "version": "0.7.2",
+      "runtimeHint": "npx",
+      "transport": {
+        "type": "stdio"
+      },
+      "packageArguments": [
+        {
+          "type": "positional",
+          "value": "voice",
+          "valueHint": "voice"
+        },
+        {
+          "type": "positional",
+          "value": "mcp",
+          "valueHint": "mcp"
+        }
+      ],
+      "environmentVariables": [
+        {
+          "name": "CRIXIN_API_KEY",
+          "description": "Crixin platform key (crx_live_…). Set this for hosted mode — no Twilio account needed.",
+          "isRequired": false,
+          "isSecret": true
+        },
+        {
+          "name": "TWILIO_ACCOUNT_SID",
+          "description": "Bring-your-own-Twilio mode: account SID.",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "TWILIO_AUTH_TOKEN",
+          "description": "Bring-your-own-Twilio mode: auth token.",
+          "isRequired": false,
+          "isSecret": true
+        },
+        {
+          "name": "TWILIO_PHONE_NUMBER",
+          "description": "Bring-your-own-Twilio mode: caller number in E.164.",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "DEEPGRAM_API_KEY",
+          "description": "Optional in BYO mode — enables transcribe_call locally.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://crixin-platform.vercel.app/api/mcp",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Bearer crx_live_… key from the Crixin dashboard.",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}

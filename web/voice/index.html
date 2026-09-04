@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="canonical" href="https://crixin.com/voice" />
+  <title>Voice MCP — give your AI a phone line. Bring your own Twilio.</title>
+  <meta name="description" content="The Voice half of the Crixin MCP toolkit. Your AI agent dials real numbers, sends real SMS, and transcribes real calls through your own Twilio. Six MCP tools, one stdio server, local SQLite. Bring your own Twilio." />
+  <meta name="keywords" content="voice mcp, twilio mcp, ai phone calls, mcp server, ai cold caller, outbound dialer, deepgram, tcpa dnc compliance" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Voice MCP — give your AI a phone line" />
+  <meta property="og:description" content="One half of the Crixin MCP toolkit. The other half is Coder MCP — your AI's memory across every coding session." />
+  <meta property="og:url" content="https://crixin.com/voice" />
+  <meta property="og:image" content="https://crixin.com/og-image.png" />
+  <meta property="og:site_name" content="Crixin" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Crixin Voice MCP",
+    "alternateName": ["crixin-voice", "Voice MCP"],
+    "description": "Open-source MCP server and CLI that lets AI agents hire phone numbers, place outbound calls, send SMS, and classify outcomes through Twilio. One half of the Crixin MCP toolkit — the other half is Coder MCP for memory across AI coding sessions.",
+    "applicationCategory": "DeveloperApplication",
+    "applicationSubCategory": "AgentTools",
+    "operatingSystem": ["macOS", "Linux", "Windows"],
+    "url": "https://crixin.com/voice",
+    "downloadUrl": "https://www.npmjs.com/package/crixin",
+    "softwareVersion": "0.0.1",
+    "license": "https://opensource.org/licenses/MIT",
+    "author": { "@type": "Person", "name": "Mosab Abdallah", "url": "https://github.com/Mrdopplereffekt" },
+    "publisher": { "@type": "Organization", "name": "Lazizatech", "url": "https://github.com/THELAZIZAGROUP" },
+    "keywords": "ai sales agent, twilio, mcp server, deepgram, tcpa, dnc, outbound dialer",
+    "featureList": [
+      "Hire AI agents — name, voice, persona, dedicated phone number",
+      "make_call / send_sms / transcribe_call / list_calls / get_call / list_recordings",
+      "Stdio MCP server — Claude Code, Cursor, Codex CLI, Claude Desktop",
+      "Inline TwiML — no public webhook required",
+      "Polly + Google neural voices, 30+ languages incl. Arabic via Deepgram",
+      "Campaign cadences: light_touch / standard / full_court_press",
+      "Outcome classification — interested / not_interested / no_answer / voicemail / callback",
+      "TCPA windows, DNC, AMD, consent — defaults you don't have to remember"
+    ],
+    "offers": {
+      "@type": "Offer",
+      "name": "Free / Open Source",
+      "price": "0",
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock",
+      "description": "MIT-licensed. You bring your own Twilio account."
+    }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" />
+  <link rel="stylesheet" href="../styles.css" />
+  <script src="/site.js" defer></script>
+
+  <style>
+    .eyebrow {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--brand);
+      padding: 6px 12px;
+      border: 1px solid var(--brand);
+      border-radius: 9999px;
+      opacity: 0.92;
+    }
+    .voice-hero { padding: 130px 0 80px; position: relative; }
+    .voice-hero h1 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      font-size: clamp(40px, 6vw, 76px);
+      line-height: 1.05;
+      margin: 22px 0 18px;
+    }
+    .voice-hero h1 em { color: var(--brand); font-style: italic; }
+    .voice-hero p.lede {
+      font-size: 19px;
+      line-height: 1.55;
+      color: var(--text-secondary);
+      max-width: 680px;
+      margin: 0 0 28px;
+    }
+    .ctas { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+    .copy-cmd {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      padding: 12px 18px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--text-primary);
+      transition: border-color 160ms var(--ease), color 160ms var(--ease);
+    }
+    .copy-cmd:hover { border-color: var(--brand); color: var(--brand); }
+    .btn-ghost {
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 500;
+      padding: 11px 18px;
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      color: var(--text-primary);
+      transition: border-color 160ms var(--ease), color 160ms var(--ease);
+    }
+    .btn-ghost:hover { border-color: var(--brand); color: var(--brand); }
+    .btn-primary {
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 11px 18px;
+      border-radius: 8px;
+      background: var(--brand);
+      color: #0b0d12;
+      border: 1px solid var(--brand);
+      transition: background 160ms var(--ease), transform 160ms var(--ease);
+    }
+    .btn-primary:hover { background: var(--brand-soft); transform: translateY(-1px); }
+
+    .caller-visual {
+      margin-top: 56px;
+      position: relative;
+      max-width: 760px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      background: linear-gradient(180deg, var(--bg-surface), var(--bg-elevated));
+      padding: 28px;
+      box-shadow: 0 30px 80px -40px rgba(245, 180, 82, 0.18);
+      overflow: hidden;
+    }
+    .caller-visual::before {
+      content: "";
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(circle at 80% 20%, rgba(245, 180, 82, 0.18), transparent 55%),
+        radial-gradient(circle at 12% 90%, rgba(123, 216, 143, 0.10), transparent 50%);
+      pointer-events: none;
+    }
+    .caller-row {
+      display: flex; align-items: center; gap: 14px; padding: 12px 0;
+      border-bottom: 1px dashed var(--border-subtle);
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      position: relative;
+      z-index: 1;
+    }
+    .caller-row:last-child { border-bottom: 0; }
+    .caller-row .dot {
+      width: 10px; height: 10px; border-radius: 50%; flex: 0 0 auto;
+      background: var(--brand);
+      box-shadow: 0 0 0 0 rgba(245, 180, 82, 0.55);
+      animation: pulse 2s var(--ease) infinite;
+    }
+    .caller-row .dot.done {
+      background: var(--success); box-shadow: none; animation: none;
+    }
+    .caller-row .label { flex: 1 1 auto; color: var(--text-secondary); }
+    .caller-row .label strong { color: var(--text-primary); font-weight: 500; }
+    .caller-row .meta { color: var(--text-muted); font-size: 12px; }
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0 0   rgba(245, 180, 82, 0.55); }
+      70%  { box-shadow: 0 0 0 12px rgba(245, 180, 82, 0); }
+      100% { box-shadow: 0 0 0 0   rgba(245, 180, 82, 0); }
+    }
+    .caller-waveform {
+      display: flex; align-items: end; gap: 3px; height: 22px; flex: 0 0 auto;
+    }
+    .caller-waveform span {
+      width: 3px; background: var(--brand); border-radius: 2px;
+      animation: bar 1.1s var(--ease) infinite;
+    }
+    .caller-waveform span:nth-child(1) { animation-delay: 0.0s; height: 30%; }
+    .caller-waveform span:nth-child(2) { animation-delay: 0.1s; height: 70%; }
+    .caller-waveform span:nth-child(3) { animation-delay: 0.2s; height: 100%; }
+    .caller-waveform span:nth-child(4) { animation-delay: 0.3s; height: 60%; }
+    .caller-waveform span:nth-child(5) { animation-delay: 0.4s; height: 90%; }
+    .caller-waveform span:nth-child(6) { animation-delay: 0.5s; height: 40%; }
+    @keyframes bar {
+      0%, 100% { transform: scaleY(0.4); opacity: 0.7; }
+      50%      { transform: scaleY(1.0); opacity: 1.0; }
+    }
+
+    /* Sections */
+    section.sm { padding: 56px 0; }
+    section.sm h2 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      letter-spacing: -0.015em;
+      font-size: clamp(28px, 4vw, 44px);
+      margin: 0 0 8px;
+    }
+    section.sm h2 em { color: var(--brand); font-style: italic; }
+    section.sm .sublede { color: var(--text-secondary); font-size: 16px; max-width: 620px; line-height: 1.6; }
+
+    /* Roster grid (voices × personas) */
+    .roster-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px; margin-top: 28px;
+    }
+    .agent-card {
+      padding: 22px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      background: var(--bg-surface);
+      display: flex; flex-direction: column; gap: 10px;
+      transition: border-color 200ms var(--ease), transform 200ms var(--ease);
+    }
+    .agent-card:hover { border-color: var(--brand); transform: translateY(-2px); }
+    .agent-card .ahead {
+      display: flex; justify-content: space-between; align-items: baseline;
+    }
+    .agent-card .aname {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 24px;
+      color: var(--brand);
+    }
+    .agent-card .avoice { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); letter-spacing: 0.05em; text-transform: uppercase; }
+    .agent-card .arole { color: var(--text-primary); font-size: 14px; }
+    .agent-card .adesc { color: var(--text-secondary); font-size: 13.5px; line-height: 1.55; }
+
+    /* Workflow / 3-up */
+    .work-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px; margin-top: 28px;
+    }
+    .work-card {
+      padding: 24px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      background: var(--bg-surface);
+    }
+    .work-card h3 {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 26px;
+      margin: 0 0 6px;
+      color: var(--text-primary);
+    }
+    .work-card h3 em { color: var(--brand); font-style: italic; }
+    .work-card p { color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin: 0 0 14px; }
+    .work-card ul { list-style: none; padding: 0; margin: 0; font-size: 13.5px; color: var(--text-secondary); line-height: 1.85; }
+    .work-card ul li::before { content: "·"; color: var(--brand); margin-right: 8px; }
+
+    pre.code {
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      line-height: 1.55;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 18px 22px;
+      overflow-x: auto;
+      margin: 18px 0;
+      color: var(--text-primary);
+    }
+    pre.code .c { color: var(--text-muted); }
+    pre.code .k { color: var(--brand-soft); }
+    pre.code .s { color: var(--success); }
+
+    .tools-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px; margin-top: 24px;
+    }
+    .tool-card {
+      padding: 18px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      background: var(--bg-surface);
+    }
+    .tool-card .tname { font-family: var(--font-mono); font-size: 13.5px; color: var(--brand); margin-bottom: 6px; }
+    .tool-card .tdesc { color: var(--text-secondary); font-size: 13px; line-height: 1.55; }
+
+    .hosts-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px; margin-top: 24px;
+    }
+    .host-card {
+      padding: 20px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      background: var(--bg-surface);
+    }
+    .host-card h3 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 22px;
+      margin: 0 0 10px;
+      color: var(--text-primary);
+    }
+    .host-card pre { margin: 0; padding: 14px 16px; font-size: 12.5px; }
+
+    /* Heritage callout */
+    .heritage {
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 30px;
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--brand);
+      border-radius: 10px;
+      background: var(--bg-surface);
+    }
+    .heritage h3 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-style: italic;
+      font-size: 26px;
+      margin: 0 0 8px;
+      color: var(--text-primary);
+    }
+    .heritage h3 em { color: var(--brand); font-style: italic; }
+    .heritage p { color: var(--text-secondary); font-size: 15px; line-height: 1.65; margin: 0 0 10px; }
+
+    .footer-cta { padding: 80px 0 100px; text-align: center; }
+    .footer-cta h2 { margin-bottom: 8px; }
+    .footer-cta p { color: var(--text-secondary); margin-bottom: 24px; }
+
+    footer.site {
+      padding: 30px 0 50px;
+      color: var(--text-muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border-subtle);
+      margin-top: 30px;
+    }
+    footer.site a { color: var(--text-secondary); margin: 0 12px; }
+    footer.site a:first-child { margin-left: 0; }
+  </style>
+</head>
+<body>
+  <canvas id="embers" aria-hidden="true"></canvas>
+
+  <header class="site" id="site-header">
+    <div class="wrap row" style="display:flex;align-items:center;justify-content:space-between;height:64px;">
+      <a href="/" class="brand-mark" style="font-family:var(--font-display);font-style:italic;color:var(--brand);font-size:24px;text-decoration:none;">crixin<span class="tag" style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);margin-left:8px;letter-spacing:0.05em;">v0.4.0 · voice mcp</span></a>
+      <nav class="primary" style="display:flex;gap:18px;font-size:14px;">
+        <a href="/voice" style="color:var(--brand);">Voice MCP</a>
+        <a href="/coder">Coder MCP</a>
+        <a href="/wrapped">Wrapped</a>
+        <a href="/voice/use-cases">Use cases</a>
+        <a href="/voice/docs">Docs</a>
+        <a href="/voice/api">API</a>
+        <a href="/voice/pricing">Pricing</a>
+        <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="voice-hero">
+    <div class="wrap-narrow">
+      <span class="eyebrow">crixin · voice mcp · capability module</span>
+      <h1>Give your AI a <em>phone line</em>.</h1>
+      <p class="lede">Voice MCP is one half of the Crixin toolkit. Your AI agent — Claude Code, Cursor, Codex CLI, Claude Desktop — gets six MCP tools to dial real numbers, send real SMS, and transcribe real calls through <em>your</em> Twilio account. The other half (<a href="/coder" style="color:var(--brand);">Coder MCP</a>) gives it a memory. <strong>MIT-licensed. Bring your own Twilio. Local SQLite.</strong></p>
+      <div class="ctas">
+        <span class="copy-cmd" onclick="navigator.clipboard.writeText('npm i -g crixin && crixin install')">npm i -g crixin &amp;&amp; crixin install</span>
+        <a class="btn-primary" href="/install">Install in 30 seconds</a>
+        <a class="btn-ghost" href="/voice/agents">Meet the agents</a>
+      </div>
+
+      <div class="caller-visual" aria-hidden="true">
+        <div class="caller-row">
+          <span class="dot done"></span>
+          <span class="label"><strong>Sarah</strong> dialing <code>+15555550100</code> · campaign <code>q2-restaurants</code></span>
+          <span class="meta">CA94e1…3a02</span>
+        </div>
+        <div class="caller-row">
+          <span class="dot done"></span>
+          <span class="label">Status: <strong>ringing</strong> → <strong>in-progress</strong> · TCPA window OK</span>
+          <span class="meta">2.4s</span>
+        </div>
+        <div class="caller-row">
+          <span class="dot"></span>
+          <span class="label">Speaking <strong>Polly.Joanna-Neural</strong> · "Hi, I'm Sarah from…"</span>
+          <span class="caller-waveform" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span><span></span>
+          </span>
+        </div>
+        <div class="caller-row">
+          <span class="dot"></span>
+          <span class="label">Recording response · Deepgram transcribe · GPT-4o-mini classifies → <strong>interested</strong></span>
+          <span class="meta">RE5b…</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sm">
+    <div class="wrap">
+      <h2>Pick a voice. <em>Per call.</em></h2>
+      <p class="sublede">Voice MCP exposes Twilio's Polly + Google neural voices as a tool parameter — pass <code>voice: "Polly.Joanna-Neural"</code> on a <code>make_call</code> invocation. No agent roster to configure, no personas to manage. Four illustrative examples below; the full Polly catalog (30+ languages) is available on every call.</p>
+
+      <div class="roster-grid">
+        <div class="agent-card">
+          <div class="ahead"><span class="aname">Polly.Joanna-Neural</span><span class="avoice">en-US · warm</span></div>
+          <div class="arole">Default for English outbound.</div>
+          <div class="adesc">Soft pacing, lots of acknowledgment. The voice your AI will reach for most often without thinking.</div>
+        </div>
+        <div class="agent-card">
+          <div class="ahead"><span class="aname">Polly.Matthew-Neural</span><span class="avoice">en-US · professional</span></div>
+          <div class="arole">B2B / executive register.</div>
+          <div class="adesc">Tight, deliberate. Pass this when calling someone whose calendar is the bottleneck.</div>
+        </div>
+        <div class="agent-card">
+          <div class="ahead"><span class="aname">Polly.Hala-Neural</span><span class="avoice">ar-EG · natural</span></div>
+          <div class="arole">Egyptian Arabic.</div>
+          <div class="adesc">The dialect, not MSA. Makes restaurant calls in Cairo feel local instead of imported.</div>
+        </div>
+        <div class="agent-card">
+          <div class="ahead"><span class="aname">Polly.Lucia-Neural</span><span class="avoice">es-ES · clear</span></div>
+          <div class="arole">Spanish (Castilian).</div>
+          <div class="adesc">Also: <code>Polly.Mia</code> (es-MX), <code>Polly.Penelope</code> (es-US). LATAM Spanish has its own pool.</div>
+        </div>
+      </div>
+
+      <p class="sublede" style="margin-top:36px;">No personas, no campaigns, no roster to manage — your AI agent picks the voice on a per-call basis as a single tool parameter. <a href="/voice/agents" style="color:var(--brand);">Full voice catalog &rarr;</a></p>
+    </div>
+  </section>
+
+  <section class="sm" style="background:linear-gradient(180deg,transparent,rgba(245,180,82,0.03));">
+    <div class="wrap">
+      <h2>The whole sales loop. <em>Open-source.</em></h2>
+      <p class="sublede">Voice MCP ships every primitive of a real sales loop — campaigns, leads, outcome classification, compliance — exposed as MCP tools, REST endpoints, or a TypeScript library. Pick your altitude. Local SQLite, your data.</p>
+
+      <div class="work-grid">
+        <div class="work-card">
+          <h3>Campaigns &amp; <em>cadences</em></h3>
+          <p>Three presets baked in. Agents pace retries to match.</p>
+          <ul>
+            <li><code>light_touch</code> — 1–2 calls per lead</li>
+            <li><code>standard</code> — 3–5 calls, spaced</li>
+            <li><code>full_court_press</code> — 5–8 calls</li>
+            <li>Custom cadences via TypeScript</li>
+          </ul>
+        </div>
+        <div class="work-card">
+          <h3>Leads &amp; <em>outcomes</em></h3>
+          <p>Drop in a CSV or pull leads from Google Places. Every call lands a structured outcome.</p>
+          <ul>
+            <li><code>interested</code> · <code>not_interested</code></li>
+            <li><code>no_answer</code> · <code>voicemail</code></li>
+            <li><code>callback</code> with scheduled time</li>
+            <li>Qualification score &amp; transcript per lead</li>
+          </ul>
+        </div>
+        <div class="work-card">
+          <h3>Compliance, <em>by default</em></h3>
+          <p>Off-hour calls don't go out. DNC requests are honored mid-call. AMD before any prompt.</p>
+          <ul>
+            <li>TCPA windows — 8am–9pm local time</li>
+            <li>DNC list checked pre-dial</li>
+            <li>Answering machine detection (AMD)</li>
+            <li>Auto-DNC on opt-out keywords</li>
+          </ul>
+          <p style="margin-top:14px;font-size:13px;"><a href="/voice/compliance" style="color:var(--brand);">How compliance is enforced &rarr;</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sm">
+    <div class="wrap">
+      <h2>Six MCP tools. <em>One stdio server.</em></h2>
+      <p class="sublede">Drop the engine straight into Claude Code, Cursor, or Codex CLI and your agent can place a call, drop an SMS, or read back a transcript — without you writing webhooks or babysitting Twilio.</p>
+      <div class="tools-grid">
+        <div class="tool-card"><div class="tname">make_call</div><div class="tdesc">Outbound call. <code>to</code> + <code>prompt</code>, or raw TwiML.</div></div>
+        <div class="tool-card"><div class="tname">send_sms</div><div class="tdesc">SMS / MMS. Messaging Service support.</div></div>
+        <div class="tool-card"><div class="tname">transcribe_call</div><div class="tdesc">Deepgram, 30+ languages incl. Arabic.</div></div>
+        <div class="tool-card"><div class="tname">get_call</div><div class="tdesc">Status, duration, price, timestamps.</div></div>
+        <div class="tool-card"><div class="tname">list_calls</div><div class="tdesc">Filter by <code>to</code>, <code>from</code>, <code>status</code>.</div></div>
+        <div class="tool-card"><div class="tname">list_recordings</div><div class="tdesc">Recordings + auth-protected media URLs.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ The receipts: what lands in your local DB ═══════ -->
+  <section class="sm">
+    <div class="wrap">
+      <h2>And the receipts. <em>Yours.</em></h2>
+      <p class="sublede">Every call mirrored to local SQLite + (optional) Deepgram transcripts. <code style="font-family:var(--font-mono);background:var(--bg-elevated);padding:2px 6px;border-radius:4px;font-size:13px;">crixin voice wrapped</code> condenses it to a single HTML file you can open, screenshot, share. Below: an actual sample after 30 days running mixed inbound + outbound.</p>
+
+      <style>
+        .vrw {
+          margin-top: 32px;
+          border: 1px solid var(--border-subtle);
+          border-radius: 16px;
+          background: var(--bg-surface);
+          padding: 30px 28px;
+          box-shadow: 0 50px 120px -60px rgba(245, 180, 82, 0.20);
+          max-width: 900px;
+          margin-left: auto;
+          margin-right: auto;
+        }
+        .vrw-head { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; padding-bottom: 16px; border-bottom: 1px solid var(--border-subtle); margin-bottom: 22px; flex-wrap: wrap; }
+        .vrw-head h3 { font-family: var(--font-display); font-style: italic; font-weight: 400; font-size: 28px; color: var(--brand); margin: 0; }
+        .vrw-head .meta { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+
+        .vrw-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 22px; }
+        .vrw-stat { padding: 14px 16px; background: var(--bg-elevated); border: 1px solid var(--border-subtle); border-radius: 8px; }
+        .vrw-stat .l { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+        .vrw-stat .v { font-family: var(--font-display); font-style: italic; font-size: 26px; color: var(--brand); line-height: 1.05; }
+        .vrw-stat.archetype .v { font-size: 18px; }
+        .vrw-stat .s { color: var(--text-secondary); font-size: 11.5px; margin-top: 3px; }
+
+        .vrw-hm { display: grid; grid-template-columns: repeat(24, 1fr); gap: 3px; margin: 6px 0; }
+        .vrw-hm > div { aspect-ratio: 1; background: var(--bg-elevated); border-radius: 3px; }
+        .vrw-section-h { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 8px; }
+        .vrw-hint { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); text-align: center; margin-top: 6px; }
+
+        .vrw-foot { margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--border-subtle); text-align: center; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+        .vrw-cta { display: flex; justify-content: center; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
+        .vrw-cta a {
+          font-family: var(--font-mono); font-size: 12.5px;
+          padding: 9px 16px;
+          border: 1px solid var(--border-strong);
+          border-radius: 8px;
+          color: var(--text-primary);
+        }
+        .vrw-cta a:hover { border-color: var(--brand); color: var(--brand); }
+        .vrw-cta a.primary { background: var(--brand); color: #0b0d12; border-color: var(--brand); }
+      </style>
+
+      <div class="vrw">
+        <div class="vrw-head">
+          <h3>Voice Wrapped <em>· last 30 days</em></h3>
+          <span class="meta">sample · mixed inbound + outbound</span>
+        </div>
+
+        <div class="vrw-stats">
+          <div class="vrw-stat"><div class="l">Total calls</div><div class="v">1,247</div><div class="s">across 4 use cases</div></div>
+          <div class="vrw-stat"><div class="l">Minutes</div><div class="v">8,432</div><div class="s">avg 6m 45s</div></div>
+          <div class="vrw-stat"><div class="l">Twilio spend</div><div class="v">$174.32</div><div class="s">~$0.14 / call</div></div>
+          <div class="vrw-stat"><div class="l">Top country</div><div class="v">Egypt</div><div class="s">624 calls · ar-EG</div></div>
+          <div class="vrw-stat archetype"><div class="l">Caller archetype</div><div class="v">Patient Listener</div><div class="s">avg call &gt; 3 min</div></div>
+          <div class="vrw-stat"><div class="l">Duck rate</div><div class="v">14.2%</div><div class="s">"let me get back to you"</div></div>
+        </div>
+
+        <div class="vrw-section-h">Hour of day</div>
+        <div class="vrw-hm">
+          <div style="background:rgba(245,180,82,0.04);"></div>
+          <div style="background:rgba(245,180,82,0.02);"></div>
+          <div style="background:rgba(245,180,82,0.02);"></div>
+          <div style="background:rgba(245,180,82,0.02);"></div>
+          <div style="background:rgba(245,180,82,0.02);"></div>
+          <div style="background:rgba(245,180,82,0.02);"></div>
+          <div style="background:rgba(245,180,82,0.03);"></div>
+          <div style="background:rgba(245,180,82,0.08);"></div>
+          <div style="background:rgba(245,180,82,0.20);"></div>
+          <div style="background:rgba(245,180,82,0.42);"></div>
+          <div style="background:rgba(245,180,82,0.62);"></div>
+          <div style="background:rgba(245,180,82,0.78);"></div>
+          <div style="background:rgba(245,180,82,0.85);"></div>
+          <div style="background:rgba(245,180,82,0.72);"></div>
+          <div style="background:rgba(245,180,82,0.95);"></div>
+          <div style="background:rgba(245,180,82,1);"></div>
+          <div style="background:rgba(245,180,82,0.84);"></div>
+          <div style="background:rgba(245,180,82,0.62);"></div>
+          <div style="background:rgba(245,180,82,0.48);"></div>
+          <div style="background:rgba(245,180,82,0.32);"></div>
+          <div style="background:rgba(245,180,82,0.20);"></div>
+          <div style="background:rgba(245,180,82,0.10);"></div>
+          <div style="background:rgba(245,180,82,0.06);"></div>
+          <div style="background:rgba(245,180,82,0.04);"></div>
+        </div>
+        <div class="vrw-hint">12am ← peak around 3pm local → 11pm · TCPA 8am–9pm window respected</div>
+
+        <div class="vrw-foot">PII auto-stripped · generated locally · shareable</div>
+
+        <div class="vrw-cta">
+          <a href="/wrapped" class="primary">See the full Wrapped page →</a>
+          <a href="/voice/use-cases">Six use cases with receipts</a>
+          <a href="/archetype">All 8 caller archetypes</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sm" style="background:linear-gradient(180deg,transparent,rgba(245,180,82,0.03));">
+    <div class="wrap">
+      <h2>Three hosts. <em>Same one-liner.</em></h2>
+      <p class="sublede">No host-specific glue. Same npm package, same MCP transport, same env vars.</p>
+      <div class="hosts-grid">
+        <div class="host-card">
+          <h3>Claude Code</h3>
+          <pre class="code">claude mcp add crixin-voice -- \
+  npx -y crixin voice mcp</pre>
+        </div>
+        <div class="host-card">
+          <h3>Cursor</h3>
+          <pre class="code">// ~/.cursor/mcp.json
+{
+  "mcpServers": {
+    "crixin/voice": {
+      "command": "npx",
+      "args": ["-y", "crixin", "voice", "mcp"]
+    }
+  }
+}</pre>
+        </div>
+        <div class="host-card">
+          <h3>Codex CLI</h3>
+          <pre class="code"># ~/.codex/config.toml
+[mcp_servers.crixin-voice]
+command = "npx"
+args = ["-y", "crixin", "voice", "mcp"]</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sm">
+    <div class="wrap-narrow">
+      <h2>Configure once. <em>Forget it exists.</em></h2>
+      <p class="sublede">Set your Twilio creds in the environment your AI host launches from. Everything else is the agent's problem.</p>
+<pre class="code">export TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+export TWILIO_AUTH_TOKEN=your_auth_token
+export TWILIO_PHONE_NUMBER=+15555550100
+
+<span class="c"># Optional — only needed if you ask transcribe_call to use Deepgram</span>
+export DEEPGRAM_API_KEY=...
+
+crixin voice doctor       <span class="c"># verify config</span></pre>
+      <p style="color:var(--text-secondary);margin-top:18px;">No SaaS in the middle. Calls are placed straight to Twilio's REST API. Recordings live in your Twilio account. We never see your audio, your transcripts, or your phone numbers.</p>
+    </div>
+  </section>
+
+  <section class="sm" style="background:linear-gradient(180deg,transparent,rgba(245,180,82,0.03));">
+    <div class="wrap-narrow">
+      <div class="heritage">
+        <h3>Why this is <em>open</em>.</h3>
+        <p>Crixin used to run as a hosted SaaS — multi-tenant, Stripe-billed, 4 voices × 4 personas, Google-Places lead sourcing, Firestore campaign management, GPT-4o-mini outcome classification. It worked. But the hosted-platform shape pulled us into a category — telecom SaaS — where we couldn't beat Vapi / Bland / Telnyx on infrastructure, and where the moat was somebody else's.</p>
+        <p>So we cut it. Voice MCP is now the open-source half of a two-MCP toolkit (the other half: Coder MCP for memory). The structural moat — MCP-first, BYO carrier, BYO LLM, local SQLite — is the thing the hosted-platform players can't easily copy. <a href="/voice/pricing" style="color:var(--brand);">See pricing &rarr;</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="footer-cta">
+    <div class="wrap-narrow">
+      <h2>Free. <em>Bring your own Twilio.</em></h2>
+      <p>The package is MIT-licensed and free forever. You pay Twilio for the calls and SMS — typically &lt;$0.02 per minute domestic, varies by destination.</p>
+      <div class="ctas" style="justify-content:center;">
+        <span class="copy-cmd" onclick="navigator.clipboard.writeText('npm i -g crixin')">npm i -g crixin</span>
+        <a class="btn-primary" href="/voice/install">Install guide</a>
+        <a class="btn-ghost" href="/voice/docs">Tool reference</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site">
+    <div class="wrap" style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;">
+      <div>
+        <a href="/">crixin</a>
+        <a href="/voice">voice</a>
+        <a href="/voice/agentic">agentic</a>
+        <a href="/voice/agents">agents</a>
+        <a href="/voice/compliance">compliance</a>
+        <a href="/voice/pricing">pricing</a>
+      </div>
+      <div>
+        <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a>
+        <a href="https://www.npmjs.com/package/crixin">npm</a>
+        <a href="mailto:hello@crixin.com">hello@crixin.com</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,1673 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Crixin — give your AI a phone and a memory. Local-first.</title>
+  <meta name="description" content="Your AI agent can call real numbers, send SMS, transcribe conversations, and recall context from every past coding session. Locally, through your own Twilio. Works with Claude Code, Cursor, Codex CLI, and Claude Desktop. Built on MCP." />
+  <meta name="keywords" content="ai phone calls, ai memory, ai agent capabilities, twilio mcp, claude code memory, codex cli memory, cursor memory, mcp server, local-first ai, voice wrapped, caller archetype" />
+  <link rel="canonical" href="https://crixin.com/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Crixin — give your AI a phone and a memory" />
+  <meta property="og:description" content="Your AI can call real numbers and recall every coding session it's had with you. Locally, through your own Twilio. Built on MCP." />
+  <meta property="og:url" content="https://crixin.com/" />
+  <meta property="og:image" content="https://crixin.com/og-image.png" />
+  <meta property="og:site_name" content="Crixin" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Crixin — give your AI a phone and a memory" />
+  <meta name="twitter:description" content="Your AI can dial, text, transcribe, and remember. Locally. Bring your own Twilio. Built on MCP." />
+  <meta name="twitter:image" content="https://crixin.com/og-image.png" />
+
+  <!-- Structured data: SoftwareApplication + Offer -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Crixin",
+    "alternateName": ["crixin", "Crixin MCP Toolkit"],
+    "description": "Your AI agent can call real numbers, send SMS, transcribe conversations, and recall context from every Claude Code, Codex CLI, and Cursor session. Locally, through your own Twilio. Built on MCP; works with Claude Code, Cursor, Codex CLI, and Claude Desktop.",
+    "applicationCategory": "DeveloperApplication",
+    "applicationSubCategory": "AgentTools",
+    "operatingSystem": ["macOS", "Linux", "Windows"],
+    "url": "https://crixin.com",
+    "downloadUrl": "https://www.npmjs.com/package/crixin",
+    "softwareVersion": "0.4.0",
+    "license": "https://opensource.org/licenses/MIT",
+    "author": { "@type": "Person", "name": "Mosab Abdallah", "url": "https://github.com/Mrdopplereffekt" },
+    "publisher": { "@type": "Organization", "name": "Lazizatech", "url": "https://github.com/THELAZIZAGROUP" },
+    "keywords": "mcp toolkit, ai agent infrastructure, twilio mcp, ai memory, mcp server, claude code, cursor, codex cli",
+    "featureList": [
+      "Voice MCP — make_call / send_sms / transcribe_call / get_call / list_calls / list_recordings",
+      "Coder MCP — search_sessions / list_recent_sessions / get_session / stats across all your AI coding history",
+      "One-shot install into Claude Code, Cursor, Codex CLI, and Claude Desktop",
+      "Local SQLite — your transcripts and history stay on your laptop",
+      "Polly + Google neural voices, 30+ languages incl. Arabic via Deepgram",
+      "Wrapped — year-end visual receipt for both Voice and Coder",
+      "Caller Archetype — Quick Pitcher / Patient Listener / Ducker / Hard Closer / …",
+      "Bring your own Twilio. Bring your own LLM. No SaaS in the middle."
+    ],
+    "offers": [
+      {
+        "@type": "Offer",
+        "name": "Free",
+        "price": "0",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "description": "Open source forever. Bring your own Twilio."
+      },
+      {
+        "@type": "Offer",
+        "name": "Pro",
+        "price": "5",
+        "priceCurrency": "USD",
+        "priceSpecification": {
+          "@type": "UnitPriceSpecification",
+          "price": "5",
+          "priceCurrency": "USD",
+          "unitText": "month",
+          "billingDuration": "P1M"
+        },
+        "availability": "https://schema.org/InStock",
+        "url": "https://crixin.com/#install",
+        "description": "$5/month: hosted Wrapped, cross-machine memory sync, premium archetypes. 3-day free trial. Cancel anytime."
+      }
+    ]
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" />
+  <!-- To swap the hero visual for a Spline scene later, uncomment the line below
+       and add `<spline-viewer url="https://prod.spline.design/<id>/scene.splinecode"></spline-viewer>`
+       inside `.hero-right`. The Three.js scene currently renders the brand-aligned visual.
+  <script type="module" src="https://unpkg.com/@splinetool/viewer@1.10.62/build/spline-viewer.js"></script>
+  -->
+
+  <style>
+    :root {
+      --bg-base:        #0a0c11;
+      --bg-surface:     #14161e;
+      --bg-elevated:    #1c1f29;
+      --border-subtle:  #232631;
+      --border-strong:  #353945;
+      --text-primary:   #ecedf1;
+      --text-secondary: #989ba9;
+      --text-muted:     #5e6373;
+      --brand:          #f5b452;
+      --brand-deep:     #d68f2c;
+      --brand-soft:     #fad08e;
+      --success:        #7bd88f;
+      --danger:         #f7768e;
+      --font-sans:      "Geist", -apple-system, system-ui, sans-serif;
+      --font-display:   "Instrument Serif", Georgia, serif;
+      --font-mono:      "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
+      --ease:           cubic-bezier(0.22, 1, 0.36, 1);
+      --spring:         cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    * { box-sizing: border-box; }
+    *::-webkit-scrollbar { width: 0; height: 0; }
+    * { scrollbar-width: none; }
+
+    html, body { margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 1.6;
+      letter-spacing: -0.005em;
+      overflow-x: hidden;
+      position: relative;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Ambient gradient — fixed under everything */
+    body::before {
+      content: ""; position: fixed; inset: 0; pointer-events: none; z-index: -1;
+      background:
+        radial-gradient(1100px 700px at 78% -10%, rgba(245, 180, 82, 0.08), transparent 60%),
+        radial-gradient(900px 500px at 8% 110%, rgba(245, 180, 82, 0.05), transparent 60%);
+    }
+    /* Film grain on top of everything for texture */
+    body::after {
+      content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 60;
+      opacity: 0.05;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.85 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    }
+
+    /* Particle field — fixed full-document, behind everything */
+    #embers {
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none;
+    }
+    /* Three.js scene canvas — hero right column */
+    #scene { position: absolute; inset: 0; z-index: 2; }
+    /* Spline viewer — sits over Three.js, fades in on load */
+    spline-viewer {
+      position: absolute; inset: 0;
+      width: 100% !important; height: 100% !important;
+      opacity: 0;
+      transition: opacity 700ms var(--ease);
+      --shadow: none;
+      background: transparent !important;
+    }
+    spline-viewer.loaded { opacity: 1; }
+    spline-viewer::part(logo) { display: none; }
+
+    code, pre, .mono { font-family: var(--font-mono); font-size: 0.92em; }
+    a { color: var(--brand); text-decoration: none; transition: color 160ms var(--ease); }
+    a:hover { color: var(--brand-soft); }
+    button, input { font: inherit; }
+    ::selection { background: rgba(245, 180, 82, 0.28); color: var(--text-primary); }
+    :focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; border-radius: 4px; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; animation: none !important; }
+      html { scroll-behavior: auto; }
+    }
+
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 0 32px; position: relative; z-index: 10; }
+    .wrap-narrow { max-width: 820px; margin: 0 auto; padding: 0 32px; position: relative; z-index: 10; }
+
+    /* ----- Header — dissolved into the page; scroll-aware backdrop ----- */
+    header.site {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 40;
+      transition: background 240ms var(--ease), backdrop-filter 240ms var(--ease), border-color 240ms var(--ease);
+      background: transparent;
+      border-bottom: 1px solid transparent;
+    }
+    header.site.scrolled {
+      backdrop-filter: blur(14px) saturate(140%);
+      -webkit-backdrop-filter: blur(14px) saturate(140%);
+      background: rgba(10, 12, 17, 0.55);
+      border-bottom-color: rgba(245, 180, 82, 0.10);
+    }
+    header.site .row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 0;
+    }
+    .brand-mark {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--brand);
+      letter-spacing: -0.025em;
+      line-height: 1;
+      display: inline-flex; align-items: baseline; gap: 10px;
+      transition: color 200ms var(--ease), text-shadow 240ms var(--ease);
+    }
+    .brand-mark:hover { color: var(--brand-soft); text-shadow: 0 0 24px rgba(245, 180, 82, 0.45); }
+    .brand-mark .tag {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-style: normal;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+      transform: translateY(-2px);
+      transition: color 200ms var(--ease);
+    }
+    .brand-mark:hover .tag { color: var(--brand-soft); }
+    nav.primary { display: flex; align-items: center; gap: 4px; }
+    nav.primary a {
+      position: relative;
+      color: var(--text-secondary);
+      font-size: 13.5px;
+      font-weight: 500;
+      letter-spacing: 0.005em;
+      padding: 8px 14px;
+      transition: color 200ms var(--ease);
+    }
+    nav.primary a:not(.cta)::after {
+      content: ""; position: absolute; left: 14px; right: 14px; bottom: 4px;
+      height: 1px;
+      background: var(--brand);
+      transform: scaleX(0);
+      transform-origin: center;
+      transition: transform 280ms var(--spring);
+    }
+    nav.primary a:not(.cta):hover { color: var(--text-primary); }
+    nav.primary a:not(.cta):hover::after { transform: scaleX(1); }
+    nav.primary a.cta {
+      margin-left: 12px;
+      color: var(--brand);
+      padding: 8px 16px;
+      border: 1px solid rgba(245, 180, 82, 0.4);
+      border-radius: 999px;
+      transition: all 220ms var(--spring);
+    }
+    nav.primary a.cta:hover {
+      background: rgba(245, 180, 82, 0.10);
+      border-color: var(--brand);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px -8px rgba(245, 180, 82, 0.5);
+    }
+
+    /* ----- Hero ----- */
+    section.hero {
+      position: relative;
+      min-height: min(880px, 100dvh);
+      display: grid; place-items: center;
+      padding: 64px 0 96px;
+      overflow: hidden;
+    }
+    .hero-grid {
+      display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 60px;
+      align-items: center;
+      width: 100%;
+      position: relative; z-index: 10;
+    }
+    .hero-left { animation: fadeUp 800ms var(--ease) both; }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 12px; font-weight: 500;
+      color: var(--brand);
+      letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 6px 14px;
+      background: rgba(245, 180, 82, 0.06);
+      border: 1px solid rgba(245, 180, 82, 0.25);
+      border-radius: 999px;
+      margin-bottom: 24px;
+    }
+    .hero-eyebrow .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--brand);
+      box-shadow: 0 0 12px var(--brand);
+      animation: pulse 2.4s var(--ease) infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.4; transform: scale(0.7); }
+    }
+    h1.hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(46px, 6vw, 84px);
+      font-weight: 400;
+      line-height: 0.98;
+      letter-spacing: -0.025em;
+      margin: 0 0 28px;
+      color: var(--text-primary);
+      text-wrap: balance;
+    }
+    h1.hero-title em {
+      font-style: italic;
+      color: var(--brand);
+      position: relative;
+    }
+    h1.hero-title em::after {
+      content: ""; position: absolute; left: 0; right: 0; bottom: -2px; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--brand), transparent);
+      transform: scaleX(0);
+      transform-origin: left;
+      animation: drawLine 1200ms 600ms var(--ease) forwards;
+    }
+    @keyframes drawLine {
+      to { transform: scaleX(1); }
+    }
+    .hero-lede {
+      font-size: 18px;
+      color: var(--text-secondary);
+      max-width: 540px;
+      margin: 0 0 36px;
+      line-height: 1.55;
+      animation: fadeUp 800ms 200ms var(--ease) both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .install-pill {
+      display: inline-flex; align-items: stretch;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.6);
+      animation: fadeUp 800ms 320ms var(--ease) both;
+      max-width: 100%;
+    }
+    .install-pill .cmd {
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      color: var(--text-primary);
+      padding: 16px 20px;
+      letter-spacing: -0.005em;
+      white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+    .install-pill .cmd .prompt { color: var(--text-muted); user-select: none; margin-right: 10px; }
+    .install-pill .cmd .amber { color: var(--brand); }
+    .install-pill button {
+      background: rgba(245, 180, 82, 0.08);
+      border: 0;
+      border-left: 1px solid var(--border-subtle);
+      color: var(--brand);
+      padding: 0 18px;
+      font-size: 12px; font-weight: 600;
+      letter-spacing: 0.04em; text-transform: uppercase;
+      cursor: pointer;
+      transition: background 200ms var(--ease);
+    }
+    .install-pill button:hover { background: rgba(245, 180, 82, 0.16); }
+    .install-pill button.copied { color: var(--success); }
+    .hero-meta {
+      display: flex; gap: 24px; margin-top: 24px;
+      font-size: 12.5px; color: var(--text-muted);
+      animation: fadeUp 800ms 460ms var(--ease) both;
+    }
+    .hero-meta .item { display: flex; align-items: center; gap: 6px; }
+    .hero-meta svg { width: 14px; height: 14px; color: var(--brand); }
+
+    .hero-right {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      border-radius: 20px;
+      overflow: hidden;
+      background: radial-gradient(circle at 30% 30%, rgba(245, 180, 82, 0.06), transparent 60%), var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      animation: fadeUp 1000ms 200ms var(--ease) both;
+      min-height: 460px;
+    }
+    .hero-right > canvas, .hero-right > #scene {
+      position: absolute !important; inset: 0 !important;
+      width: 100% !important; height: 100% !important;
+      display: block;
+    }
+    /* Spline iframe placeholder — drop your scene URL here.
+       Get one at https://spline.design/ → Export → Public URL.
+       The Three.js fallback below renders meanwhile. */
+    .spline-frame {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      border: 0;
+      opacity: 0;
+      transition: opacity 600ms var(--ease);
+    }
+    .spline-frame.loaded { opacity: 1; }
+    .hero-right .scene-label {
+      position: absolute; bottom: 16px; left: 16px;
+      z-index: 10;
+      color: var(--text-muted); font-size: 11px;
+      font-family: var(--font-mono);
+      letter-spacing: 0.04em;
+      pointer-events: none;
+    }
+
+    /* ----- Sections ----- */
+    section.block { padding: 120px 0; position: relative; }
+    section.block.tight { padding: 80px 0; }
+
+    /* Always-visible content. Subtle entrance only fires on viewport intersection,
+       and only adds a tiny upward translate (no opacity hide). Fully accessible to
+       SEO, no-JS, and screenshot tooling at any moment. */
+    .reveal { transition: transform 700ms var(--ease); }
+    .reveal-stagger > * { transition: transform 700ms var(--ease); }
+    body.has-reveal .reveal:not(.in) { transform: translateY(14px); }
+    body.has-reveal .reveal-stagger:not(.in) > * { transform: translateY(10px); }
+
+    .eyebrow {
+      font-size: 11px; font-weight: 600;
+      color: var(--brand);
+      letter-spacing: 0.10em; text-transform: uppercase;
+      margin: 0 0 14px;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(36px, 4.4vw, 56px);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      font-weight: 400;
+      margin: 0 0 18px;
+      color: var(--text-primary);
+      text-wrap: balance;
+    }
+    .section-title em { font-style: italic; color: var(--brand); }
+    .section-lede {
+      font-size: 17px;
+      color: var(--text-secondary);
+      max-width: 640px;
+      margin: 0 0 56px;
+      line-height: 1.55;
+    }
+
+    /* ----- Pillars (3 cards with mouse-tilt) ----- */
+    .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .pillar {
+      position: relative;
+      padding: 36px 28px 32px;
+      background: linear-gradient(180deg, var(--bg-surface) 0%, rgba(20, 22, 30, 0.6) 100%);
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      transition: transform 280ms var(--spring), border-color 220ms var(--ease);
+      transform-style: preserve-3d;
+      will-change: transform;
+      overflow: hidden;
+    }
+    .pillar:hover { border-color: rgba(245, 180, 82, 0.4); }
+    .pillar::before {
+      content: ""; position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(400px circle at var(--mx, 50%) var(--my, 50%), rgba(245, 180, 82, 0.08), transparent 40%);
+      opacity: 0; transition: opacity 220ms var(--ease);
+    }
+    .pillar:hover::before { opacity: 1; }
+    .pillar .num {
+      font-family: var(--font-display);
+      font-size: 56px;
+      line-height: 1;
+      font-style: italic;
+      color: var(--brand);
+      opacity: 0.9;
+      margin-bottom: 18px;
+      letter-spacing: -0.03em;
+    }
+    .pillar h3 {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      margin: 0 0 10px;
+      color: var(--text-primary);
+    }
+    .pillar p {
+      color: var(--text-secondary);
+      font-size: 14.5px;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* ----- Showcase row (Wrapped tease) ----- */
+    .showcase {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 56px;
+      align-items: center;
+    }
+    .showcase img {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(245, 180, 82, 0.04);
+      transition: transform 600ms var(--ease);
+    }
+    .showcase img:hover { transform: translateY(-4px) scale(1.005); }
+
+    /* ----- Code block (How it works) ----- */
+    .codeblock {
+      background: linear-gradient(180deg, #0a0c11 0%, #0c0e14 100%);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 28px 32px;
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      line-height: 1.85;
+      color: var(--text-primary);
+      overflow-x: auto;
+      box-shadow: 0 16px 40px -20px rgba(0, 0, 0, 0.5);
+    }
+    .codeblock .prompt { color: var(--text-muted); user-select: none; }
+    .codeblock .comment { color: var(--text-muted); font-style: italic; }
+    .codeblock .amber { color: var(--brand); }
+
+    /* ----- Hosts (per-host install) ----- */
+    .hosts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .host {
+      padding: 28px 24px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      transition: transform 280ms var(--spring), border-color 220ms var(--ease);
+    }
+    .host:hover { transform: translateY(-3px); border-color: rgba(245, 180, 82, 0.35); }
+    .host .icon {
+      width: 36px; height: 36px;
+      border-radius: 9px;
+      display: grid; place-items: center;
+      background: rgba(245, 180, 82, 0.08);
+      color: var(--brand);
+      margin-bottom: 18px;
+    }
+    .host h3 {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 400;
+      letter-spacing: -0.015em;
+      margin: 0 0 10px;
+    }
+    .host p { color: var(--text-secondary); font-size: 14px; margin: 0 0 16px; line-height: 1.55; }
+    .host .snippet {
+      background: #0a0c11;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: var(--text-secondary);
+      overflow-x: auto;
+      margin-bottom: 14px;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 16px;
+      border-radius: 8px;
+      font-size: 13px; font-weight: 600;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      transition: all 200ms var(--spring);
+      text-decoration: none;
+      border: 0;
+    }
+    .btn-primary {
+      background: var(--brand);
+      color: #0a0c11;
+    }
+    .btn-primary:hover { background: var(--brand-soft); transform: translateY(-1px); color: #0a0c11; }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border-strong);
+    }
+    .btn-ghost:hover { color: var(--text-primary); border-color: var(--text-muted); }
+
+    /* ----- Pricing ----- */
+    .pricing { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .tier {
+      position: relative;
+      padding: 36px 28px 32px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      transition: transform 280ms var(--spring), border-color 220ms var(--ease);
+    }
+    .tier:hover { transform: translateY(-3px); border-color: var(--border-strong); }
+    .tier.featured {
+      background: linear-gradient(180deg, rgba(245, 180, 82, 0.05) 0%, var(--bg-surface) 60%);
+      border-color: rgba(245, 180, 82, 0.4);
+      box-shadow: 0 30px 60px -30px rgba(245, 180, 82, 0.15);
+    }
+    .tier.featured::before {
+      content: "Most popular";
+      position: absolute; top: -10px; right: 24px;
+      background: var(--brand);
+      color: #0a0c11;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 6px;
+    }
+    .tier .name {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+      letter-spacing: -0.01em;
+    }
+    .tier .price {
+      font-family: var(--font-display);
+      font-size: 52px;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
+      margin: 14px 0 18px;
+      font-variant-numeric: tabular-nums;
+    }
+    .tier .price .per {
+      font-size: 14px; color: var(--text-muted);
+      font-family: var(--font-sans);
+    }
+    .tier ul {
+      list-style: none; padding: 0; margin: 0 0 24px;
+      color: var(--text-secondary); font-size: 14px;
+    }
+    .tier li {
+      padding: 8px 0;
+      border-top: 1px solid var(--border-subtle);
+      line-height: 1.5;
+    }
+    .tier li:first-child { border-top: 0; }
+
+    /* ----- Final CTA ----- */
+    .final-cta {
+      text-align: center;
+      padding: 80px 32px;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+    .final-cta h2 {
+      font-family: var(--font-display);
+      font-size: clamp(48px, 6vw, 80px);
+      line-height: 1;
+      letter-spacing: -0.025em;
+      margin: 0 0 24px;
+      font-weight: 400;
+    }
+    .final-cta h2 em { font-style: italic; color: var(--brand); }
+    .final-cta p {
+      font-size: 17px; color: var(--text-secondary);
+      margin: 0 auto 36px; max-width: 520px;
+    }
+    .final-form { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; max-width: 520px; margin: 0 auto; }
+    .final-form input {
+      flex: 1; min-width: 220px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      transition: border-color 200ms var(--ease);
+    }
+    .final-form input:focus { outline: none; border-color: var(--brand); }
+    .final-form button { padding: 12px 20px; border-radius: 10px; }
+    #waitlist-msg { color: var(--text-muted); font-size: 13px; margin-top: 14px; min-height: 18px; }
+
+    /* ----- Footer ----- */
+    footer.site {
+      border-top: 1px solid var(--border-subtle);
+      padding: 36px 0;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+    footer.site .row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+    footer.site a { color: var(--text-secondary); }
+    footer.site a:hover { color: var(--text-primary); }
+
+    /* ----- Responsive ----- */
+    @media (max-width: 940px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+      .hero-right { order: -1; min-height: 320px; aspect-ratio: 16 / 10; }
+      .pillars, .hosts, .pricing { grid-template-columns: 1fr; }
+      .showcase { grid-template-columns: 1fr; }
+      section.block { padding: 80px 0; }
+    }
+    @media (max-width: 600px) {
+      .wrap, .wrap-narrow { padding: 0 20px; }
+      nav.primary { gap: 16px; }
+      nav.primary a:not(.cta) { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Page-wide pulsing-ember field — sits behind everything, fixed to viewport. -->
+  <canvas id="embers" aria-hidden="true"></canvas>
+
+  <header class="site" id="site-header">
+    <div class="wrap row">
+      <a href="/" class="brand-mark">crixin<span class="tag">v0.4.0</span></a>
+      <nav class="primary">
+        <a href="/voice">Voice</a>
+        <a href="/coder">Coder</a>
+        <a href="/wrapped">Wrapped</a>
+        <a href="/install">Install</a>
+        <a href="/login">Sign in</a>
+        <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a>
+        <a href="#install" class="cta">Get started</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <span class="hero-eyebrow"><span class="dot"></span> v0.4.0 · live on npm</span>
+          <h1 class="hero-title">Give your AI a <em>phone</em> and a <em>memory</em>.</h1>
+          <p class="hero-lede">Your AI agent can <strong>call real numbers</strong>, send SMS, transcribe conversations, and <strong>recall context</strong> from every coding session it's had with you. Locally, through your own Twilio and your own machine. Works with Claude Code, Cursor, Codex CLI, and Claude Desktop. <span style="color:var(--text-muted);">Built on MCP.</span></p>
+          <div class="install-pill" id="install-pill">
+            <span class="cmd"><span class="prompt">$</span>npm i -g <span class="amber">crixin</span> &amp;&amp; crixin install</span>
+            <button id="copy-install" type="button" aria-label="Copy install command">Copy</button>
+          </div>
+          <div class="hero-meta">
+            <span class="item"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 7l4 4 6-7"/></svg>Built on MCP</span>
+            <span class="item"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 7l4 4 6-7"/></svg>Local-first SQLite</span>
+            <span class="item"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 7l4 4 6-7"/></svg>MIT licensed</span>
+          </div>
+        </div>
+
+        <div class="hero-right">
+          <!-- Three.js receipt — a tear-off ledger of what your AI did this week.
+               Items are call outcomes (orders, meetings, reservations) instead
+               of sessions. The Three.js scene wraps it in floating rotation. -->
+          <canvas id="scene" aria-hidden="true"></canvas>
+          <span class="scene-label">// your AI agent · audited</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Live install terminal (MagicUI-inspired, vanilla JS) ===== -->
+  <section class="block tight" id="terminal-demo">
+    <style>
+      .ct-wrap {
+        max-width: 960px;
+        margin: 0 auto;
+      }
+      .ct-eyebrow {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        text-align: center;
+        margin-bottom: 14px;
+      }
+      .crixin-terminal {
+        position: relative;
+        background: #0a0c11;
+        border: 1px solid rgba(245, 180, 82, 0.14);
+        border-radius: 14px;
+        box-shadow: 0 30px 80px -30px rgba(245, 180, 82, 0.18),
+                    0 1px 0 rgba(255,255,255,0.04) inset;
+        overflow: hidden;
+      }
+      .ct-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 18px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        background: linear-gradient(180deg, rgba(255,255,255,0.025), transparent);
+      }
+      .ct-dot {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+      .ct-dot.r { background: #ff5f57; }
+      .ct-dot.y { background: #febb2e; }
+      .ct-dot.g { background: #27c93f; }
+      .ct-title {
+        flex: 1;
+        text-align: center;
+        font-family: var(--font-mono);
+        font-size: 11.5px;
+        color: var(--text-muted);
+        letter-spacing: 0.04em;
+        margin-right: 33px;
+      }
+      .ct-body {
+        font-family: var(--font-mono);
+        font-size: 13.5px;
+        line-height: 1.75;
+        padding: 22px 24px;
+        color: #e6e8ef;
+        min-height: 580px;
+        overflow: hidden;
+      }
+      .ct-line {
+        opacity: 0;
+        transform: translateY(-4px);
+        transition: opacity 280ms var(--ease), transform 280ms var(--ease);
+        white-space: pre;
+      }
+      .ct-line.shown { opacity: 1; transform: translateY(0); }
+      .ct-line.typing .ct-text::after {
+        content: "▎";
+        color: var(--brand);
+        margin-left: 1px;
+        animation: ct-blink 800ms steps(2, end) infinite;
+      }
+      .ct-line.typing.done .ct-text::after { content: ""; animation: none; }
+      @keyframes ct-blink {
+        0%, 50% { opacity: 1; }
+        50.01%, 100% { opacity: 0; }
+      }
+      .ct-prompt { color: var(--brand); }
+      .ct-check { color: #7bd88f; }
+      .ct-dim { color: var(--text-muted); }
+      .ct-amber { color: var(--brand); }
+      .ct-arrow { color: var(--brand-soft); }
+      .ct-empty { display: block; height: 0.6em; }
+      @media (max-width: 620px) {
+        .ct-body { font-size: 12px; padding: 16px 14px; min-height: 540px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .ct-line { opacity: 1; transform: none; transition: none; }
+        .ct-line.typing .ct-text::after { animation: none; }
+      }
+    </style>
+    <div class="wrap">
+      <div class="ct-wrap">
+        <p class="ct-eyebrow">30 seconds · npm to first MCP call</p>
+        <div class="crixin-terminal" id="crixin-terminal">
+          <div class="ct-header">
+            <span class="ct-dot r"></span>
+            <span class="ct-dot y"></span>
+            <span class="ct-dot g"></span>
+            <span class="ct-title">~ — crixin</span>
+          </div>
+          <div class="ct-body" id="ct-body">
+            <div class="ct-line" data-type="type" data-duration="35"><span class="ct-text"></span></div>
+            <div class="ct-line" data-type="span"><span class="ct-dim">added 1 package in 4.1s</span></div>
+            <div class="ct-line ct-empty"></div>
+            <div class="ct-line" data-type="span"><span class="ct-check">✓</span> claude code     <span class="ct-dim">~/.claude/settings.json</span>   <span class="ct-amber">crixin-voice</span> + <span class="ct-amber">crixin-coder</span></div>
+            <div class="ct-line" data-type="span"><span class="ct-check">✓</span> cursor          <span class="ct-dim">~/.cursor/mcp.json</span>        <span class="ct-amber">crixin-voice</span> + <span class="ct-amber">crixin-coder</span></div>
+            <div class="ct-line" data-type="span"><span class="ct-check">✓</span> codex cli       <span class="ct-dim">~/.codex/config.toml</span>      <span class="ct-amber">crixin-voice</span> + <span class="ct-amber">crixin-coder</span></div>
+            <div class="ct-line" data-type="span"><span class="ct-check">✓</span> claude desktop  <span class="ct-dim">~/Library/.../claude_desktop_config.json</span></div>
+            <div class="ct-line ct-empty"></div>
+            <div class="ct-line" data-type="type" data-duration="40"><span class="ct-text"></span></div>
+            <div class="ct-line" data-type="span"><span class="ct-check">✓</span> Twilio       <span class="ct-dim">account active · trial</span></div>
+            <div class="ct-line" data-type="span"><span class="ct-check">✓</span> Deepgram     <span class="ct-dim">nova-2 reachable</span></div>
+            <div class="ct-line" data-type="span"><span class="ct-check">✓</span> MCP          <span class="ct-amber">crixin-voice</span> + <span class="ct-amber">crixin-coder</span> installed in 4 hosts</div>
+            <div class="ct-line ct-empty"></div>
+            <div class="ct-line" data-type="type" data-duration="40"><span class="ct-text"></span></div>
+            <div class="ct-line" data-type="span"><span class="ct-amber">ingested 447 sessions · 312,841 messages</span> <span class="ct-dim">→ ~/.crixin/crixin.db</span></div>
+            <div class="ct-line ct-empty"></div>
+            <div class="ct-line" data-type="type" data-duration="45"><span class="ct-text"></span></div>
+            <div class="ct-line" data-type="span"><span class="ct-arrow">→</span> <span class="ct-amber">make_call</span> fired · <span class="ct-dim">Dr. Patel Dental</span> · <span class="ct-check">ringing…</span></div>
+            <div class="ct-line" data-type="span"><span class="ct-arrow">→</span> connected · <span class="ct-dim">47s · transcribed (Deepgram nova-2)</span></div>
+            <div class="ct-line" data-type="span"><span class="ct-dim">  "Hi, yes — Tuesday at 3pm works. See you then."</span></div>
+            <div class="ct-line" data-type="span"><span class="ct-check">✓</span> outcome: <span class="ct-amber">confirmed</span> · <span class="ct-dim">saved to ~/.crixin/crixin.db</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        const terminal = document.getElementById("crixin-terminal");
+        if (!terminal) return;
+
+        // Content for each typing line, in order
+        const typingContent = [
+          { line: 0, text: '$ npm i -g crixin && crixin install' },
+          { line: 8, text: '$ crixin doctor' },
+          { line: 13, text: '$ crixin coder ingest' },
+          { line: 16, text: '$ # now in your AI host:\n> use crixin-voice to call my dentist' },
+        ];
+
+        const lines = Array.from(terminal.querySelectorAll(".ct-line"));
+        let started = false;
+
+        function escapeHtml(s) {
+          return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        // Render the $ prompt char in brand color when typing
+        function renderTyping(target, text) {
+          // Wrap the leading "$" or ">" as the prompt accent if present
+          const m = text.match(/^([\$>])(\s)([\s\S]*)$/);
+          if (m) {
+            target.innerHTML = '<span class="ct-prompt">' + m[1] + '</span>' + m[2] + escapeHtml(m[3]);
+          } else if (text.startsWith("$ #")) {
+            target.innerHTML = '<span class="ct-dim">' + escapeHtml(text) + '</span>';
+          } else {
+            target.innerHTML = escapeHtml(text);
+          }
+        }
+
+        function typeLine(line, full, duration) {
+          return new Promise((resolve) => {
+            line.classList.add("shown", "typing");
+            const target = line.querySelector(".ct-text");
+            let i = 0;
+            const tick = () => {
+              if (i <= full.length) {
+                renderTyping(target, full.slice(0, i));
+                i++;
+                setTimeout(tick, duration);
+              } else {
+                line.classList.add("done");
+                resolve();
+              }
+            };
+            tick();
+          });
+        }
+
+        function showSpan(line) {
+          return new Promise((resolve) => {
+            line.classList.add("shown");
+            setTimeout(resolve, line.classList.contains("ct-empty") ? 60 : 240);
+          });
+        }
+
+        async function play() {
+          if (started) return;
+          started = true;
+          for (let idx = 0; idx < lines.length; idx++) {
+            const line = lines[idx];
+            const type = line.dataset.type;
+            if (type === "type") {
+              // Find the typing content for this line index
+              const content = typingContent.find((c) => c.line === idx);
+              if (content) {
+                const duration = parseInt(line.dataset.duration || "40", 10);
+                await typeLine(line, content.text, duration);
+                await new Promise((r) => setTimeout(r, 320));
+              }
+            } else if (type === "span") {
+              await showSpan(line);
+            } else {
+              // ct-empty spacer
+              await showSpan(line);
+            }
+          }
+        }
+
+        if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          // Reveal all immediately
+          lines.forEach((l) => l.classList.add("shown"));
+          typingContent.forEach((c) => {
+            const target = lines[c.line]?.querySelector(".ct-text");
+            if (target) renderTyping(target, c.text);
+          });
+          return;
+        }
+
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              if (e.isIntersecting) {
+                play();
+                io.disconnect();
+                break;
+              }
+            }
+          },
+          { threshold: 0.3 }
+        );
+        io.observe(terminal);
+      })();
+    </script>
+  </section>
+
+  <!-- ===== Two capabilities ===== -->
+  <section class="block">
+    <div class="wrap">
+      <div class="reveal">
+        <p class="eyebrow">What it does</p>
+        <h2 class="section-title">Two new senses. <em>One toolkit.</em></h2>
+        <p class="section-lede">Crixin gives your AI agent the two things a chat window doesn't: a way to <em>reach the world</em>, and a way to <em>remember what it did there</em>. Both ship in one npm package, share one local SQLite, and install into Claude Code, Cursor, Codex CLI, and Claude Desktop with a single command.</p>
+      </div>
+      <div class="pillars reveal-stagger">
+        <article class="pillar tilt">
+          <div class="num">01</div>
+          <h3>The phone</h3>
+          <p>Your AI <strong>dials real numbers</strong>, sends SMS, and transcribes the call — through your own Twilio account. Polly + Google neural voices in 30+ languages including Egyptian Arabic. Compliance gates (TCPA windows, geo-gate, DNC) baked in.</p>
+          <p style="margin-top:10px;font-family:var(--font-mono);font-size:12px;color:var(--text-muted);letter-spacing:0.04em;">Voice MCP · 6 tools · <code style="background:transparent;color:inherit;">make_call</code> · <code style="background:transparent;color:inherit;">send_sms</code> · <code style="background:transparent;color:inherit;">transcribe_call</code> · …</p>
+          <p style="margin-top:14px;"><a class="btn btn-ghost" href="/voice">See it →</a></p>
+        </article>
+        <article class="pillar tilt">
+          <div class="num">02</div>
+          <h3>The memory</h3>
+          <p>Your AI <strong>recalls every Claude Code, Codex CLI, and Cursor session</strong> you've ever had with it. No more re-explaining your project for the 40th time — the LLM driving today's call can pull up what you and it agreed on last Tuesday at 3am.</p>
+          <p style="margin-top:10px;font-family:var(--font-mono);font-size:12px;color:var(--text-muted);letter-spacing:0.04em;">Coder MCP · 4 tools · <code style="background:transparent;color:inherit;">search_sessions</code> · <code style="background:transparent;color:inherit;">get_session</code> · <code style="background:transparent;color:inherit;">stats</code> · …</p>
+          <p style="margin-top:14px;"><a class="btn btn-ghost" href="/coder">See it →</a></p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Showcase: Wrapped ===== -->
+  <section class="block tight">
+    <div class="wrap">
+      <div class="showcase reveal">
+        <div>
+          <p class="eyebrow">The year-end receipt</p>
+          <h2 class="section-title">Wrapped. <em>For both halves.</em></h2>
+          <p class="section-lede"><code class="mono">crixin voice wrapped</code> and <code class="mono">crixin coder wrapped</code> each emit a self-contained HTML report — heatmaps, archetypes, top destinations or top projects, monthly bars. Local. Shareable as a screenshot. PII auto-stripped. The proof your data layer is doing its job.</p>
+          <p>
+            <a class="btn btn-primary" href="/wrapped">See Voice Wrapped →</a>
+            <a class="btn btn-ghost" href="/archetype" style="margin-left: 6px;">The archetypes</a>
+          </p>
+        </div>
+        <div>
+          <a href="/wrapped"><img src="/screenshots/wrapped.png" alt="A Crixin Wrapped report — heatmap of activity, archetype reveal, top destinations or top projects, monthly bars, estimated cost" loading="lazy" /></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== How it works (code) ===== -->
+  <section class="block">
+    <div class="wrap-narrow">
+      <div class="reveal">
+        <p class="eyebrow">How it works</p>
+        <h2 class="section-title">One install. <em>Two new abilities.</em></h2>
+        <p class="section-lede">No setup wizard. No SaaS account. No telemetry. The npm package is the entire product. One command wires Crixin into Claude Code, Cursor, Codex CLI, and Claude Desktop — your AI host picks up the new abilities on next launch.</p>
+        <pre class="codeblock"><span class="comment"># Install + wire Crixin into your AI hosts.</span>
+<span class="prompt">$</span> npm i -g <span class="amber">crixin</span> &amp;&amp; crixin install
+
+<span class="comment"># Ingest your existing AI coding history into local SQLite.</span>
+<span class="prompt">$</span> crixin coder ingest
+
+<span class="comment"># Verify Twilio reachable (no charges — just an account fetch).</span>
+<span class="prompt">$</span> crixin voice doctor
+
+<span class="comment"># Place a real call from the CLI, or ask your AI in chat.</span>
+<span class="prompt">$</span> crixin voice call +201500309524 "Hi from Crixin."
+
+<span class="comment"># Or ask your AI: "find when we last discussed the auth bug."</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Per-host install ===== -->
+  <section class="block tight">
+    <div class="wrap">
+      <div class="reveal">
+        <p class="eyebrow">Per-host install</p>
+        <h2 class="section-title">Pick a host. <em>One click.</em></h2>
+        <p class="section-lede"><code class="mono">crixin install</code> handles every supported host at once. If you'd rather drop one entry by hand, the blocks below register the phone half — swap <code class="mono">"voice"</code> for <code class="mono">"coder"</code> to register the memory half instead.</p>
+      </div>
+      <div class="hosts reveal-stagger">
+        <article class="host">
+          <div class="icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          <h3>Cursor</h3>
+          <p>Drop the block into <code class="mono">~/.cursor/mcp.json</code>. Cursor picks it up on restart.</p>
+          <pre class="snippet" id="cmd-cursor">{
+  "mcpServers": {
+    "crixin-voice": {
+      "command": "npx",
+      "args": ["-y", "crixin", "voice", "mcp"]
+    }
+  }
+}</pre>
+          <a class="btn btn-ghost" id="copy-cursor" href="#">Copy block</a>
+        </article>
+        <article class="host">
+          <div class="icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          </div>
+          <h3>Claude Code</h3>
+          <p>One CLI command. Lands in <code class="mono">~/.claude.json</code> alongside any existing MCP servers.</p>
+          <pre class="snippet" id="cmd-claude">claude mcp add crixin-voice -- npx -y crixin voice mcp</pre>
+          <a class="btn btn-ghost" id="copy-claude" href="#">Copy command</a>
+        </article>
+        <article class="host">
+          <div class="icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 17V7l8-4 8 4v10l-8 4-8-4zM12 11v10M4 7l8 4 8-4"/></svg>
+          </div>
+          <h3>Codex CLI</h3>
+          <p>Append this block to <code class="mono">~/.codex/config.toml</code>. Codex picks it up on next launch.</p>
+          <pre class="snippet" id="cmd-codex">[mcp_servers.crixin-voice]
+command = "npx"
+args = ["-y", "crixin", "voice", "mcp"]</pre>
+          <a class="btn btn-ghost" id="copy-codex" href="#">Copy block</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Pricing ===== -->
+  <section class="block" id="pricing">
+    <div class="wrap">
+      <div class="reveal">
+        <p class="eyebrow">Pricing</p>
+        <h2 class="section-title">Free forever. <em>Or sync across machines.</em></h2>
+        <p class="section-lede">The toolkit is MIT-licensed and runs entirely on your laptop. Pro adds hosted Wrapped, cross-machine memory sync, and premium archetypes — for $5/month, not enterprise SaaS pricing.</p>
+      </div>
+      <div class="pricing reveal-stagger" style="grid-template-columns: 1fr 1fr; max-width: 760px; margin: 0 auto;">
+        <div class="tier">
+          <div class="name">Free</div>
+          <div class="price">$0<span class="per"> / forever</span></div>
+          <ul>
+            <li>Real outbound calls, SMS, transcription</li>
+            <li>Full coding-session recall across hosts</li>
+            <li>Both Wrapped reports + all archetypes</li>
+            <li>Local SQLite — your data stays on your laptop</li>
+            <li>Bring your own Twilio (~$0.014/min US)</li>
+            <li>Bring your own LLM</li>
+          </ul>
+          <a class="btn btn-ghost" href="https://www.npmjs.com/package/crixin">npm i -g crixin</a>
+        </div>
+        <div class="tier featured">
+          <div class="name">Pro</div>
+          <div class="price">$5<span class="per"> / month</span></div>
+          <ul>
+            <li>Everything in Free</li>
+            <li>Hosted Wrapped — shareable URL, not just local HTML</li>
+            <li>Cross-machine sync — one account, every machine, same session list. Metadata only; your code never leaves your disk.</li>
+            <li>Premium archetypes + Ducked-phrase analysis</li>
+            <li>3-day free trial · Stripe billing · cancel anytime</li>
+          </ul>
+          <a class="btn btn-primary" href="/login">Start free trial</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Final CTA ===== -->
+  <section class="block tight" id="install">
+    <div class="final-cta reveal">
+      <h2>Install in <em>30 seconds.</em></h2>
+      <p>One npm package. Your AI agent gets a phone line and a memory before your coffee's cold. Local SQLite. Bring your own Twilio. Built on MCP.</p>
+      <div class="install-pill" style="margin: 22px auto;">
+        <span class="cmd"><span class="prompt">$</span>npm i -g <span class="amber">crixin</span> &amp;&amp; crixin install</span>
+      </div>
+      <p style="margin-top: 18px;">
+        <a class="btn btn-primary" href="/install">Full install guide →</a>
+        <a class="btn btn-ghost" href="https://github.com/THELAZIZAGROUP/crixin" style="margin-left: 8px;">GitHub</a>
+      </p>
+    </div>
+  </section>
+
+  <footer class="site">
+    <div class="wrap row">
+      <div>© 2026 Crixin · MIT licensed · Built in Houston, TX.</div>
+      <div>
+        <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a> ·
+        <a href="https://crixin.com">Pitch</a> ·
+        <a href="#pricing">Pricing</a> ·
+        <a href="/faq">FAQ</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================================================== -->
+  <!-- Particles + Three.js scene + scroll reveals + form handlers   -->
+  <!-- ============================================================== -->
+  <script type="importmap">
+    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.178.0/build/three.module.js" } }
+  </script>
+  <script type="module">
+    // ----- 1. Page-wide pulsing-ember field (vanilla canvas 2D) -----
+    // Sits fixed behind everything. Two layers: rising sparks + drifting orbs.
+    (function () {
+      const canvas = document.getElementById("embers");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      let w = 0, h = 0;
+      const sparks = [];   // small, rising, fast
+      const orbs   = [];   // bigger, drifting, slow, pulsing
+      const N_SPARKS = 60;
+      const N_ORBS   = 18;
+
+      function resize() {
+        w = window.innerWidth;
+        h = window.innerHeight;
+        canvas.width  = w * dpr;
+        canvas.height = h * dpr;
+        canvas.style.width  = w + "px";
+        canvas.style.height = h + "px";
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      function spawnSpark(s) {
+        s.x  = Math.random() * w;
+        s.y  = h + Math.random() * 80;
+        s.vy = -(0.2 + Math.random() * 0.6);
+        s.vx = (Math.random() - 0.5) * 0.15;
+        s.r  = Math.random() * 1.4 + 0.4;
+        s.life = 0;
+        s.maxLife = 600 + Math.random() * 1200;
+        s.phase = Math.random() * Math.PI * 2;
+      }
+      function spawnOrb(o) {
+        o.x = Math.random() * w;
+        o.y = Math.random() * h;
+        o.vx = (Math.random() - 0.5) * 0.06;
+        o.vy = (Math.random() - 0.5) * 0.06;
+        o.r = 1.6 + Math.random() * 2.6;
+        o.phase = Math.random() * Math.PI * 2;
+      }
+      function init() {
+        sparks.length = 0; orbs.length = 0;
+        for (let i = 0; i < N_SPARKS; i++) { const s = {}; spawnSpark(s); s.y = Math.random() * h; sparks.push(s); }
+        for (let i = 0; i < N_ORBS;   i++) { const o = {}; spawnOrb(o);   orbs.push(o); }
+      }
+
+      let lastT = performance.now();
+      function tick(t) {
+        const dt = Math.min(40, t - lastT); lastT = t;
+        ctx.clearRect(0, 0, w, h);
+
+        // Drifting orbs — pulsing amber, soft glow.
+        for (const o of orbs) {
+          o.x += o.vx * dt;
+          o.y += o.vy * dt;
+          if (o.x < -20) o.x = w + 20;
+          if (o.x > w + 20) o.x = -20;
+          if (o.y < -20) o.y = h + 20;
+          if (o.y > h + 20) o.y = -20;
+          const pulse = 0.5 + 0.5 * Math.sin(t * 0.0014 + o.phase);
+          const a = 0.10 + pulse * 0.18;
+          // Halo
+          const grad = ctx.createRadialGradient(o.x, o.y, 0, o.x, o.y, o.r * 8);
+          grad.addColorStop(0, "rgba(245, 180, 82, " + a + ")");
+          grad.addColorStop(1, "rgba(245, 180, 82, 0)");
+          ctx.fillStyle = grad;
+          ctx.fillRect(o.x - o.r * 8, o.y - o.r * 8, o.r * 16, o.r * 16);
+          // Core
+          ctx.fillStyle = "rgba(250, 208, 142, " + (0.45 + pulse * 0.3) + ")";
+          ctx.beginPath();
+          ctx.arc(o.x, o.y, o.r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // Rising sparks — embers, drift up and respawn.
+        for (const s of sparks) {
+          s.life += dt;
+          s.x += s.vx * dt;
+          s.y += s.vy * dt;
+          if (s.life > s.maxLife || s.y < -20) spawnSpark(s);
+          const lifeT = s.life / s.maxLife;
+          const flicker = 0.6 + 0.4 * Math.sin(t * 0.005 + s.phase);
+          const a = (1 - lifeT) * 0.85 * flicker;
+          ctx.fillStyle = "rgba(245, 180, 82, " + a + ")";
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        requestAnimationFrame(tick);
+      }
+      window.addEventListener("resize", () => { resize(); init(); });
+      resize(); init(); requestAnimationFrame(tick);
+    })();
+
+    // ----- 1b. Scroll-aware header (transparent → blurred backdrop) --
+    (function () {
+      const h = document.getElementById("site-header");
+      if (!h) return;
+      const onScroll = () => h.classList.toggle("scrolled", window.scrollY > 12);
+      onScroll();
+      window.addEventListener("scroll", onScroll, { passive: true });
+    })();
+
+    // ----- 2. Three.js scene (the animated session "shards") --------
+    // This is the default look. To swap in a Spline scene, set
+    //   document.getElementById("spline-frame").src = "https://my.spline.design/<your-scene>/"
+    // and the iframe will fade in over the Three.js canvas.
+    (async function () {
+      const mount = document.getElementById("scene");
+      if (!mount) return;
+      let THREE;
+      try { THREE = await import("three"); } catch { return; }
+      const scene = new THREE.Scene();
+      // Soft fog to give the field actual depth.
+      scene.fog = new THREE.FogExp2(0x0a0c11, 0.085);
+      const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
+      camera.position.set(0, 0.05, 2.6);
+      const renderer = new THREE.WebGLRenderer({ canvas: mount, antialias: true, alpha: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      const resize = () => {
+        const r = mount.getBoundingClientRect();
+        renderer.setSize(r.width, r.height, false);
+        camera.aspect = r.width / Math.max(1, r.height);
+        camera.updateProjectionMatrix();
+      };
+      const ro = new ResizeObserver(resize); ro.observe(mount); resize();
+
+      // ---- 3D RECEIPT (hero element) ----
+      // CanvasTexture-mapped plane with the bottom edge curled forward, drawn
+      // to look like a real thermal-printer receipt — line items are call
+      // outcomes (orders, meetings, reservations) emitted by an AI agent
+      // using Voice MCP.
+      function makeReceiptTexture() {
+        const W = 380, H = 1100;
+        const c = document.createElement("canvas");
+        c.width = W; c.height = H;
+        const g = c.getContext("2d");
+
+        // Cream paper base
+        g.fillStyle = "#f6ecd6";
+        g.fillRect(0, 0, W, H);
+
+        // Subtle paper noise — bias slightly darker to keep cream tone
+        const id = g.getImageData(0, 0, W, H);
+        for (let i = 0; i < id.data.length; i += 4) {
+          const n = (Math.random() - 0.7) * 6;
+          id.data[i]   = Math.max(0, Math.min(255, id.data[i]   + n));
+          id.data[i+1] = Math.max(0, Math.min(255, id.data[i+1] + n));
+          id.data[i+2] = Math.max(0, Math.min(255, id.data[i+2] + n));
+        }
+        g.putImageData(id, 0, 0);
+
+        // Torn top edge — punch transparency-equivalent (we use scene bg color)
+        g.fillStyle = "rgba(10, 12, 17, 1)";
+        g.beginPath(); g.moveTo(0, 0);
+        for (let i = 0; i <= 14; i++) {
+          const x = (i / 14) * W;
+          const y = 12 + Math.abs(Math.sin(i * 1.7) * 18) + (i % 2) * 6;
+          g.lineTo(x, y);
+        }
+        g.lineTo(W, 0); g.closePath(); g.fill();
+
+        // Torn bottom edge
+        g.beginPath(); g.moveTo(0, H);
+        for (let i = 0; i <= 14; i++) {
+          const x = (i / 14) * W;
+          const y = H - 12 - Math.abs(Math.sin(i * 2.1 + 1.3) * 18) - (i % 2) * 6;
+          g.lineTo(x, y);
+        }
+        g.lineTo(W, H); g.closePath(); g.fill();
+
+        // Header
+        g.textAlign = "center";
+        g.fillStyle = "#1a1d24";
+        g.font = "700 36px 'Geist Mono', monospace";
+        g.fillText("CRIXIN", W/2, 96);
+        g.font = "13px 'Geist Mono', monospace";
+        g.fillStyle = "#5e6373";
+        g.fillText("what your AI did this week", W/2, 118);
+
+        // Divider
+        g.strokeStyle = "#1a1d24";
+        g.lineWidth = 1;
+        g.setLineDash([4, 4]);
+        g.beginPath(); g.moveTo(28, 142); g.lineTo(W - 28, 142); g.stroke();
+        g.setLineDash([]);
+
+        // Itemized voice line items — a mixed roster of outcomes across all
+        // three use cases (receptionist / sales / confirmation). The amounts
+        // are *outcome dollars* (orders booked, deals scheduled), not Twilio
+        // cost — Twilio cost is tiny and lives in the sub-line.
+        const items = [
+          { ts: "2026-05-09  10:14", agent: "SARAH",  who: "Maria's Pizza · Houston",   action: "Order placed",        amount: 84.50,  kind: "$" },
+          { ts: "2026-05-09  09:42", agent: "JAMES",  who: "Dr. Allen · Sugar Land",    action: "Meeting · Tue 3pm",   amount: null,   kind: "MEETING" },
+          { ts: "2026-05-09  09:18", agent: "MIKE",   who: "Joe's Diner · Katy",        action: "Reservation · 6 ppl", amount: null,   kind: "BOOKED" },
+          { ts: "2026-05-08  16:55", agent: "EMILY",  who: "HomeCare Inc · enterprise", action: "Demo · Thu 2pm",      amount: null,   kind: "MEETING" },
+          { ts: "2026-05-08  14:23", agent: "SARAH",  who: "Bella Salon · inbound",     action: "Appointment · Fri",   amount: null,   kind: "BOOKED" },
+          { ts: "2026-05-08  11:09", agent: "EMILY",  who: "Apex Dental · confirm",     action: "Cleaning · Mon 4pm",  amount: null,   kind: "CONFIRMED" },
+          { ts: "2026-05-07  17:34", agent: "MIKE",   who: "The Pasta Bar · catering",  action: "Order placed",        amount: 340.00, kind: "$" },
+          { ts: "2026-05-07  10:18", agent: "JAMES",  who: "Tan & Co. · follow-up",     action: "Call back · Wed 9am", amount: null,   kind: "MEETING" },
+        ];
+
+        let y = 174;
+        g.textAlign = "left";
+        g.font = "12px 'Geist Mono', monospace";
+        for (const it of items) {
+          // Timestamp + outcome marker on one line
+          g.fillStyle = "#5e6373";
+          g.fillText(it.ts, 28, y);
+          g.textAlign = "right";
+          g.fillStyle = "#1a1d24";
+          if (it.kind === "$") {
+            g.fillText("$" + it.amount.toFixed(2), W - 28, y);
+          } else {
+            g.fillText(it.kind, W - 28, y);
+          }
+          g.textAlign = "left";
+          y += 18;
+
+          // Agent + customer (bold)
+          g.fillStyle = "#1a1d24";
+          g.font = "600 13px 'Geist Mono', monospace";
+          g.fillText("  " + it.agent + " · " + it.who, 28, y);
+          y += 16;
+
+          // Action
+          g.fillStyle = "#7a7e8c";
+          g.font = "11px 'Geist Mono', monospace";
+          g.fillText("  " + it.action, 28, y);
+          y += 26;
+
+          g.font = "12px 'Geist Mono', monospace";
+        }
+
+        // Divider
+        g.strokeStyle = "#1a1d24"; g.setLineDash([4, 4]);
+        g.beginPath(); g.moveTo(28, y); g.lineTo(W - 28, y); g.stroke();
+        g.setLineDash([]);
+        y += 30;
+
+        // Outcome breakdown
+        const orders = items.filter(it => it.kind === "$").reduce((a, it) => a + it.amount, 0);
+        const meetings = items.filter(it => it.kind === "MEETING").length;
+        const bookings = items.filter(it => it.kind === "BOOKED" || it.kind === "CONFIRMED").length;
+
+        g.fillStyle = "#1a1d24";
+        g.font = "700 18px 'Geist Mono', monospace";
+        g.textAlign = "left";
+        g.fillText("ORDERS", 28, y);
+        g.textAlign = "right";
+        g.fillText("$" + orders.toFixed(2), W - 28, y);
+        y += 24;
+
+        g.font = "600 13px 'Geist Mono', monospace";
+        g.textAlign = "left";
+        g.fillStyle = "#5e6373";
+        g.fillText("MEETINGS BOOKED", 28, y);
+        g.textAlign = "right";
+        g.fillStyle = "#1a1d24";
+        g.fillText(meetings.toString(), W - 28, y);
+        y += 20;
+
+        g.fillStyle = "#5e6373";
+        g.textAlign = "left";
+        g.fillText("RESERVATIONS / CONFIRMS", 28, y);
+        g.textAlign = "right";
+        g.fillStyle = "#1a1d24";
+        g.fillText(bookings.toString(), W - 28, y);
+        y += 32;
+
+        // Sub-line — the unit economics
+        g.font = "11px 'Geist Mono', monospace";
+        g.fillStyle = "#5e6373";
+        g.textAlign = "center";
+        g.fillText("8 calls · 22 min on the line · $0.31 in Twilio", W/2, y);
+        y += 20;
+        g.fillText("local-only · audio + transcripts stay in your account", W/2, y);
+        y += 28;
+
+        // The pitch — italic-ish
+        g.font = "italic 600 14px 'Instrument Serif', Georgia, serif";
+        g.fillStyle = "#1a1d24";
+        g.fillText("$" + orders.toFixed(2) + " booked. $0.31 spent.", W/2, y);
+        y += 19;
+        g.fillText("While you were shipping the next thing.", W/2, y);
+        y += 30;
+
+        // Barcode-ish footer
+        g.fillStyle = "#1a1d24";
+        let bx = 70;
+        for (let i = 0; i < 50; i++) {
+          const bw = 1 + Math.floor(Math.random() * 4);
+          const bh = 30;
+          g.fillRect(bx, y, bw, bh);
+          bx += bw + 1 + Math.floor(Math.random() * 2);
+        }
+        y += 44;
+        g.fillStyle = "#5e6373";
+        g.font = "10px 'Geist Mono', monospace";
+        g.fillText("v0.4.0 · " + new Date().toISOString().slice(0, 10), W/2, y);
+
+        const tex = new THREE.CanvasTexture(c);
+        tex.minFilter = THREE.LinearFilter;
+        tex.magFilter = THREE.LinearFilter;
+        tex.anisotropy = 8;
+        return tex;
+      }
+
+      const RC_W = 0.95, RC_H = 2.7, RC_SEGS = 32;
+      const receiptGeom = new THREE.PlaneGeometry(RC_W, RC_H, 1, RC_SEGS);
+      // Curl the bottom edge forward toward the camera for a paper-falling feel.
+      // Clamp the normalized position so float jitter on edge vertices can't
+      // feed Math.pow a negative base and produce NaN.
+      const pos = receiptGeom.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        const yPos = pos.getY(i);
+        let tNorm = (yPos + RC_H / 2) / RC_H;
+        if (tNorm < 0) tNorm = 0;
+        if (tNorm > 1) tNorm = 1;
+        const curl = Math.pow(1 - tNorm, 2.2) * 0.32;
+        pos.setZ(i, curl);
+      }
+      pos.needsUpdate = true;
+      receiptGeom.computeVertexNormals();
+      receiptGeom.computeBoundingSphere();
+
+      const receiptMat = new THREE.MeshBasicMaterial({
+        map: makeReceiptTexture(),
+        side: THREE.DoubleSide,
+        transparent: true,
+      });
+      const receipt = new THREE.Mesh(receiptGeom, receiptMat);
+      receipt.position.set(0, 0, 0);
+      receipt.rotation.y = -0.18;
+      scene.add(receipt);
+
+      // Soft amber glow behind the receipt — additive sprite, sits in -Z
+      const glowCanvas = document.createElement("canvas");
+      glowCanvas.width = glowCanvas.height = 256;
+      const gctx = glowCanvas.getContext("2d");
+      const ggrad = gctx.createRadialGradient(128, 128, 0, 128, 128, 128);
+      ggrad.addColorStop(0,   "rgba(245, 180, 82, 0.55)");
+      ggrad.addColorStop(0.4, "rgba(245, 180, 82, 0.18)");
+      ggrad.addColorStop(1,   "rgba(245, 180, 82, 0)");
+      gctx.fillStyle = ggrad; gctx.fillRect(0, 0, 256, 256);
+      const glowTex = new THREE.CanvasTexture(glowCanvas);
+      const glow = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: glowTex, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false,
+      }));
+      glow.scale.set(4.5, 5, 1);
+      glow.position.z = -0.6;
+      scene.add(glow);
+
+      // ---- Star-field backdrop (small specks) ----
+      const stars = new THREE.Group();
+      scene.add(stars);
+      const starGeom = new THREE.SphereGeometry(0.012, 6, 6);
+      for (let i = 0; i < 220; i++) {
+        const m = new THREE.Mesh(starGeom, new THREE.MeshBasicMaterial({
+          color: new THREE.Color().setHSL(0.10, 0.6, 0.7 + Math.random() * 0.3),
+          transparent: true,
+          opacity: 0.25 + Math.random() * 0.5,
+        }));
+        const r = 5 + Math.random() * 3;
+        const t = Math.random() * Math.PI * 2;
+        const y = (Math.random() - 0.5) * 6;
+        m.position.set(Math.cos(t) * r, y, Math.sin(t) * r);
+        stars.add(m);
+      }
+
+      // ---- Mouse parallax + scroll progress ----
+      let mx = 0, my = 0;
+      const parent = mount.parentElement;
+      parent.addEventListener("mousemove", (e) => {
+        const r = parent.getBoundingClientRect();
+        mx = ((e.clientX - r.left) / r.width  - 0.5) * 0.7;
+        my = ((e.clientY - r.top)  / r.height - 0.5) * 0.5;
+      });
+
+      // Scroll progress through the hero — 0 at top, 1 once the hero has
+      // scrolled fully off. Drives the receipt "unroll-and-recede" choreography.
+      let scrollP = 0;
+      const heroEl = document.querySelector(".hero");
+      function recompScroll() {
+        const heroH = heroEl ? heroEl.offsetHeight : window.innerHeight;
+        scrollP = Math.max(0, Math.min(1, window.scrollY / Math.max(1, heroH)));
+      }
+      recompScroll();
+      window.addEventListener("scroll", recompScroll, { passive: true });
+      window.addEventListener("resize", recompScroll);
+
+      const start = performance.now();
+      function loop(now) {
+        const t = (now - start) / 1000;
+        const sp = scrollP; // 0..1 through the hero
+
+        // Camera drift + parallax response (zoom out slightly as user scrolls)
+        camera.position.x = Math.sin(t * 0.08) * 0.25 + mx * 0.9;
+        camera.position.y = 0.2 + my * -0.4 + sp * 0.4;
+        camera.position.z = 2.6 + sp * 1.2;
+        camera.lookAt(0, 0, 0);
+
+        // Receipt — sway, then "fall and recede" as you scroll the hero out.
+        receipt.rotation.y = -0.18 + Math.sin(t * 0.35) * 0.18 + sp * 0.55;
+        receipt.rotation.z = Math.sin(t * 0.22) * 0.02 - sp * 0.18;
+        receipt.position.y = Math.sin(t * 0.5) * 0.06 - sp * 0.7;
+        receipt.position.z = -sp * 0.6;
+        const recScale = 1 - sp * 0.18;
+        receipt.scale.set(recScale, recScale, recScale);
+        // Receipt fades slightly so the rest of the page can take focus.
+        receiptMat.opacity = 1 - sp * 0.45;
+        receiptMat.transparent = true;
+
+        // Glow pulses with breath; dims with scroll.
+        const breath = 1 + Math.sin(t * 0.9) * 0.08;
+        const glowScale = 4.5 * breath * (1 - sp * 0.4);
+        glow.scale.set(glowScale, glowScale * 1.1, 1);
+
+        // Stars drift (subtle), gain a touch of momentum on scroll.
+        stars.rotation.y = t * 0.012 + sp * 0.15;
+
+        renderer.render(scene, camera);
+        requestAnimationFrame(loop);
+      }
+      requestAnimationFrame(loop);
+
+      // Spline viewer (if added) will fade in over the Three.js scene.
+      const sv = document.getElementById("spline-viewer");
+      if (sv) {
+        const reveal = () => sv.classList.add("loaded");
+        sv.addEventListener("load", reveal);
+        sv.addEventListener("load-complete", reveal);
+        setTimeout(reveal, 2400);
+      }
+    })();
+
+    // ----- 3. Pillar mouse-tilt -------------------------------------
+    document.querySelectorAll(".tilt").forEach((el) => {
+      el.addEventListener("mousemove", (e) => {
+        const r = el.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width;
+        const y = (e.clientY - r.top)  / r.height;
+        el.style.setProperty("--mx", (x * 100) + "%");
+        el.style.setProperty("--my", (y * 100) + "%");
+        const rx = (y - 0.5) * -6;
+        const ry = (x - 0.5) *  6;
+        el.style.transform = "perspective(900px) rotateX(" + rx + "deg) rotateY(" + ry + "deg) translateY(-2px)";
+      });
+      el.addEventListener("mouseleave", () => {
+        el.style.transform = "";
+      });
+    });
+
+    // ----- 4. Scroll-driven reveals ---------------------------------
+    document.body.classList.add("has-reveal");
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+      }
+    }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+    document.querySelectorAll(".reveal, .reveal-stagger").forEach(el => io.observe(el));
+
+    // ----- 5. Install pill copy button ------------------------------
+    const installBtn = document.getElementById("copy-install");
+    installBtn?.addEventListener("click", () => {
+      navigator.clipboard.writeText("npm i -g crixin && crixin voice install").then(() => {
+        const orig = installBtn.textContent;
+        installBtn.textContent = "Copied";
+        installBtn.classList.add("copied");
+        setTimeout(() => { installBtn.textContent = orig; installBtn.classList.remove("copied"); }, 1600);
+      });
+    });
+
+    // ----- 6. Cursor deep-link MCP installer ------------------------
+    (function () {
+      const cfg = { command: "npx", args: ["-y", "crixin", "--mcp"] };
+      const link = "cursor://anysphere.cursor-deeplink/mcp/install?name=crixin&config=" + btoa(JSON.stringify(cfg));
+      const a = document.getElementById("install-cursor");
+      if (a) a.href = link;
+    })();
+
+    // ----- 7. Per-host snippet copy buttons -------------------------
+    function copyTo(btnId, srcId) {
+      const btn = document.getElementById(btnId);
+      const src = document.getElementById(srcId);
+      if (!btn || !src) return;
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        navigator.clipboard.writeText(src.textContent.trim()).then(() => {
+          const o = btn.textContent;
+          btn.textContent = "Copied";
+          btn.style.color = "var(--brand)";
+          setTimeout(() => { btn.textContent = o; btn.style.color = ""; }, 1600);
+        });
+      });
+    }
+    copyTo("copy-claude", "cmd-claude");
+    copyTo("copy-codex",  "cmd-codex");
+  </script>
+
+</body>
+</html>

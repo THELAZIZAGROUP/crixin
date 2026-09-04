@@ -1,0 +1,92 @@
+# Crixin
+
+> The MCP toolkit for AI agents. Two MCP servers in one npm package, sharing one local SQLite. Voice MCP gives AI agents phone access through your own Twilio. Coder MCP gives them memory across every Claude Code, Codex CLI, and Cursor session you've ever had.
+
+## What it is
+
+- **`crixin`** is an npm package: one CLI, two MCP servers (`crixin-voice` + `crixin-coder`), one local SQLite at `~/.crixin/crixin.db`.
+- **Voice MCP** — six tools exposed to AI hosts: `make_call`, `send_sms`, `transcribe_call`, `get_call`, `list_calls`, `list_recordings`.
+- **Coder MCP** — four tools: `search_sessions`, `list_recent_sessions`, `get_session`, `stats`.
+- **MIT-licensed.** Bring your own Twilio. Bring your own LLM. No SaaS in the middle.
+
+## Positioning
+
+Vapi / Bland / Retell are closed hosted platforms. Telnyx is the carrier layer. Crixin is the **protocol adapter** — the 200-line MCP layer that lets your existing AI host (Claude Code, Cursor, Codex CLI, Claude Desktop) reach phone networks and persistent memory. Capability layer, not platform.
+
+## Two capabilities
+
+1. **Voice MCP — give your AI a phone.** Real outbound calls + SMS through your Twilio. Polly + Google neural voices in 30+ languages including Egyptian Arabic. Geo-gate baked in (US/UK/EU/AU require `consented`; Egypt + Gulf dial directly).
+2. **Coder MCP — give your AI a memory.** Reads the JSONLs your AI host already wrote to disk (`~/.claude/projects/`, `~/.codex/sessions/`, Cursor app data) into local SQLite. Any LLM you wire to it can pull up what you discussed Tuesday at 3am.
+
+## Wrapped (the year-end receipt)
+
+Both halves emit a self-contained HTML report — heatmaps, archetypes, top destinations or top projects, monthly bars. Local. Shareable as a screenshot. PII auto-stripped.
+
+```
+crixin voice wrapped      → ./crixin-voice-wrapped-<year>.html
+crixin coder wrapped      → ./crixin-coder-wrapped-<year>.html
+```
+
+## Stack
+
+- TTS: Twilio Polly + Google neural voices (in-call, via TwiML `<Say>`).
+- STT: Deepgram (optional, Nova-2 by default — 30+ languages including Egyptian Arabic).
+- LLM: none in the open-source path. Your AI host decides what to say or recall.
+- Storage: local SQLite at `~/.crixin/crixin.db`. Tables: `voice_calls`, `voice_recordings`, `sessions`, `messages`.
+
+## Required env
+
+Voice MCP:
+- `TWILIO_ACCOUNT_SID`
+- `TWILIO_AUTH_TOKEN`
+- `TWILIO_PHONE_NUMBER` (E.164)
+- `DEEPGRAM_API_KEY` (optional — for transcribe_call + Voice Wrapped + Caller Archetype)
+
+Coder MCP: none. Reads what your AI host already wrote to disk.
+
+## Install (30 seconds)
+
+```sh
+npm i -g crixin
+crixin install              # wires BOTH MCPs into Claude Code, Cursor, Codex CLI, Claude Desktop
+crixin doctor               # health check: DB + license + env + both MCPs
+crixin coder ingest         # pull AI coding history into local SQLite
+crixin voice doctor         # probe Twilio creds (no charges)
+```
+
+Then ask your AI host: "use crixin-voice to call +1xxxxxxxxxx" or "use crixin-coder to find when we last touched auth.ts".
+
+## Pricing
+
+- **Free** ($0 forever, MIT): both MCPs, all tools, all Wrapped, all archetypes, local SQLite. Bring your own Twilio (~$0.014/min US).
+- **Pro** ($5/month): hosted Wrapped (shareable URL), cross-machine memory sync, premium archetypes. 3-day free trial. No enterprise tier. No sales team.
+
+## Privacy
+
+- Zero servers between you and Twilio. Calls hit `api.twilio.com` directly.
+- Coder MCP reads files your AI host already wrote to your disk. Nothing leaves your machine.
+- Transcripts and call recordings stay in your Twilio account + your local SQLite.
+- No telemetry, no upload, no analytics pixels.
+
+## Repo + npm
+
+- Source: <https://github.com/THELAZIZAGROUP/crixin>
+- npm: <https://www.npmjs.com/package/crixin>
+- License: MIT
+
+## Marketing site
+
+- `/` — landing — "Give your AI a phone and a memory."
+- `/voice` — Voice MCP capability page
+- `/coder` — Coder MCP capability page
+- `/wrapped` — Wrapped explainer (both halves)
+- `/archetype` — archetype taxonomy
+- `/install` — 5-step install walkthrough
+- `/voice/pricing` — pricing (Free + Pro $5/mo)
+- `/voice/docs`, `/voice/api`, `/voice/compliance`, `/voice/use-cases` — Voice MCP deep-dives
+- `/faq` — FAQ
+
+## Author
+
+- Mosab Abdallah · <https://github.com/Mrdopplereffekt>
+- Publisher: Lazizatech · <https://github.com/Lazizatech>

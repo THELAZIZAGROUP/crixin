@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="canonical" href="https://crixin.com/faq" />
+  <title>Crixin FAQ — AI phone calls, MCP, Twilio, and what stays on your laptop</title>
+  <meta name="description" content="Honest answers about the Crixin MCP toolkit — what it is, what it isn't, what data leaves your machine (none), how Twilio billing works (you pay them directly), and where Voice Wrapped/Archetype get their numbers from." />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Crixin FAQ" />
+  <meta property="og:description" content="The honest answers to the questions you'd ask before installing." />
+  <meta property="og:url" content="https://crixin.com/faq" />
+  <meta property="og:site_name" content="Crixin" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="/site.js" defer></script>
+
+  <style>
+    .doc-hero { padding: 130px 0 40px; }
+    .eyebrow { display: inline-block; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--brand); padding: 6px 12px; border: 1px solid var(--brand); border-radius: 9999px; }
+    .doc-hero h1 { font-family: var(--font-display); font-weight: 400; font-size: clamp(40px, 6vw, 76px); line-height: 1.05; letter-spacing: -0.02em; margin: 22px 0 18px; }
+    .doc-hero h1 em { color: var(--brand); font-style: italic; }
+    .doc-hero p.lede { font-size: 19px; color: var(--text-secondary); max-width: 720px; line-height: 1.55; }
+    .qa { padding: 28px 0; border-bottom: 1px solid var(--border-subtle); }
+    .qa:last-child { border-bottom: none; }
+    .qa h3 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 24px;
+      margin: 0 0 10px;
+      color: var(--text-primary);
+    }
+    .qa h3 em { color: var(--brand); font-style: italic; }
+    .qa p { color: var(--text-secondary); font-size: 15px; line-height: 1.65; margin: 0 0 8px; }
+    .qa code { background: var(--bg-elevated); padding: 1px 6px; border-radius: 4px; font-family: var(--font-mono); font-size: 13px; color: var(--text-primary); }
+    section.sm { padding: 50px 0; }
+    footer.site { padding: 30px 0 50px; color: var(--text-muted); font-size: 13px; border-top: 1px solid var(--border-subtle); margin-top: 60px; }
+    footer.site a { color: var(--text-secondary); margin: 0 12px; }
+  </style>
+</head>
+<body>
+  <canvas id="embers" aria-hidden="true"></canvas>
+
+  <header class="site" id="site-header">
+    <div class="wrap row">
+      <a href="/" class="brand-mark">crixin<span class="tag">v0.4.0</span></a>
+      <nav class="primary">
+        <a href="/voice">Voice MCP</a>
+        <a href="/voice/use-cases">Use cases</a>
+        
+        <a href="/coder">Coder</a><a href="/wrapped">Wrapped</a>
+        <a href="/archetype">Archetype</a>
+        <a href="/voice/pricing">Pricing</a>
+        <a href="/login">Sign in</a>
+        <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="doc-hero">
+    <div class="wrap-narrow">
+      <span class="eyebrow">faq</span>
+      <h1>The honest <em>answers</em>.</h1>
+      <p class="lede">Crixin places real phone calls. Real money is at stake. Here's what's actually in the box, what stays on your laptop, and where Twilio's bill ends and ours begins (it doesn't — we don't bill you).</p>
+    </div>
+  </section>
+
+  <section class="sm">
+    <div class="wrap-narrow">
+
+      <div class="qa">
+        <h3>What is Crixin, <em>exactly</em>?</h3>
+        <p>An MCP server, a CLI, and a local SQLite database. The MCP server exposes <code>make_call</code>, <code>send_sms</code>, <code>transcribe_call</code>, <code>get_call</code>, <code>list_calls</code>, and <code>list_recordings</code> to any AI host (Claude Code, Cursor, Codex CLI, Claude Desktop). The CLI lets you place one-off calls, ingest your Twilio history, and run Voice Wrapped / Caller Archetype / Ducked analysis on your transcripts.</p>
+      </div>
+
+      <div class="qa">
+        <h3>What does <em>NOT</em> leave my laptop?</h3>
+        <p>Your transcripts, your call recordings (which live in your Twilio account anyway), your phone numbers, your customer list, your Caller Archetype label, your Voice Wrapped report. Crixin has zero servers between you and Twilio. Calls hit <code>api.twilio.com</code> directly with your auth header.</p>
+      </div>
+
+      <div class="qa">
+        <h3>What about <em>Deepgram</em>?</h3>
+        <p>Optional. Only used if you set <code>DEEPGRAM_API_KEY</code> and call <code>transcribe_call</code> (or run <code>crixin voice ingest</code> with transcription enabled). When you do, recordings are sent from your Twilio account → Deepgram for transcription, and the result is stored locally. Crixin doesn't see, store, or proxy any of it.</p>
+      </div>
+
+      <div class="qa">
+        <h3>How does the <em>billing</em> work?</h3>
+        <p>The open-source toolkit is MIT-licensed and free forever. You pay Twilio directly for the actual phone calls — typically ~$0.014/min for US/Canada outbound voice and ~$0.0083 per SMS. International is more (Egypt ~$0.135/min, UAE ~$0.155/min mobile). Deepgram is ~$0.0043/min on the Nova-2 tier. <strong>Crixin doesn't take a cut.</strong> Pro ($5/mo) adds hosted Wrapped and cross-machine memory sync — it's not a managed Twilio reseller. You always pay Twilio directly.</p>
+      </div>
+
+      <div class="qa">
+        <h3>Is this <em>spammy</em>? What about TCPA?</h3>
+        <p>Voice MCP is a phone primitive. It doesn't tell you what to do with it. The toolkit ships a geo-gate (strict-consent jurisdictions like US/UK/EU/AU require an explicit <code>consented: true</code> flag) and TCPA-window helpers. The rest of compliance — DNC list checking, consent collection, opt-out flows — is on you, because Crixin doesn't know if your AI is running an inbound receptionist or outbound sales. Both are legitimate, both have different obligations.</p>
+      </div>
+
+      <div class="qa">
+        <h3>What languages can my AI <em>actually speak</em>?</h3>
+        <p>Whatever Twilio's <code>&lt;Say&gt;</code> supports — Polly + Google neural voices, ~30 languages including <em>Egyptian Arabic</em> (<code>Polly.Hala-Neural</code>), <em>MSA Arabic</em> (<code>Polly.Zeina</code>), <em>Spanish</em> (<code>Polly.Lucia-Neural</code>), <em>Portuguese</em>, <em>French</em>, <em>German</em>, <em>Mandarin</em>, etc. For transcription via Deepgram, Nova-2 covers 30+ languages including all the above. ElevenLabs voice cloning is on the roadmap, not in v0.1.0.</p>
+      </div>
+
+      <div class="qa">
+        <h3>What stack <em>actually</em> runs the calls?</h3>
+        <p>STT: Deepgram (optional, only when you ask). TTS: Twilio Polly + Google neural voices (built into Twilio's <code>&lt;Say&gt;</code> verb). LLM: there's no LLM in the call path — your AI host (Claude/GPT/etc.) decides what to say, and Voice MCP just speaks it. Bring your own LLM, always.</p>
+      </div>
+
+      <div class="qa">
+        <h3>Where does <em>Voice Wrapped</em> get its numbers?</h3>
+        <p>From your local SQLite (<code>~/.crixin/crixin.db</code>), populated by <code>crixin voice ingest</code> which mirrors your Twilio Calls + Recordings into the <code>voice_calls</code> + <code>voice_recordings</code> tables. If <code>DEEPGRAM_API_KEY</code> is set, it also runs Deepgram on each recording and rolls the transcripts up onto the call row. The Wrapped HTML is rendered from those rows entirely client-side — no network call to generate the report.</p>
+      </div>
+
+      <div class="qa">
+        <h3>What happened to the <em>session-analyzer</em>?</h3>
+        <p>v0.1.0 retired it. Older versions of <code>crixin</code> ingested Claude Code / Codex CLI / Cursor JSONL session files and ran a wrapped/archetype analysis on coding sessions. That product is no longer the focus — same engines now read call data instead. If you were on v0.0.x and want to keep the session-analyzer flow, pin to <code>crixin@0.0.9</code> in your install.</p>
+      </div>
+
+      <div class="qa">
+        <h3>Does Crixin work with <em>any</em> AI host that speaks MCP?</h3>
+        <p>Yes — that's the point of MCP. Anything that talks the Model Context Protocol (Claude Code, Cursor, Codex CLI, Claude Desktop, and a growing list of others) can use Crixin's tools. The voice MCP server is stdio-based, ships as a single npm package, and reads creds from env. No HTTPS endpoints to expose, no public webhooks to register with Twilio.</p>
+      </div>
+
+      <div class="qa">
+        <h3>What's the <em>Pro</em> license about?</h3>
+        <p>Pro ($5/mo, 3-day free trial) unlocks: hosted Wrapped share links (revocable), cross-machine memory sync (same Coder MCP history on every laptop you work from), and premium archetypes. That's the whole upsell. No enterprise tier, no sales team, no SLA. The open-source toolkit stays MIT and free for everyone.</p>
+      </div>
+
+      <div class="qa">
+        <h3>I rotated my Twilio token. Now <code>make_call</code> 401s. <em>What do I do?</em></h3>
+        <p>Re-copy your token from <a href="https://console.twilio.com/" style="color:var(--brand);">console.twilio.com</a> into your secrets manager + restart your AI host so it picks up the new env. Then run <code>crixin voice doctor</code> — it'll do a single GET against the Twilio API and tell you "active" or surface error 20003 with the exact reason. No charges, no risk. (This is the most common production failure for any Twilio-backed product. We surface it as a friendly message instead of raw JSON in case it happens mid-call.)</p>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="site">
+    <div class="wrap" style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;">
+      <div>
+        <a href="/">crixin</a>
+        <a href="/voice">voice</a>
+        <a href="/wrapped">wrapped</a>
+        <a href="/archetype">archetype</a>
+        <a href="/voice/pricing">pricing</a>
+      </div>
+      <div>
+        <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a>
+        <a href="/faq">FAQ</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
