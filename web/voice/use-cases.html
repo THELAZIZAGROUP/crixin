@@ -145,7 +145,7 @@
     pre.code .s { color: #7bd88f; }
     pre.code .v { color: var(--brand); }
 
-    /* ── Mock receipt card (wrapped-style) ───────────────── */
+    /* ── Mock receipt card ───────────────── */
     .receipt {
       padding: 22px 22px 20px;
       border: 1px solid var(--border-subtle);
@@ -226,56 +226,6 @@
       text-transform: uppercase;
     }
 
-    /* ── Big "receipts you'll get" dashboard mock ────────── */
-    .dash {
-      margin: 50px 0 0;
-      border: 1px solid var(--border-subtle);
-      border-radius: 14px;
-      background: var(--bg-surface);
-      padding: 32px 28px;
-      box-shadow: 0 50px 120px -60px rgba(245, 180, 82, 0.20);
-    }
-    .dash-head {
-      display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 12px;
-      padding-bottom: 18px;
-      border-bottom: 1px solid var(--border-subtle);
-      margin-bottom: 22px;
-    }
-    .dash-head h3 {
-      font-family: var(--font-display);
-      font-style: italic;
-      font-weight: 400;
-      font-size: 32px;
-      color: var(--brand);
-      margin: 0;
-    }
-    .dash-head .meta { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
-    .dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 22px; }
-    .dash-stat { padding: 16px 18px; background: var(--bg-elevated); border: 1px solid var(--border-subtle); border-radius: 10px; }
-    .dash-stat .l { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
-    .dash-stat .v { font-family: var(--font-display); font-style: italic; font-size: 30px; color: var(--brand); line-height: 1.05; }
-    .dash-stat .s { color: var(--text-secondary); font-size: 12px; margin-top: 4px; }
-    .dash-two { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
-    @media (max-width: 720px) { .dash-two { grid-template-columns: 1fr; } }
-    .dash-panel h4 { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 12px; }
-    .dash-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--border-subtle); font-size: 13.5px; color: var(--text-secondary); }
-    .dash-row:last-child { border: 0; }
-    .dash-row strong { color: var(--text-primary); font-weight: 500; }
-    .dash-row .pct { color: var(--brand); font-family: var(--font-mono); font-size: 12px; }
-    .dash-bar { height: 6px; background: var(--bg-elevated); border-radius: 4px; overflow: hidden; margin-top: 6px; }
-    .dash-bar > span { display: block; height: 100%; background: var(--brand); }
-    .arch-pill {
-      display: inline-block;
-      padding: 4px 11px;
-      border: 1px solid var(--brand);
-      border-radius: 9999px;
-      font-family: var(--font-display);
-      font-style: italic;
-      font-size: 18px;
-      color: var(--brand);
-      margin-top: 6px;
-    }
-
     /* ── Footer CTA ─────────────────────────────────────── */
     .uc-footer-cta { padding: 80px 0 100px; text-align: center; }
     .uc-footer-cta h2 { margin-bottom: 8px; }
@@ -316,7 +266,7 @@
       <span class="eyebrow">use cases</span>
       <h1>Build what your client needs. <em>We handle the phone.</em></h1>
       <p class="lede">
-        Voice MCP is the <strong style="color:var(--text-primary)">phone primitive</strong> for developers shipping voice AI to clients. The MCP server gives your AI agent <code class="mono" style="background:var(--bg-elevated);padding:2px 6px;border-radius:4px;font-size:13px;">make_call</code>, <code class="mono" style="background:var(--bg-elevated);padding:2px 6px;border-radius:4px;font-size:13px;">send_sms</code>, <code class="mono" style="background:var(--bg-elevated);padding:2px 6px;border-radius:4px;font-size:13px;">transcribe_call</code>. Every call lands in local SQLite — auditable, searchable, Wrapped-ready. You build the application; Crixin is the dial tone underneath.
+        Voice MCP is the <strong style="color:var(--text-primary)">phone primitive</strong> for developers shipping voice AI to clients. The MCP server gives your AI agent <code class="mono" style="background:var(--bg-elevated);padding:2px 6px;border-radius:4px;font-size:13px;">make_call</code>, <code class="mono" style="background:var(--bg-elevated);padding:2px 6px;border-radius:4px;font-size:13px;">send_sms</code>, <code class="mono" style="background:var(--bg-elevated);padding:2px 6px;border-radius:4px;font-size:13px;">transcribe_call</code>. Every call lands in local SQLite — auditable, searchable. You build the application; Crixin is the dial tone underneath.
       </p>
       <div class="ctas">
         <span class="copy-cmd" onclick="navigator.clipboard.writeText('npm i -g crixin && crixin voice install')">npm i -g crixin &amp;&amp; crixin voice install</span>
@@ -341,8 +291,8 @@
         <div class="flow-step">
           <div class="num">STEP 03</div>
           <h3>Read the receipts</h3>
-          <p>Every call mirrored to local SQLite + (optional) Deepgram transcripts. Voice Wrapped + Caller Archetype + Ducked rebuilt for any time window.</p>
-          <code>crixin voice wrapped</code>
+          <p>Every call mirrored to local SQLite + (optional) Deepgram transcripts. Caller Archetype + Ducked rebuilt for any time window.</p>
+          <code>crixin voice ingest</code>
         </div>
       </div>
     </div>
@@ -690,75 +640,6 @@
   </section>
 
   <!-- ═══════════════════════════════════════════════════════
-       THE BIG DASHBOARD — what you'll see
-       ═══════════════════════════════════════════════════════ -->
-  <section class="uc">
-    <div class="wrap">
-      <h2 style="text-align:center;margin-bottom:6px;">After 30 days, <em>you'll see this</em>.</h2>
-      <p style="color:var(--text-secondary);text-align:center;max-width:680px;margin:0 auto 8px;font-size:15.5px;line-height:1.65;">
-        <code class="mono" style="background:var(--bg-elevated);padding:2px 6px;border-radius:4px;font-size:13px;">crixin voice ingest</code> mirrors your Twilio history into local SQLite. <code class="mono" style="background:var(--bg-elevated);padding:2px 6px;border-radius:4px;font-size:13px;">crixin voice wrapped</code> writes this as a single self-contained HTML file. Drop it into a client report; screenshot it for a deck; share it with your team.
-      </p>
-
-      <div class="dash">
-        <div class="dash-head">
-          <h3>Voice Wrapped <em>· Q2 2026</em></h3>
-          <span class="meta">Acme PLG · client snapshot</span>
-        </div>
-
-        <div class="dash-grid">
-          <div class="dash-stat"><div class="l">Total calls</div><div class="v">3,418</div><div class="s">across 6 use cases</div></div>
-          <div class="dash-stat"><div class="l">Total minutes</div><div class="v">2,089</div><div class="s">avg 36s / call</div></div>
-          <div class="dash-stat"><div class="l">Twilio + Deepgram</div><div class="v">$58.24</div><div class="s">$0.017 / call avg</div></div>
-          <div class="dash-stat"><div class="l">Unique destinations</div><div class="v">1,612</div><div class="s">US / CA / MX</div></div>
-          <div class="dash-stat"><div class="l">Caller archetype</div><div class="v" style="font-size:22px;">Quick Pitcher</div><div class="s">avg call &lt; 60s</div></div>
-          <div class="dash-stat"><div class="l">Duck rate</div><div class="v">7.4%</div><div class="s">below industry avg</div></div>
-        </div>
-
-        <div class="dash-two">
-          <div class="dash-panel">
-            <h4>Top use cases by call volume</h4>
-            <div class="dash-row"><span><strong>NPS &amp; review calls</strong></span><span class="pct">36%</span></div>
-            <div class="dash-bar"><span style="width:36%"></span></div>
-            <div class="dash-row" style="margin-top:8px;"><span><strong>Restaurant receptionist</strong></span><span class="pct">22%</span></div>
-            <div class="dash-bar"><span style="width:22%"></span></div>
-            <div class="dash-row" style="margin-top:8px;"><span><strong>B2B discovery</strong></span><span class="pct">17%</span></div>
-            <div class="dash-bar"><span style="width:17%"></span></div>
-            <div class="dash-row" style="margin-top:8px;"><span><strong>Field service triage</strong></span><span class="pct">11%</span></div>
-            <div class="dash-bar"><span style="width:11%"></span></div>
-            <div class="dash-row" style="margin-top:8px;"><span><strong>SaaS activation</strong></span><span class="pct">9%</span></div>
-            <div class="dash-bar"><span style="width:9%"></span></div>
-            <div class="dash-row" style="margin-top:8px;"><span><strong>Appointment confirms</strong></span><span class="pct">5%</span></div>
-            <div class="dash-bar"><span style="width:5%"></span></div>
-          </div>
-          <div class="dash-panel">
-            <h4>Outcome distribution</h4>
-            <div class="dash-row"><span>Booked / confirmed / completed</span><strong>1,891</strong></div>
-            <div class="dash-row"><span>Voicemail / no-answer</span><strong>704</strong></div>
-            <div class="dash-row"><span>Callback scheduled</span><strong>438</strong></div>
-            <div class="dash-row"><span>Transferred to human</span><strong>197</strong></div>
-            <div class="dash-row"><span>Opted out (DNC honored)</span><strong>52</strong></div>
-            <div class="dash-row"><span>Errored</span><strong>136</strong></div>
-
-            <h4 style="margin-top:24px;">Language mix</h4>
-            <div class="dash-row"><span>en-US</span><span class="pct">71%</span></div>
-            <div class="dash-row"><span>es-MX / es-US</span><span class="pct">22%</span></div>
-            <div class="dash-row"><span>ar-EG</span><span class="pct">7%</span></div>
-
-            <h4 style="margin-top:24px;">What your AI ducked when asked</h4>
-            <div class="dash-row"><span style="font-family:var(--font-mono);font-size:12px;">"let me get back to you"</span><strong>47×</strong></div>
-            <div class="dash-row"><span style="font-family:var(--font-mono);font-size:12px;">"that's a great question"</span><strong>38×</strong></div>
-            <div class="dash-row"><span style="font-family:var(--font-mono);font-size:12px;">"I'll have my team follow up"</span><strong>21×</strong></div>
-          </div>
-        </div>
-
-        <div style="margin-top:22px;padding-top:18px;border-top:1px solid var(--border-subtle);text-align:center;color:var(--text-muted);font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;">
-          Generated locally · PII auto-stripped · shareable as a screenshot
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══════════════════════════════════════════════════════
        FOOTER CTA
        ═══════════════════════════════════════════════════════ -->
   <section class="uc-footer-cta">
@@ -780,7 +661,6 @@
         <a href="/">crixin</a>
         <a href="/voice">assistant</a>
         <a href="/coder">coder</a>
-        <a href="/wrapped">wrapped</a>
         <a href="/voice/pricing">pricing</a>
       </div>
       <div>

@@ -348,7 +348,6 @@
       <nav class="primary" style="display:flex;gap:18px;font-size:14px;">
         <a href="/voice" style="color:var(--brand);">Voice MCP</a>
         <a href="/coder">Coder MCP</a>
-        <a href="/wrapped">Wrapped</a>
         <a href="/voice/use-cases">Use cases</a>
         <a href="/voice/docs">Docs</a>
         <a href="/voice/api">API</a>
@@ -480,108 +479,6 @@
         <div class="tool-card"><div class="tname">get_call</div><div class="tdesc">Status, duration, price, timestamps.</div></div>
         <div class="tool-card"><div class="tname">list_calls</div><div class="tdesc">Filter by <code>to</code>, <code>from</code>, <code>status</code>.</div></div>
         <div class="tool-card"><div class="tname">list_recordings</div><div class="tdesc">Recordings + auth-protected media URLs.</div></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══════ The receipts: what lands in your local DB ═══════ -->
-  <section class="sm">
-    <div class="wrap">
-      <h2>And the receipts. <em>Yours.</em></h2>
-      <p class="sublede">Every call mirrored to local SQLite + (optional) Deepgram transcripts. <code style="font-family:var(--font-mono);background:var(--bg-elevated);padding:2px 6px;border-radius:4px;font-size:13px;">crixin voice wrapped</code> condenses it to a single HTML file you can open, screenshot, share. Below: an actual sample after 30 days running mixed inbound + outbound.</p>
-
-      <style>
-        .vrw {
-          margin-top: 32px;
-          border: 1px solid var(--border-subtle);
-          border-radius: 16px;
-          background: var(--bg-surface);
-          padding: 30px 28px;
-          box-shadow: 0 50px 120px -60px rgba(245, 180, 82, 0.20);
-          max-width: 900px;
-          margin-left: auto;
-          margin-right: auto;
-        }
-        .vrw-head { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; padding-bottom: 16px; border-bottom: 1px solid var(--border-subtle); margin-bottom: 22px; flex-wrap: wrap; }
-        .vrw-head h3 { font-family: var(--font-display); font-style: italic; font-weight: 400; font-size: 28px; color: var(--brand); margin: 0; }
-        .vrw-head .meta { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
-
-        .vrw-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 22px; }
-        .vrw-stat { padding: 14px 16px; background: var(--bg-elevated); border: 1px solid var(--border-subtle); border-radius: 8px; }
-        .vrw-stat .l { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
-        .vrw-stat .v { font-family: var(--font-display); font-style: italic; font-size: 26px; color: var(--brand); line-height: 1.05; }
-        .vrw-stat.archetype .v { font-size: 18px; }
-        .vrw-stat .s { color: var(--text-secondary); font-size: 11.5px; margin-top: 3px; }
-
-        .vrw-hm { display: grid; grid-template-columns: repeat(24, 1fr); gap: 3px; margin: 6px 0; }
-        .vrw-hm > div { aspect-ratio: 1; background: var(--bg-elevated); border-radius: 3px; }
-        .vrw-section-h { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 8px; }
-        .vrw-hint { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); text-align: center; margin-top: 6px; }
-
-        .vrw-foot { margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--border-subtle); text-align: center; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
-        .vrw-cta { display: flex; justify-content: center; gap: 12px; margin-top: 22px; flex-wrap: wrap; }
-        .vrw-cta a {
-          font-family: var(--font-mono); font-size: 12.5px;
-          padding: 9px 16px;
-          border: 1px solid var(--border-strong);
-          border-radius: 8px;
-          color: var(--text-primary);
-        }
-        .vrw-cta a:hover { border-color: var(--brand); color: var(--brand); }
-        .vrw-cta a.primary { background: var(--brand); color: #0b0d12; border-color: var(--brand); }
-      </style>
-
-      <div class="vrw">
-        <div class="vrw-head">
-          <h3>Voice Wrapped <em>· last 30 days</em></h3>
-          <span class="meta">sample · mixed inbound + outbound</span>
-        </div>
-
-        <div class="vrw-stats">
-          <div class="vrw-stat"><div class="l">Total calls</div><div class="v">1,247</div><div class="s">across 4 use cases</div></div>
-          <div class="vrw-stat"><div class="l">Minutes</div><div class="v">8,432</div><div class="s">avg 6m 45s</div></div>
-          <div class="vrw-stat"><div class="l">Twilio spend</div><div class="v">$174.32</div><div class="s">~$0.14 / call</div></div>
-          <div class="vrw-stat"><div class="l">Top country</div><div class="v">Egypt</div><div class="s">624 calls · ar-EG</div></div>
-          <div class="vrw-stat archetype"><div class="l">Caller archetype</div><div class="v">Patient Listener</div><div class="s">avg call &gt; 3 min</div></div>
-          <div class="vrw-stat"><div class="l">Duck rate</div><div class="v">14.2%</div><div class="s">"let me get back to you"</div></div>
-        </div>
-
-        <div class="vrw-section-h">Hour of day</div>
-        <div class="vrw-hm">
-          <div style="background:rgba(245,180,82,0.04);"></div>
-          <div style="background:rgba(245,180,82,0.02);"></div>
-          <div style="background:rgba(245,180,82,0.02);"></div>
-          <div style="background:rgba(245,180,82,0.02);"></div>
-          <div style="background:rgba(245,180,82,0.02);"></div>
-          <div style="background:rgba(245,180,82,0.02);"></div>
-          <div style="background:rgba(245,180,82,0.03);"></div>
-          <div style="background:rgba(245,180,82,0.08);"></div>
-          <div style="background:rgba(245,180,82,0.20);"></div>
-          <div style="background:rgba(245,180,82,0.42);"></div>
-          <div style="background:rgba(245,180,82,0.62);"></div>
-          <div style="background:rgba(245,180,82,0.78);"></div>
-          <div style="background:rgba(245,180,82,0.85);"></div>
-          <div style="background:rgba(245,180,82,0.72);"></div>
-          <div style="background:rgba(245,180,82,0.95);"></div>
-          <div style="background:rgba(245,180,82,1);"></div>
-          <div style="background:rgba(245,180,82,0.84);"></div>
-          <div style="background:rgba(245,180,82,0.62);"></div>
-          <div style="background:rgba(245,180,82,0.48);"></div>
-          <div style="background:rgba(245,180,82,0.32);"></div>
-          <div style="background:rgba(245,180,82,0.20);"></div>
-          <div style="background:rgba(245,180,82,0.10);"></div>
-          <div style="background:rgba(245,180,82,0.06);"></div>
-          <div style="background:rgba(245,180,82,0.04);"></div>
-        </div>
-        <div class="vrw-hint">12am ← peak around 3pm local → 11pm · TCPA 8am–9pm window respected</div>
-
-        <div class="vrw-foot">PII auto-stripped · generated locally · shareable</div>
-
-        <div class="vrw-cta">
-          <a href="/wrapped" class="primary">See the full Wrapped page →</a>
-          <a href="/voice/use-cases">Six use cases with receipts</a>
-          <a href="/archetype">All 8 caller archetypes</a>
-        </div>
       </div>
     </div>
   </section>

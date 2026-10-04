@@ -18,15 +18,6 @@ Vapi / Bland / Retell are closed hosted platforms. Telnyx is the carrier layer. 
 1. **Voice MCP — give your AI a phone.** Real outbound calls + SMS through your Twilio. Polly + Google neural voices in 30+ languages including Egyptian Arabic. Geo-gate baked in (US/UK/EU/AU require `consented`; Egypt + Gulf dial directly).
 2. **Coder MCP — give your AI a memory.** Reads the JSONLs your AI host already wrote to disk (`~/.claude/projects/`, `~/.codex/sessions/`, Cursor app data) into local SQLite. Any LLM you wire to it can pull up what you discussed Tuesday at 3am.
 
-## Wrapped (the year-end receipt)
-
-Both halves emit a self-contained HTML report — heatmaps, archetypes, top destinations or top projects, monthly bars. Local. Shareable as a screenshot. PII auto-stripped.
-
-```
-crixin voice wrapped      → ./crixin-voice-wrapped-<year>.html
-crixin coder wrapped      → ./crixin-coder-wrapped-<year>.html
-```
-
 ## Stack
 
 - TTS: Twilio Polly + Google neural voices (in-call, via TwiML `<Say>`).
@@ -40,7 +31,7 @@ Voice MCP:
 - `TWILIO_ACCOUNT_SID`
 - `TWILIO_AUTH_TOKEN`
 - `TWILIO_PHONE_NUMBER` (E.164)
-- `DEEPGRAM_API_KEY` (optional — for transcribe_call + Voice Wrapped + Caller Archetype)
+- `DEEPGRAM_API_KEY` (optional — for transcribe_call + Caller Archetype)
 
 Coder MCP: none. Reads what your AI host already wrote to disk.
 
@@ -58,8 +49,8 @@ Then ask your AI host: "use crixin-voice to call +1xxxxxxxxxx" or "use crixin-co
 
 ## Pricing
 
-- **Free** ($0 forever, MIT): both MCPs, all tools, all Wrapped, all archetypes, local SQLite. Bring your own Twilio (~$0.014/min US).
-- **Pro** ($5/month): hosted Wrapped (shareable URL), cross-machine memory sync, premium archetypes. 3-day free trial. No enterprise tier. No sales team.
+- **Free** ($0 forever, MIT): both MCPs, all tools, all archetypes, local SQLite. Bring your own Twilio (~$0.014/min US).
+- **Pro** ($5/month): cross-machine memory sync, premium archetypes. 3-day free trial. No enterprise tier. No sales team.
 
 ## Privacy
 
@@ -79,7 +70,6 @@ Then ask your AI host: "use crixin-voice to call +1xxxxxxxxxx" or "use crixin-co
 - `/` — landing — "Give your AI a phone and a memory."
 - `/voice` — Voice MCP capability page
 - `/coder` — Coder MCP capability page
-- `/wrapped` — Wrapped explainer (both halves)
 - `/archetype` — archetype taxonomy
 - `/install` — 5-step install walkthrough
 - `/voice/pricing` — pricing (Free + Pro $5/mo)

@@ -7,6 +7,9 @@
   "outputDirectory": "web",
   "installCommand": "npm install --omit=dev",
   "framework": null,
+  "redirects": [
+    { "source": "/wrapped", "destination": "/", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/", "destination": "/index.html" }
   ],

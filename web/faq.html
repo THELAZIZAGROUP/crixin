@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="canonical" href="https://crixin.com/faq" />
   <title>Crixin FAQ — AI phone calls, MCP, Twilio, and what stays on your laptop</title>
-  <meta name="description" content="Honest answers about the Crixin MCP toolkit — what it is, what it isn't, what data leaves your machine (none), how Twilio billing works (you pay them directly), and where Voice Wrapped/Archetype get their numbers from." />
+  <meta name="description" content="Honest answers about the Crixin MCP toolkit — what it is, what it isn't, what data leaves your machine (none), how Twilio billing works (you pay them directly), and where Caller Archetype gets its numbers from." />
 
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Crixin FAQ" />
@@ -52,7 +52,7 @@
         <a href="/voice">Voice MCP</a>
         <a href="/voice/use-cases">Use cases</a>
         
-        <a href="/coder">Coder</a><a href="/wrapped">Wrapped</a>
+        <a href="/coder">Coder</a>
         <a href="/archetype">Archetype</a>
         <a href="/voice/pricing">Pricing</a>
         <a href="/login">Sign in</a>
@@ -74,12 +74,12 @@
 
       <div class="qa">
         <h3>What is Crixin, <em>exactly</em>?</h3>
-        <p>An MCP server, a CLI, and a local SQLite database. The MCP server exposes <code>make_call</code>, <code>send_sms</code>, <code>transcribe_call</code>, <code>get_call</code>, <code>list_calls</code>, and <code>list_recordings</code> to any AI host (Claude Code, Cursor, Codex CLI, Claude Desktop). The CLI lets you place one-off calls, ingest your Twilio history, and run Voice Wrapped / Caller Archetype / Ducked analysis on your transcripts.</p>
+        <p>An MCP server, a CLI, and a local SQLite database. The MCP server exposes <code>make_call</code>, <code>send_sms</code>, <code>transcribe_call</code>, <code>get_call</code>, <code>list_calls</code>, and <code>list_recordings</code> to any AI host (Claude Code, Cursor, Codex CLI, Claude Desktop). The CLI lets you place one-off calls, ingest your Twilio history, and run Caller Archetype / Ducked analysis on your transcripts.</p>
       </div>
 
       <div class="qa">
         <h3>What does <em>NOT</em> leave my laptop?</h3>
-        <p>Your transcripts, your call recordings (which live in your Twilio account anyway), your phone numbers, your customer list, your Caller Archetype label, your Voice Wrapped report. Crixin has zero servers between you and Twilio. Calls hit <code>api.twilio.com</code> directly with your auth header.</p>
+        <p>Your transcripts, your call recordings (which live in your Twilio account anyway), your phone numbers, your customer list, your Caller Archetype label. Crixin has zero servers between you and Twilio. Calls hit <code>api.twilio.com</code> directly with your auth header.</p>
       </div>
 
       <div class="qa">
@@ -89,7 +89,7 @@
 
       <div class="qa">
         <h3>How does the <em>billing</em> work?</h3>
-        <p>The open-source toolkit is MIT-licensed and free forever. You pay Twilio directly for the actual phone calls — typically ~$0.014/min for US/Canada outbound voice and ~$0.0083 per SMS. International is more (Egypt ~$0.135/min, UAE ~$0.155/min mobile). Deepgram is ~$0.0043/min on the Nova-2 tier. <strong>Crixin doesn't take a cut.</strong> Pro ($5/mo) adds hosted Wrapped and cross-machine memory sync — it's not a managed Twilio reseller. You always pay Twilio directly.</p>
+        <p>The open-source toolkit is MIT-licensed and free forever. You pay Twilio directly for the actual phone calls — typically ~$0.014/min for US/Canada outbound voice and ~$0.0083 per SMS. International is more (Egypt ~$0.135/min, UAE ~$0.155/min mobile). Deepgram is ~$0.0043/min on the Nova-2 tier. <strong>Crixin doesn't take a cut.</strong> Pro ($5/mo) adds cross-machine memory sync — it's not a managed Twilio reseller. You always pay Twilio directly.</p>
       </div>
 
       <div class="qa">
@@ -108,13 +108,8 @@
       </div>
 
       <div class="qa">
-        <h3>Where does <em>Voice Wrapped</em> get its numbers?</h3>
-        <p>From your local SQLite (<code>~/.crixin/crixin.db</code>), populated by <code>crixin voice ingest</code> which mirrors your Twilio Calls + Recordings into the <code>voice_calls</code> + <code>voice_recordings</code> tables. If <code>DEEPGRAM_API_KEY</code> is set, it also runs Deepgram on each recording and rolls the transcripts up onto the call row. The Wrapped HTML is rendered from those rows entirely client-side — no network call to generate the report.</p>
-      </div>
-
-      <div class="qa">
         <h3>What happened to the <em>session-analyzer</em>?</h3>
-        <p>v0.1.0 retired it. Older versions of <code>crixin</code> ingested Claude Code / Codex CLI / Cursor JSONL session files and ran a wrapped/archetype analysis on coding sessions. That product is no longer the focus — same engines now read call data instead. If you were on v0.0.x and want to keep the session-analyzer flow, pin to <code>crixin@0.0.9</code> in your install.</p>
+        <p>v0.1.0 retired it. Older versions of <code>crixin</code> ingested Claude Code / Codex CLI / Cursor JSONL session files and ran an archetype analysis on coding sessions. That product is no longer the focus — same engines now read call data instead. If you were on v0.0.x and want to keep the session-analyzer flow, pin to <code>crixin@0.0.9</code> in your install.</p>
       </div>
 
       <div class="qa">
@@ -124,7 +119,7 @@
 
       <div class="qa">
         <h3>What's the <em>Pro</em> license about?</h3>
-        <p>Pro ($5/mo, 3-day free trial) unlocks: hosted Wrapped share links (revocable), cross-machine memory sync (same Coder MCP history on every laptop you work from), and premium archetypes. That's the whole upsell. No enterprise tier, no sales team, no SLA. The open-source toolkit stays MIT and free for everyone.</p>
+        <p>Pro ($5/mo, 3-day free trial) unlocks: cross-machine memory sync (same Coder MCP history on every laptop you work from), and premium archetypes. That's the whole upsell. No enterprise tier, no sales team, no SLA. The open-source toolkit stays MIT and free for everyone.</p>
       </div>
 
       <div class="qa">
@@ -140,7 +135,6 @@
       <div>
         <a href="/">crixin</a>
         <a href="/voice">voice</a>
-        <a href="/wrapped">wrapped</a>
         <a href="/archetype">archetype</a>
         <a href="/voice/pricing">pricing</a>
       </div>

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Crixin — give your AI a phone and a memory. Local-first.</title>
   <meta name="description" content="Your AI agent can call real numbers, send SMS, transcribe conversations, and recall context from every past coding session. Locally, through your own Twilio. Works with Claude Code, Cursor, Codex CLI, and Claude Desktop. Built on MCP." />
-  <meta name="keywords" content="ai phone calls, ai memory, ai agent capabilities, twilio mcp, claude code memory, codex cli memory, cursor memory, mcp server, local-first ai, voice wrapped, caller archetype" />
+  <meta name="keywords" content="ai phone calls, ai memory, ai agent capabilities, twilio mcp, claude code memory, codex cli memory, cursor memory, mcp server, local-first ai, caller archetype" />
   <link rel="canonical" href="https://crixin.com/" />
 
   <!-- Open Graph -->
@@ -44,7 +44,6 @@
       "One-shot install into Claude Code, Cursor, Codex CLI, and Claude Desktop",
       "Local SQLite — your transcripts and history stay on your laptop",
       "Polly + Google neural voices, 30+ languages incl. Arabic via Deepgram",
-      "Wrapped — year-end visual receipt for both Voice and Coder",
       "Caller Archetype — Quick Pitcher / Patient Listener / Ducker / Hard Closer / …",
       "Bring your own Twilio. Bring your own LLM. No SaaS in the middle."
     ],
@@ -71,7 +70,7 @@
         },
         "availability": "https://schema.org/InStock",
         "url": "https://crixin.com/#install",
-        "description": "$5/month: hosted Wrapped, cross-machine memory sync, premium archetypes. 3-day free trial. Cancel anytime."
+        "description": "$5/month: cross-machine memory sync and premium archetypes. 3-day free trial. Cancel anytime."
       }
     ]
   }
@@ -482,19 +481,6 @@
       margin: 0;
     }
 
-    /* ----- Showcase row (Wrapped tease) ----- */
-    .showcase {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 56px;
-      align-items: center;
-    }
-    .showcase img {
-      width: 100%;
-      border-radius: 14px;
-      border: 1px solid var(--border-subtle);
-      box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(245, 180, 82, 0.04);
-      transition: transform 600ms var(--ease);
-    }
-    .showcase img:hover { transform: translateY(-4px) scale(1.005); }
 
     /* ----- Code block (How it works) ----- */
     .codeblock {
@@ -701,7 +687,6 @@
       <nav class="primary">
         <a href="/voice">Voice</a>
         <a href="/coder">Coder</a>
-        <a href="/wrapped">Wrapped</a>
         <a href="/install">Install</a>
         <a href="/login">Sign in</a>
         <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a>
@@ -1003,25 +988,6 @@
     </div>
   </section>
 
-  <!-- ===== Showcase: Wrapped ===== -->
-  <section class="block tight">
-    <div class="wrap">
-      <div class="showcase reveal">
-        <div>
-          <p class="eyebrow">The year-end receipt</p>
-          <h2 class="section-title">Wrapped. <em>For both halves.</em></h2>
-          <p class="section-lede"><code class="mono">crixin voice wrapped</code> and <code class="mono">crixin coder wrapped</code> each emit a self-contained HTML report — heatmaps, archetypes, top destinations or top projects, monthly bars. Local. Shareable as a screenshot. PII auto-stripped. The proof your data layer is doing its job.</p>
-          <p>
-            <a class="btn btn-primary" href="/wrapped">See Voice Wrapped →</a>
-            <a class="btn btn-ghost" href="/archetype" style="margin-left: 6px;">The archetypes</a>
-          </p>
-        </div>
-        <div>
-          <a href="/wrapped"><img src="/screenshots/wrapped.png" alt="A Crixin Wrapped report — heatmap of activity, archetype reveal, top destinations or top projects, monthly bars, estimated cost" loading="lazy" /></a>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <!-- ===== How it works (code) ===== -->
   <section class="block">
@@ -1102,7 +1068,7 @@ args = ["-y", "crixin", "voice", "mcp"]</pre>
       <div class="reveal">
         <p class="eyebrow">Pricing</p>
         <h2 class="section-title">Free forever. <em>Or sync across machines.</em></h2>
-        <p class="section-lede">The toolkit is MIT-licensed and runs entirely on your laptop. Pro adds hosted Wrapped, cross-machine memory sync, and premium archetypes — for $5/month, not enterprise SaaS pricing.</p>
+        <p class="section-lede">The toolkit is MIT-licensed and runs entirely on your laptop. Pro adds cross-machine memory sync and premium archetypes — for $5/month, not enterprise SaaS pricing.</p>
       </div>
       <div class="pricing reveal-stagger" style="grid-template-columns: 1fr 1fr; max-width: 760px; margin: 0 auto;">
         <div class="tier">
@@ -1111,7 +1077,7 @@ args = ["-y", "crixin", "voice", "mcp"]</pre>
           <ul>
             <li>Real outbound calls, SMS, transcription</li>
             <li>Full coding-session recall across hosts</li>
-            <li>Both Wrapped reports + all archetypes</li>
+            <li>All caller archetypes</li>
             <li>Local SQLite — your data stays on your laptop</li>
             <li>Bring your own Twilio (~$0.014/min US)</li>
             <li>Bring your own LLM</li>
@@ -1123,7 +1089,6 @@ args = ["-y", "crixin", "voice", "mcp"]</pre>
           <div class="price">$5<span class="per"> / month</span></div>
           <ul>
             <li>Everything in Free</li>
-            <li>Hosted Wrapped — shareable URL, not just local HTML</li>
             <li>Cross-machine sync — one account, every machine, same session list. Metadata only; your code never leaves your disk.</li>
             <li>Premium archetypes + Ducked-phrase analysis</li>
             <li>3-day free trial · Stripe billing · cancel anytime</li>

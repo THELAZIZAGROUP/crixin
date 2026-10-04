@@ -77,77 +77,6 @@
       text-transform: uppercase;
     }
     .plan-badge.free { background: var(--bg-elevated); color: var(--text-secondary); border: 1px solid var(--border-strong); }
-    .wrapped-section { margin-top: 48px; }
-    .wrapped-head {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-    .wrapped-head h2 {
-      font-family: var(--font-display);
-      font-weight: 400;
-      font-style: italic;
-      font-size: 30px;
-      color: var(--brand);
-      margin: 0;
-    }
-    .wrapped-head em { font-style: italic; }
-    .wrapped-meta {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-muted);
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-    .wrapped-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px;
-      margin-top: 16px;
-    }
-    .wrapped-stat {
-      padding: 18px;
-      border: 1px solid var(--border-subtle);
-      border-radius: 10px;
-      background: var(--bg-surface);
-    }
-    .wrapped-stat .label {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--text-muted);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: 6px;
-    }
-    .wrapped-stat .value {
-      font-family: var(--font-display);
-      font-style: italic;
-      font-size: 26px;
-      color: var(--brand);
-      line-height: 1.1;
-    }
-    .wrapped-stat .sub { color: var(--text-secondary); font-size: 12px; margin-top: 4px; }
-    .wrapped-empty {
-      margin-top: 16px;
-      padding: 26px;
-      border: 1px dashed var(--border-strong);
-      border-radius: 12px;
-      background: rgba(245, 180, 82, 0.03);
-    }
-    .wrapped-empty p { color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin: 0 0 14px; }
-    .wrapped-empty pre {
-      font-family: var(--font-mono);
-      font-size: 12.5px;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border-subtle);
-      border-radius: 8px;
-      padding: 12px 14px;
-      margin: 0;
-      color: var(--text-primary);
-      overflow-x: auto;
-    }
     .next-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -233,7 +162,7 @@
         <a href="/voice">Voice MCP</a>
         <a href="/voice/use-cases">Use cases</a>
         
-        <a href="/coder">Coder</a><a href="/wrapped">Wrapped</a>
+        <a href="/coder">Coder</a>
         <a href="/archetype">Archetype</a>
         <a href="/voice/pricing">Pricing</a>
         <a href="/account" style="color:var(--brand);">Account</a>
@@ -249,7 +178,7 @@
         <span class="eyebrow">account</span>
         <h1>You're <em>signed out</em>.</h1>
         <div class="signin-prompt">
-          <p style="color:var(--text-secondary);font-size:15px;line-height:1.6;margin:0;">Sign in with a magic link to manage your plan, view your hosted Voice Wrapped, and update billing.</p>
+          <p style="color:var(--text-secondary);font-size:15px;line-height:1.6;margin:0;">Sign in with a magic link to manage your plan and update billing.</p>
           <a href="/login">Sign in →</a>
         </div>
       </div>
@@ -257,7 +186,7 @@
       <div id="signed-in" style="display:none;">
         <span class="eyebrow">account</span>
         <h1>You're <em>signed in</em>.</h1>
-        <p style="color:var(--text-secondary);font-size:15.5px;line-height:1.6;max-width:640px;">Your plan, your account email, and what to do next. The hosted dashboard (live calls, real-time Voice Wrapped, multi-number routing) ships with the Pro and Business tiers — until then this page is the receipt.</p>
+        <p style="color:var(--text-secondary);font-size:15.5px;line-height:1.6;max-width:640px;">Your plan, your account email, and what to do next. The hosted dashboard (live calls, multi-number routing) ships with the Pro and Business tiers — until then this page is the receipt.</p>
 
         <div class="acct-card">
           <div class="acct-row">
@@ -278,33 +207,8 @@
           </div>
         </div>
 
-        <div class="wrapped-section">
-          <div class="wrapped-head">
-            <h2>Voice Wrapped <em>· this year</em></h2>
-            <span class="wrapped-meta" id="wrapped-meta">checking…</span>
-          </div>
-
-          <div id="wrapped-loaded" style="display:none;">
-            <div class="wrapped-grid" id="wrapped-grid"></div>
-            <p style="margin-top:16px;color:var(--text-secondary);font-size:13px;">
-              <a href="/wrapped" style="color:var(--brand);">See the full Wrapped page →</a>
-            </p>
-          </div>
-
-          <div class="wrapped-empty" id="wrapped-empty" style="display:none;">
-            <p><strong style="color:var(--text-primary);">No Voice Wrapped synced yet.</strong> Run the CLI locally and pipe your Wrapped output here — your transcripts stay on your laptop, only the aggregate numbers land in your account.</p>
-<pre>npm i -g crixin
-crixin voice ingest                                    <span style="color:var(--text-muted);"># pull Twilio + Deepgram</span>
-crixin voice wrapped --year 2026 --json | curl -X POST \
-  -H "Content-Type: application/json" -d @- \
-  --cookie "$(grep crixin_session ~/.crixin/cookies.txt)" \
-  https://crixin.com/api/voice/wrapped</pre>
-            <p style="margin-top:14px;font-size:12px;color:var(--text-muted);">A first-class <code style="background:var(--bg-elevated);padding:1px 5px;border-radius:3px;">crixin voice wrapped --sync</code> flag ships with the hosted Pro tier. Until then, the curl above works from any signed-in browser session.</p>
-          </div>
-        </div>
-
         <h2 style="font-family:var(--font-display);font-weight:400;font-style:italic;font-size:30px;color:var(--brand);margin:48px 0 8px;">What's <em>next</em>.</h2>
-        <p style="color:var(--text-secondary);font-size:14.5px;line-height:1.55;">The hosted dashboard isn't live yet. Until then, install the open-source CLI and run Voice Wrapped on your own Twilio data.</p>
+        <p style="color:var(--text-secondary);font-size:14.5px;line-height:1.55;">The hosted dashboard isn't live yet. Until then, install the open-source CLI and place calls through your own Twilio.</p>
 
         <div class="next-grid">
           <div class="next-card">
@@ -313,13 +217,8 @@ crixin voice wrapped --year 2026 --json | curl -X POST \
             <a href="/install">Install in 30 seconds →</a>
           </div>
           <div class="next-card">
-            <h3>Voice Wrapped</h3>
-            <p>Run <code>crixin voice ingest</code> then <code>crixin voice wrapped</code> for your year on the phone — heatmap, archetype, top tags.</p>
-            <a href="/wrapped">See what's on the page →</a>
-          </div>
-          <div class="next-card">
             <h3>Coder MCP</h3>
-            <p>Run <code>crixin coder ingest</code> then ask your AI host to search past sessions. Or run <code>crixin coder wrapped</code> for your year of pair-programming.</p>
+            <p>Run <code>crixin coder ingest</code> then ask your AI host to search past sessions.</p>
             <a href="/coder">See Coder MCP →</a>
           </div>
         </div>
@@ -336,7 +235,6 @@ crixin voice wrapped --year 2026 --json | curl -X POST \
       <div>
         <a href="/">crixin</a>
         <a href="/voice">voice</a>
-        <a href="/wrapped">wrapped</a>
         <a href="/archetype">archetype</a>
         <a href="/voice/pricing">pricing</a>
       </div>
@@ -368,115 +266,11 @@ crixin voice wrapped --year 2026 --json | curl -X POST \
             ? new Date(u.createdAt).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })
             : "—";
 
-          // Once we know there's a session, fetch the Voice Wrapped snapshot.
-          loadVoiceWrapped();
         })
         .catch(() => {
           loading.style.display = "none";
           signedOut.style.display = "block";
         });
-
-      function fmtDur(sec) {
-        if (sec == null) return "—";
-        if (sec < 60) return sec + "s";
-        const m = Math.floor(sec / 60);
-        const r = sec % 60;
-        return r ? m + "m " + r + "s" : m + "m";
-      }
-      function fmtHour(h) {
-        if (h == null) return "—";
-        const ampm = h < 12 || h === 24 ? "AM" : "PM";
-        return ((h % 12) || 12) + " " + ampm;
-      }
-      function fmtMoney(cents) {
-        if (cents == null || cents === 0) return "$0";
-        return "$" + (cents / 100).toFixed(2);
-      }
-      function fmtPct(n) {
-        if (n == null) return "—";
-        return (n * 100).toFixed(1) + "%";
-      }
-      function statTile(label, value, sub) {
-        const el = document.createElement("div");
-        el.className = "wrapped-stat";
-        const subHtml = sub ? '<div class="sub">' + escape(sub) + '</div>' : '';
-        el.innerHTML = '<div class="label">' + escape(label) + '</div>'
-                     + '<div class="value">' + escape(value) + '</div>'
-                     + subHtml;
-        return el;
-      }
-      function escape(s) {
-        return String(s == null ? "" : s)
-          .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-      }
-
-      function loadVoiceWrapped() {
-        const meta = document.getElementById("wrapped-meta");
-        const loaded = document.getElementById("wrapped-loaded");
-        const empty = document.getElementById("wrapped-empty");
-        const grid = document.getElementById("wrapped-grid");
-
-        fetch("/api/voice/wrapped", { credentials: "same-origin" })
-          .then((r) => {
-            if (r.status === 404) return null; // no snapshot yet
-            if (!r.ok) throw new Error("HTTP " + r.status);
-            return r.json();
-          })
-          .then((w) => {
-            if (!w) {
-              meta.textContent = "no snapshot yet";
-              empty.style.display = "block";
-              return;
-            }
-            meta.textContent = "synced "
-              + (w.syncedAt ? new Date(w.syncedAt).toLocaleString() : "")
-              + " · year " + (w.year || "—");
-
-            grid.innerHTML = "";
-            grid.appendChild(statTile("total calls",
-              (w.totalCalls || 0).toLocaleString(),
-              (w.completedCalls || 0).toLocaleString() + " completed"));
-            grid.appendChild(statTile("total minutes",
-              (w.totalMinutes || 0).toLocaleString(),
-              "avg " + fmtDur(w.avgCallSeconds) + " per call"));
-            grid.appendChild(statTile("twilio spend",
-              fmtMoney(w.totalCostCents),
-              w.totalCalls
-                ? "~" + fmtMoney(Math.round((w.totalCostCents || 0) / w.totalCalls)) + "/call"
-                : "no calls yet"));
-            grid.appendChild(statTile("unique destinations",
-              (w.uniqueDestinations || 0).toLocaleString(),
-              "distinct numbers"));
-            grid.appendChild(statTile("busiest hour",
-              fmtHour(w.busiestHour),
-              "most calls"));
-            grid.appendChild(statTile("longest call",
-              fmtDur(w.longestCallSeconds),
-              ""));
-            if (w.callerArchetype) {
-              grid.appendChild(statTile("archetype",
-                w.callerArchetype,
-                w.duckRate != null ? "duck rate " + fmtPct(w.duckRate) : ""));
-            }
-            const topCountry = (w.topDestinationCountries || [])[0];
-            if (topCountry) {
-              grid.appendChild(statTile("top country",
-                topCountry.country,
-                topCountry.count + " calls · " + topCountry.minutes + " min"));
-            }
-            const topLang = (w.topLanguages || [])[0];
-            if (topLang) {
-              grid.appendChild(statTile("top language",
-                topLang.language,
-                topLang.count + " calls"));
-            }
-            loaded.style.display = "block";
-          })
-          .catch(() => {
-            meta.textContent = "couldn't load";
-            empty.style.display = "block";
-          });
-      }
 
       signoutBtn.addEventListener("click", async () => {
         signoutBtn.disabled = true;

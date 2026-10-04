@@ -346,7 +346,7 @@ p.section-lede { color: var(--text-secondary); max-width: 720px; margin: 0 0 32p
 }
 .tier ul li:last-child { border-bottom: none; }
 
-/* ---- Hook block (Wrapped-style accent) ---- */
+/* ---- Hook block ---- */
 
 .hook {
   position: relative;

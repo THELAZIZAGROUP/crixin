@@ -110,7 +110,6 @@
       <nav class="primary">
         <a href="/voice">Voice</a>
         <a href="/coder">Coder</a>
-        <a href="/wrapped">Wrapped</a>
         <a href="/install" style="color:var(--brand);">Install</a>
         <a href="/voice/pricing">Pricing</a>
         <a href="https://github.com/THELAZIZAGROUP/crixin">GitHub</a>
@@ -136,7 +135,7 @@
       <div class="step">
         <div class="num">STEP 01</div>
         <h3>Install <em>from npm</em>.</h3>
-        <p>One global package. Includes the CLI, both MCP servers (<code>crixin-voice</code> + <code>crixin-coder</code>), all the Wrapped + Archetype engines, and a local SQLite at <code>~/.crixin/crixin.db</code>.</p>
+        <p>One global package. Includes the CLI, both MCP servers (<code>crixin-voice</code> + <code>crixin-coder</code>), the Archetype engine, and a local SQLite at <code>~/.crixin/crixin.db</code>.</p>
 <pre class="code">npm i -g crixin
 crixin --version  <span class="c"># 0.5.0</span></pre>
       </div>
@@ -210,7 +209,7 @@ args = ["-y","crixin","coder","mcp"]</pre>
 export TWILIO_AUTH_TOKEN=your_auth_token
 export TWILIO_PHONE_NUMBER=+15555550100
 
-<span class="c"># Optional — needed for transcribe_call + Voice Wrapped + Caller Archetype</span>
+<span class="c"># Optional — needed for transcribe_call + Caller Archetype</span>
 export DEEPGRAM_API_KEY=...
 
 crixin voice doctor</pre>
@@ -244,14 +243,6 @@ then use crixin-voice to call them and confirm.</pre>
         <p style="margin-top:14px;font-size:13px;color:var(--text-muted);">No campaign UI, no agent roster, no dashboard. Two MCP tool surfaces, one chat window, one phone ringing.</p>
       </div>
 
-      <div class="step" style="border-top: 1px solid var(--border-subtle); padding-top: 32px; margin-top: 32px;">
-        <div class="num">BONUS</div>
-        <h3>See the <em>year-end receipts</em>.</h3>
-<pre class="code">crixin voice wrapped --year 2026     <span class="c"># heatmap, archetype, top destinations</span>
-crixin coder wrapped --year 2026     <span class="c"># heatmap, archetype, top projects</span></pre>
-        <p style="margin-top:14px;font-size:13px;color:var(--text-muted);">Each writes a self-contained HTML file you can open, screenshot, or share. Generated locally. PII auto-stripped.</p>
-      </div>
-
     </div>
   </section>
 
@@ -260,7 +251,6 @@ crixin coder wrapped --year 2026     <span class="c"># heatmap, archetype, top p
       <div>
         <a href="/">crixin</a>
         <a href="/voice">voice</a>
-        <a href="/wrapped">wrapped</a>
         <a href="/archetype">archetype</a>
         <a href="/voice/pricing">pricing</a>
       </div>

@@ -13,12 +13,6 @@
     <changefreq>weekly</changefreq>
   </url>
   <url>
-    <loc>https://crixin.com/wrapped</loc>
-    <lastmod>2026-05-12</lastmod>
-    <priority>0.92</priority>
-    <changefreq>weekly</changefreq>
-  </url>
-  <url>
     <loc>https://crixin.com/archetype</loc>
     <lastmod>2026-05-12</lastmod>
     <priority>0.9</priority>
